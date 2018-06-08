@@ -1,2 +1,37 @@
-v. 2.3.3
-1. GWMLibrary is now used to create holograms!
+beta-3.0
+1. Some optimisations and commands rework.
+2. Changes in code style
+2.1 'snake_case' changed to 'camelCase' in local variables.
+2.2 Collection declaration in global variables changed to interfaces.
+3. First GUI Preview
+3.1 'DECORATIVE_ITEMS' is no more necessary parameter.
+3. First Open Manager
+3.1 'DECORATIVE_ITEMS' is no more necessary parameter.
+3.2 'SCROLL_DELAYS' is no more necessary parameter.
+3.3 'CLOSE_DELAY' is no more necessary parameter.
+4. Second Open Manager
+4.1 'HIDDEN_ITEM' is no more necessary parameter.
+5. Animation1 Open Manager
+5.1 'FLOOR_BLOCK_TYPE' is no more necessary parameter.
+5.2 'FENCE_BLOCK_TYPE' is no more necessary parameter.
+5.3 'CRATE_BLOCK_TYPE' is no more necessary parameter.
+6. Apache commons-io is now included in .jar.
+7. MySQL support! (beta)
+7.1 Added "MySQL" parameter to config.
+7.2 Added "USE_MYSQL_FOR_VIRTUAL_CASES" parameter to config.
+7.3 Added "USE_MYSQL_FOR_VIRTUAL_KEYS" parameter to config.
+7.4 Added "USE_MYSQL_FOR_TIMED_CASES" parameter to config.
+7.5 Added "USE_MYSQL_FOR_TIMED_KEYS" parameter to config.
+7.6 Added "MAX_VIRTUAL_NAMES_LENGTH" parameter to config.
+8. You can now set delay between crate opening.
+8.1 Added "CRATE_OPEN_DELAY" parameter to config.
+9. You can now buy/give Super Objects.
+9.1 Added "/gwmcrates buy savedsuperobject <saved super object> [amount]"
+9.1 Added "/gwmcrates give savedsuperobject <saved super object> [amount]"
+10. IMPORTANT! 'timed_cases_delays.conf' renamed to 'timed_cases.conf'! Your file will be automatically renamed.
+11. IMPORTANT! 'timed_keys_delays.conf' renamed to 'timed_keys.conf'! Your file will be automatically renamed.
+12. Package changed from 'ua.gwm' to 'org.gwmdevelopments'.
+13. Project moved to GitLab from GitHub.
+14. 'CMD' node in 'COMMANDS' parameter of 'COMMANDS' drop renamed to 'COMMAND'.
+15. IMPORTANT! Permissions changed!
+16. IMPORTANT! Language settings changed! Check 'language.conf'!
