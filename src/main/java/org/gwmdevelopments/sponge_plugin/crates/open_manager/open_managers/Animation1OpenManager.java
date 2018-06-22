@@ -11,6 +11,7 @@ import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
+import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
@@ -24,7 +25,6 @@ import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.gwmdevelopments.sponge_plugin.library.utils.LibraryUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -149,10 +149,10 @@ public class Animation1OpenManager extends OpenManager {
                         add(Keys.DIRECTION, Direction.SOUTH).
                         build(),
                 BlockChangeFlags.NONE);
-        LibraryUtils.tryCreateHolograms(location1, hologram).ifPresent(holograms::addAll);
-        LibraryUtils.tryCreateHolograms(location2, hologram).ifPresent(holograms::addAll);
-        LibraryUtils.tryCreateHolograms(location3, hologram).ifPresent(holograms::addAll);
-        LibraryUtils.tryCreateHolograms(location4, hologram).ifPresent(holograms::addAll);
+        GWMLibraryUtils.tryCreateHolograms(location1, hologram).ifPresent(holograms::addAll);
+        GWMLibraryUtils.tryCreateHolograms(location2, hologram).ifPresent(holograms::addAll);
+        GWMLibraryUtils.tryCreateHolograms(location3, hologram).ifPresent(holograms::addAll);
+        GWMLibraryUtils.tryCreateHolograms(location4, hologram).ifPresent(holograms::addAll);
         getOpenSound().ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
         PLAYERS_OPENING_ANIMATION1.put(player, new Information(this, manager,
                 new HashMap<Location<World>, Boolean>(){{

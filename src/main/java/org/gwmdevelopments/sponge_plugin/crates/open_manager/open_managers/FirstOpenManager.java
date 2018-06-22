@@ -9,8 +9,10 @@ import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenedCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
+import org.gwmdevelopments.sponge_plugin.crates.util.DecorativeDropChangeRunnable;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
+import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.living.player.Player;
@@ -23,7 +25,6 @@ import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 import java.util.*;
 
@@ -32,18 +33,30 @@ public class FirstOpenManager extends OpenManager {
     public static final Map<Container, Pair<FirstOpenManager, Manager>> FIRST_GUI_CONTAINERS = new HashMap<>();
     public static final Set<Container> SHOWN_GUI = new HashSet<>();
 
-    public static final List<Integer> DEFAULT_SCROLL_DELAYS = new ArrayList<>();
+    public static final List<Integer> DEFAULT_SCROLL_DELAYS;
+
+    public static final List<Integer> DECORATIVE_ITEMS_INDICES;
 
     static {
+        List<Integer> defaultScrollDelays = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
             for (int j = 0; j <= 10 - i; j++) {
-                DEFAULT_SCROLL_DELAYS.add(i);
+                defaultScrollDelays.add(i);
             }
         }
+        DEFAULT_SCROLL_DELAYS = Collections.unmodifiableList(defaultScrollDelays);
+        List<Integer> decorativeItemsIndices = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            decorativeItemsIndices.add(i);
+        }
+        for (int i = 17; i < 27; i++) {
+            decorativeItemsIndices.add(i);
+        }
+        DECORATIVE_ITEMS_INDICES = Collections.unmodifiableList(decorativeItemsIndices);
     }
 
     private Optional<Text> displayName = Optional.empty();
-    private List<ItemStack> decorativeItems = GWMCratesUtils.DEFAULT_DECORATIVE_ITEMS;
+    private List<ItemStack> decorativeItems = GWMCratesUtils.DEFAULT_FIRST_DECORATIVE_ITEMS;
     private List<Integer> scrollDelays = DEFAULT_SCROLL_DELAYS;
     private boolean clearDecorativeItems;
     private boolean clearOtherDrops;
@@ -74,9 +87,6 @@ public class FirstOpenManager extends OpenManager {
                 for (ConfigurationNode decorativeItemNode : decorativeItemsNode.getChildrenList()) {
                     decorativeItems.add(GWMCratesUtils.parseItem(decorativeItemNode));
                 }
-                if (decorativeItems.size() != 20) {
-                    throw new RuntimeException("DECORATIVE_ITEMS size must be 20 instead of " + decorativeItems.size() + "!");
-                }
             }
             if (!scrollDelaysNode.isVirtual()) {
                 scrollDelays = scrollDelaysNode.getList(TypeToken.of(Integer.class));
@@ -95,7 +105,7 @@ public class FirstOpenManager extends OpenManager {
                 decorativeItemsChangeMode = Optional.of((DecorativeItemsChangeMode) GWMCratesUtils.createSuperObject(decorativeItemsChangeModeNode, SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE));
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create First Gui Open Manager!", e);
+            throw new RuntimeException("Failed to create First Open Manager!", e);
         }
     }
 
@@ -124,77 +134,86 @@ public class FirstOpenManager extends OpenManager {
         if (openEvent.isCancelled()) {
             return;
         }
-        Inventory inventory = displayName.map(text -> Inventory.builder().of(InventoryArchetypes.CHEST).
-                property(InventoryTitle.PROPERTY_NAME, new InventoryTitle(text)).
-                build(GWMCrates.getInstance())).orElseGet(() -> Inventory.builder().of(InventoryArchetypes.CHEST).
-                build(GWMCrates.getInstance()));
+        Inventory.Builder builder = Inventory.builder().
+                of(InventoryArchetypes.CHEST);
+        displayName.ifPresent(title ->
+                builder.property(InventoryTitle.PROPERTY_NAME, new InventoryTitle(title)));
+        Inventory inventory = builder.build(GWMCrates.getInstance());
         List<Drop> dropList = new ArrayList<>();
         OrderedInventory ordered = GWMCratesUtils.castToOrdered(inventory);
-        for (int i = 0; i < 10; i++) {
-            ordered.getSlot(new SlotIndex(i)).get().set(decorativeItems.get(i));
+        int index = 0;
+        for (int i = 0; i < DECORATIVE_ITEMS_INDICES.size(); i++, index++) {
+            if (index == decorativeItems.size()) {
+                index = 0;
+            }
+            ordered.getSlot(new SlotIndex(DECORATIVE_ITEMS_INDICES.get(i))).get().
+                    set(decorativeItems.get(index));
         }
         for (int i = 10; i < 17; i++) {
-            Drop new_drop = GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, true);
-            dropList.add(new_drop);
-            ordered.getSlot(new SlotIndex(i)).get().set(new_drop.getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
-        }
-        for (int i = 17; i < 27; i++) {
-            ordered.getSlot(new SlotIndex(i)).get().set(decorativeItems.get(i - 7));
+            ordered.getSlot(new SlotIndex(i)).get().
+                    set(GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, true).
+                            getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
         }
         Container container = player.openInventory(inventory).get();
         getOpenSound().ifPresent(open_sound -> player.playSound(open_sound, player.getLocation().getPosition(), 1.));
         FIRST_GUI_CONTAINERS.put(container, new Pair<>(this, manager));
         decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
                     createTaskBuilder().delayTicks(mode.getChangeDelay()).
-                    execute(new DropChangeRunnable(player, container, ordered, new ArrayList<>(decorativeItems), mode)).
+                    execute(new DecorativeDropChangeRunnable(player, container, ordered, new ArrayList<>(decorativeItems), mode, DECORATIVE_ITEMS_INDICES)).
                     submit(GWMCrates.getInstance()));
         int waitTime = 0;
         for (int i = 0; i < scrollDelays.size() - 1; i++) {
             waitTime += scrollDelays.get(i);
             int finalI = i;
-            Sponge.getScheduler().createTaskBuilder().delayTicks(waitTime).execute(() -> {
-                for (int j = 10; j < 16; j++) {
-                    ordered.getSlot(new SlotIndex(j)).get().set(ordered.getSlot(new SlotIndex(j + 1)).get().peek().
-                            orElse(GWMCratesUtils.EMPTY_ITEM));
-                }
-                Drop newDrop = GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, !(finalI == scrollDelays.size() - 5));
-                dropList.add(newDrop);
-                ordered.getSlot(new SlotIndex(16)).get().set(newDrop.getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
-                scrollSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
-            }).submit(GWMCrates.getInstance());
+            Sponge.getScheduler().createTaskBuilder().
+                    delayTicks(waitTime).
+                    execute(() -> {
+                        for (int j = 10; j < 16; j++) {
+                            ordered.getSlot(new SlotIndex(j)).get().set(ordered.getSlot(new SlotIndex(j + 1)).get().peek().
+                                    orElse(GWMCratesUtils.EMPTY_ITEM));
+                        }
+                        Drop newDrop = GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, finalI != scrollDelays.size() - 5);
+                        dropList.add(newDrop);
+                        ordered.getSlot(new SlotIndex(16)).get().set(newDrop.getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
+                        scrollSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
+                    }).submit(GWMCrates.getInstance());
         }
-        Sponge.getScheduler().createTaskBuilder().delayTicks(waitTime + scrollDelays.get(scrollDelays.size() - 1)).execute(() -> {
-            Drop drop = dropList.get(dropList.size() - 4);
-            drop.apply(player);
-            winSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
-            if (clearDecorativeItems) {
-                for (int i = 0; i < 10; i++) {
-                    ordered.getSlot(new SlotIndex(i)).get().set(GWMCratesUtils.EMPTY_ITEM);
-                }
-                for (int i = 17; i < 27; i++) {
-                    ordered.getSlot(new SlotIndex(i)).get().set(GWMCratesUtils.EMPTY_ITEM);
-                }
-            }
-            if (clearOtherDrops) {
-                for (int i = 10; i < 13; i++) {
-                    ordered.getSlot(new SlotIndex(i)).get().set(GWMCratesUtils.EMPTY_ITEM);
-                }
-                for (int i = 14; i < 17; i++) {
-                    ordered.getSlot(new SlotIndex(i)).get().set(GWMCratesUtils.EMPTY_ITEM);
-                }
-            }
-            SHOWN_GUI.add(container);
-            PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, drop);
-            Sponge.getEventManager().post(openedEvent);
-        }).submit(GWMCrates.getInstance());
-        Sponge.getScheduler().createTaskBuilder().delayTicks(waitTime + scrollDelays.get(scrollDelays.size() - 1) + closeDelay).execute(() -> {
-            Optional<Container> optionalOpenInventory = player.getOpenInventory();
-            if (optionalOpenInventory.isPresent() && container.equals(optionalOpenInventory.get())) {
-                player.closeInventory();
-            }
-            SHOWN_GUI.remove(container);
-            FIRST_GUI_CONTAINERS.remove(container);
-        }).submit(GWMCrates.getInstance());
+        waitTime += scrollDelays.get(scrollDelays.size() - 1);
+        Sponge.getScheduler().createTaskBuilder().
+                delayTicks(waitTime).
+                execute(() -> {
+                    Drop drop = dropList.get(dropList.size() - 4);
+                    drop.apply(player);
+                    winSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
+                    if (clearDecorativeItems) {
+                        for (int i = 0; i < DECORATIVE_ITEMS_INDICES.size(); i++) {
+                            ordered.getSlot(new SlotIndex(DECORATIVE_ITEMS_INDICES.get(i))).get().
+                                    set(GWMCratesUtils.EMPTY_ITEM);
+                        }
+                    }
+                    if (clearOtherDrops) {
+                        for (int i = 10; i < 13; i++) {
+                            ordered.getSlot(new SlotIndex(i)).get().set(GWMCratesUtils.EMPTY_ITEM);
+                        }
+                        for (int i = 14; i < 17; i++) {
+                            ordered.getSlot(new SlotIndex(i)).get().set(GWMCratesUtils.EMPTY_ITEM);
+                        }
+                    }
+                    SHOWN_GUI.add(container);
+                    PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, drop);
+                    Sponge.getEventManager().post(openedEvent);
+                }).submit(GWMCrates.getInstance());
+        waitTime += closeDelay;
+        Sponge.getScheduler().createTaskBuilder().
+                delayTicks(waitTime).
+                execute(() -> {
+                    Optional<Container> optionalOpenInventory = player.getOpenInventory();
+                    if (optionalOpenInventory.isPresent() && container.equals(optionalOpenInventory.get())) {
+                        player.closeInventory();
+                    }
+                    SHOWN_GUI.remove(container);
+                    FIRST_GUI_CONTAINERS.remove(container);
+                }).submit(GWMCrates.getInstance());
     }
 
     public Optional<Text> getDisplayName() {
@@ -275,81 +294,5 @@ public class FirstOpenManager extends OpenManager {
 
     public void setDecorativeItemsChangeMode(Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode) {
         this.decorativeItemsChangeMode = decorativeItemsChangeMode;
-    }
-
-    public static class DropChangeRunnable implements Runnable {
-
-        private Player player;
-        private Container container;
-        private OrderedInventory ordered;
-        private List<ItemStack> decorativeItems;
-        private DecorativeItemsChangeMode decorativeItemsChangeMode;
-
-        public DropChangeRunnable(Player player, Container container, OrderedInventory ordered,
-                                  List<ItemStack> decorativeItems,
-                                  DecorativeItemsChangeMode decorativeItemsChangeMode) {
-            this.player = player;
-            this.container = container;
-            this.ordered = ordered;
-            this.decorativeItems = decorativeItems;
-            this.decorativeItemsChangeMode = decorativeItemsChangeMode;
-        }
-
-        @Override
-        public void run() {
-            Optional<Container> openInventory = player.getOpenInventory();
-            if (openInventory.isPresent() && openInventory.get().equals(container)) {
-                decorativeItems = decorativeItemsChangeMode.shuffle(decorativeItems);
-                for (int i = 0; i < 10; i++) {
-                    ordered.getSlot(new SlotIndex(i)).get().set(decorativeItems.get(i));
-                }
-                for (int i = 17; i < 27; i++) {
-                    ordered.getSlot(new SlotIndex(i)).get().set(decorativeItems.get(i - 7));
-                }
-                Sponge.getScheduler().createTaskBuilder().
-                        delayTicks(decorativeItemsChangeMode.getChangeDelay()).
-                        execute(this).submit(GWMCrates.getInstance());
-            }
-        }
-
-        public Player getPlayer() {
-            return player;
-        }
-
-        public void setPlayer(Player player) {
-            this.player = player;
-        }
-
-        public Container getContainer() {
-            return container;
-        }
-
-        public void setContainer(Container container) {
-            this.container = container;
-        }
-
-        public OrderedInventory getOrdered() {
-            return ordered;
-        }
-
-        public void setOrdered(OrderedInventory ordered) {
-            this.ordered = ordered;
-        }
-
-        public List<ItemStack> getDecorativeItems() {
-            return decorativeItems;
-        }
-
-        public void setDecorativeItems(List<ItemStack> decorativeItems) {
-            this.decorativeItems = decorativeItems;
-        }
-
-        public DecorativeItemsChangeMode getDecorativeItemsChangeMode() {
-            return decorativeItemsChangeMode;
-        }
-
-        public void setDecorativeItemsChangeMode(DecorativeItemsChangeMode decorativeItemsChangeMode) {
-            this.decorativeItemsChangeMode = decorativeItemsChangeMode;
-        }
     }
 }

@@ -82,7 +82,7 @@ public class SecondOpenManager extends OpenManager {
                 clickSound = Optional.of(clickSoundNode.getValue(TypeToken.of(SoundType.class)));
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Second Gui Open Manager!", e);
+            throw new RuntimeException("Failed to create Second Open Manager!", e);
         }
     }
 
@@ -111,12 +111,12 @@ public class SecondOpenManager extends OpenManager {
         if (openEvent.isCancelled()) {
             return;
         }
-        Inventory inventory = displayName.map(text -> Inventory.builder().of(InventoryArchetypes.CHEST).
-                property(InventoryDimension.PROPERTY_NAME, new InventoryDimension(9, rows)).
-                property(InventoryTitle.PROPERTY_NAME, new InventoryTitle(text)).
-                build(GWMCrates.getInstance())).orElseGet(() -> Inventory.builder().of(InventoryArchetypes.CHEST).
-                property(InventoryDimension.PROPERTY_NAME, new InventoryDimension(9, rows)).
-                build(GWMCrates.getInstance()));
+        Inventory.Builder builder = Inventory.builder().
+                of(InventoryArchetypes.CHEST).
+                property(InventoryDimension.PROPERTY_NAME, new InventoryDimension(9, rows));
+        displayName.ifPresent(title ->
+                builder.property(InventoryTitle.PROPERTY_NAME, new InventoryTitle(title)));
+        Inventory inventory = builder.build(GWMCrates.getInstance());
         OrderedInventory ordered = GWMCratesUtils.castToOrdered(inventory);
         int hiddenItemQuantity = hiddenItem.getQuantity();
         for (int i = 0; i < 9 * rows; i++) {

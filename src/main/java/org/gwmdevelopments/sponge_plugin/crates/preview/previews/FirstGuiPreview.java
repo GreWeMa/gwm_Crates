@@ -7,6 +7,7 @@ import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.FirstOpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
+import org.gwmdevelopments.sponge_plugin.crates.util.DecorativeDropChangeRunnable;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.spongepowered.api.Sponge;
@@ -29,7 +30,7 @@ public class FirstGuiPreview extends Preview {
     public static final Map<Container, Pair<FirstGuiPreview, Manager>> FIRST_GUI_CONTAINERS = new HashMap<>();
 
     private Optional<Text> displayName = Optional.empty();
-    private List<ItemStack> decorativeItems = GWMCratesUtils.DEFAULT_DECORATIVE_ITEMS;
+    private List<ItemStack> decorativeItems = GWMCratesUtils.DEFAULT_FIRST_DECORATIVE_ITEMS;
     private int scrollDelay;
     private Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode = Optional.empty();
 
@@ -96,7 +97,7 @@ public class FirstGuiPreview extends Preview {
         FIRST_GUI_CONTAINERS.put(container, new Pair<>(this, manager));
         decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
                 createTaskBuilder().delayTicks(mode.getChangeDelay()).
-                execute(new FirstOpenManager.DropChangeRunnable(player, container, ordered, new ArrayList<>(decorativeItems), mode)).
+                execute(new DecorativeDropChangeRunnable(player, container, ordered, new ArrayList<>(decorativeItems), mode, FirstOpenManager.DECORATIVE_ITEMS_INDICES)).
                 submit(GWMCrates.getInstance()));
         Sponge.getScheduler().createTaskBuilder().delayTicks(scrollDelay).
                 execute(new DropChangeRunnable(container, drops, index)).

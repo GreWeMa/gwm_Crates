@@ -5,14 +5,13 @@ import de.randombyte.holograms.api.HologramsService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
-import org.gwmdevelopments.sponge_plugin.library.utils.LibraryUtils;
+import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,14 +34,14 @@ public class BlockCase extends Case {
             if (locationNode.isVirtual()) {
                 throw new RuntimeException("LOCATION node does not exist!");
             }
-            location = LibraryUtils.parseLocation(locationNode);
+            location = GWMLibraryUtils.parseLocation(locationNode);
             if (!hologramNode.isVirtual()) {
                 hologram = Optional.of(hologramNode.getList(TypeToken.of(String.class)).
                         stream().
                         map(TextSerializers.FORMATTING_CODE::deserialize).
                         collect(Collectors.toList()));
             }
-            createdHolograms = LibraryUtils.tryCreateHolograms(location, hologram,
+            createdHolograms = GWMLibraryUtils.tryCreateHolograms(location, hologram,
                     GWMCrates.getInstance().getHologramOffset(), GWMCrates.getInstance().getMultilineHologramsDistance());
             startPreviewOnLeftClick = startPreviewOnLeftClickNode.getBoolean(false);
         } catch (Exception e) {

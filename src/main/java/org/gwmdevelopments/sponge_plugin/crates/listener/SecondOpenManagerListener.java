@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-public class SecondGuiOpenManagerListener {
+public class SecondOpenManagerListener {
 
     public static final Set<Container> SHOWN_GUI = new HashSet<>();
 

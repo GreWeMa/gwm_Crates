@@ -31,8 +31,8 @@ public class ItemCaseListener {
             if (!(caze instanceof ItemCase)) {
                 continue;
             }
-            ItemStack case_item = ((ItemCase) caze).getItem();
-            if (ItemStackComparators.IGNORE_SIZE.compare(item, case_item) != 0) {
+            ItemStack caseItem = ((ItemCase) caze).getItem();
+            if (ItemStackComparators.IGNORE_SIZE.compare(item, caseItem) != 0) {
                 continue;
             }
             event.setCancelled(true);

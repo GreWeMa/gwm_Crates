@@ -7,10 +7,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.CommandsDrop;
+import org.gwmdevelopments.sponge_plugin.crates.drop.drops.EmptyDrop;
 import org.gwmdevelopments.sponge_plugin.crates.gui.GWMCratesGUI;
 import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.ConfigurationDialog;
 import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.SavedSuperObjectConfigurationDialog;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
+import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
@@ -31,7 +33,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.gwmdevelopments.sponge_plugin.library.utils.LibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 import javax.swing.*;
@@ -43,12 +44,16 @@ import java.util.stream.Collectors;
 public class GWMCratesUtils {
 
     public static final ItemStack EMPTY_ITEM = ItemStack.of(ItemTypes.NONE, 0);
-    public static final List<ItemStack> DEFAULT_DECORATIVE_ITEMS = new ArrayList<>();
+    public static final List<ItemStack> DEFAULT_FIRST_DECORATIVE_ITEMS;
+    public static final Drop EMPTY_DROP = new EmptyDrop(Optional.empty(), 1,
+            Optional.empty(), Optional.empty(), Collections.EMPTY_MAP, Collections.EMPTY_MAP);
 
     static {
+        List<ItemStack> defaultFirstDecorativeItems = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            DEFAULT_DECORATIVE_ITEMS.add(GWMCratesUtils.EMPTY_ITEM);
+            defaultFirstDecorativeItems.add(GWMCratesUtils.EMPTY_ITEM);
         }
+        DEFAULT_FIRST_DECORATIVE_ITEMS = Collections.unmodifiableList(defaultFirstDecorativeItems);
     }
 
     public static void asyncImportToMySQL() {
@@ -453,17 +458,17 @@ public class GWMCratesUtils {
                 }
             }
         }
-        int max_level = 1;
+        int maxLevel = 1;
         for (int level : sortedDrops.keySet()) {
-            if (level > max_level) {
-                max_level = level;
+            if (level > maxLevel) {
+                maxLevel = level;
             }
         }
         int level;
-        while (!sortedDrops.containsKey(level = LibraryUtils.getRandomIntLevel(1, max_level))) {
+        while (!sortedDrops.containsKey(level = GWMLibraryUtils.getRandomIntLevel(1, maxLevel))) {
         }
-        List<Drop> actual_drops = sortedDrops.get(level);
-        return actual_drops.get(new Random().nextInt(actual_drops.size()));
+        List<Drop> actualDrops = sortedDrops.get(level);
+        return actualDrops.get(new Random().nextInt(actualDrops.size()));
     }
 
     public static void addItemStack(Player player, ItemStack item, int amount) {
@@ -645,8 +650,8 @@ public class GWMCratesUtils {
         try {
             Class<? extends ConfigurationDialog> configurationDialogClass = optionalConfigurationDialogClass.get();
             Constructor<? extends ConfigurationDialog> configurationDialogConstructor = configurationDialogClass.getConstructor(ConfigurationNode.class);
-            ConfigurationDialog configuration_dialog = configurationDialogConstructor.newInstance(node);
-            configuration_dialog.setVisible(true);
+            ConfigurationDialog configurationDialog = configurationDialogConstructor.newInstance(node);
+            configurationDialog.setVisible(true);
         } catch (Exception e) {
             GWMCrates.getInstance().getLogger().warn("Exception creating graphical configurator for Super Object \"" + superObjectType.toString() + "\" with type \"" + type + "\"!", e);
             JOptionPane.showMessageDialog(null, "Exception creating graphical configurator! See details in console!", "Error!", JOptionPane.WARNING_MESSAGE);
@@ -730,9 +735,9 @@ public class GWMCratesUtils {
         if (result instanceof EmptyInventory) {
             throw new RuntimeException("Inventory can not be casted to Ordered Inventory!");
         }
-        for (Inventory sub_inventory : inventory) {
-            if (sub_inventory instanceof OrderedInventory) {
-                return (OrderedInventory) sub_inventory;
+        for (Inventory subInventory : inventory) {
+            if (subInventory instanceof OrderedInventory) {
+                return (OrderedInventory) subInventory;
             }
         }
         throw new RuntimeException("Inventory can not be casted to Ordered Inventory!");

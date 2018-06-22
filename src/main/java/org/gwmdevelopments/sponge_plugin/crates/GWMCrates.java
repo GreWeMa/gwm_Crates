@@ -36,7 +36,6 @@ import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectStorage;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.cause.Cause;
@@ -53,14 +52,13 @@ import org.gwmdevelopments.sponge_plugin.library.utils.*;
 import javax.sql.DataSource;
 import java.io.File;
 import java.nio.file.Files;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.0",
+        version = "beta-3.1",
         description = "Universal (in all meanings of this word) crates plugin!",
         authors = {"GWM"/*
                          * Nazar Kalinovskiy
@@ -73,7 +71,7 @@ import java.util.*;
         })
 public class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 0);
+    public static final Version VERSION = new Version("beta", 3, 1);
 
     private static GWMCrates instance = null;
 
@@ -206,8 +204,9 @@ public class GWMCrates extends SpongePlugin {
     public void onInitialization(GameInitializationEvent event) {
         Sponge.getEventManager().registerListeners(this, new ItemCaseListener());
         Sponge.getEventManager().registerListeners(this, new BlockCaseListener());
-        Sponge.getEventManager().registerListeners(this, new FirstGuiOpenManagerListener());
-        Sponge.getEventManager().registerListeners(this, new SecondGuiOpenManagerListener());
+        Sponge.getEventManager().registerListeners(this, new FirstOpenManagerListener());
+        Sponge.getEventManager().registerListeners(this, new SecondOpenManagerListener());
+        Sponge.getEventManager().registerListeners(this, new CasinoOpenManagerListener());
         Sponge.getEventManager().registerListeners(this, new PreviewListener());
         Sponge.getEventManager().registerListeners(this, new Animation1Listener());
         Sponge.getEventManager().registerListeners(this, new EntityCaseListener());
@@ -320,6 +319,7 @@ public class GWMCrates extends SpongePlugin {
         registrationEvent.register(SuperObjectType.OPEN_MANAGER, "SECOND", SecondOpenManager.class, Optional.of(SecondOpenManagerConfigurationDialog.class));
         registrationEvent.register(SuperObjectType.OPEN_MANAGER, "ANIMATION1", Animation1OpenManager.class, Optional.of(Animation1OpenManagerConfigurationDialog.class));
         registrationEvent.register(SuperObjectType.OPEN_MANAGER, "PERMISSION", PermissionOpenManager.class, Optional.of(PermissionOpenManagerConfigurationDialog.class));
+        registrationEvent.register(SuperObjectType.OPEN_MANAGER, "CASINO", CasinoOpenManager.class, Optional.empty());
         registrationEvent.register(SuperObjectType.PREVIEW, "FIRST", FirstGuiPreview.class, Optional.of(FirstPreviewConfigurationDialog.class));
         registrationEvent.register(SuperObjectType.PREVIEW, "SECOND", SecondGuiPreview.class, Optional.of(SecondPreviewConfigurationDialog.class));
         registrationEvent.register(SuperObjectType.PREVIEW, "PERMISSION", PermissionPreview.class, Optional.of(PermissionPreviewConfigurationDialog.class));
@@ -347,7 +347,7 @@ public class GWMCrates extends SpongePlugin {
             logOpenedCrates = config.getNode("LOG_OPENED_CRATES").getBoolean(false);
             tellForceCrateOpenInfo = config.getNode("TELL_FORCE_CRATE_OPEN_INFO").getBoolean(true);
             tellGiveInfo = config.getNode("TELL_GIVE_INFO").getBoolean(true);
-            hologramOffset = LibraryUtils.parseVector3d(config.getNode("HOLOGRAM_OFFSET"));
+            hologramOffset = GWMLibraryUtils.parseVector3d(config.getNode("HOLOGRAM_OFFSET"));
             multilineHologramsDistance = config.getNode("MULTILINE_HOLOGRAMS_DISTANCE").getDouble(0.2);
             maxVirtualNamesLength = config.getNode("MAX_VIRTUAL_NAMES_LENGTH").getInt(100);
             useMySQLForVirtualCases = config.getNode("USE_MYSQL_FOR_VIRTUAL_CASES").getBoolean(false);
