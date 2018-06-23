@@ -1,3 +1,6 @@
+beta-3.1.1
+1. Added GUI Configurator for 'CASINO' Open Manager.
+
 beta-3.1
 1. Added 'CASINO' Open Manager.
 2. Added 'zh_CN.conf' translation.

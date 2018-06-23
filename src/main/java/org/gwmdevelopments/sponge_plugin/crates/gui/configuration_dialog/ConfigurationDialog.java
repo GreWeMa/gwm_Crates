@@ -1,7 +1,6 @@
 package org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.gui.AdvancedTextField;
 import org.gwmdevelopments.sponge_plugin.crates.gui.GWMCratesGUI;
@@ -20,7 +19,7 @@ public abstract class ConfigurationDialog extends JDialog {
     private ConfigurationNode node;
 
     public ConfigurationDialog(SuperObjectType super_object_type, String type, ConfigurationNode node) {
-        super(GWMCratesGUI.getInstance(), "GWMCrates GUI v" + GWMCrates.VERSION + " Super Object \"" + super_object_type + "\" type \"" + type + "\" configuration!", true);
+        super(GWMCratesGUI.getInstance(), "GWMCrates GUI " + GWMCrates.VERSION + " Super Object \"" + super_object_type + "\" type \"" + type + "\" configuration!", true);
         this.super_object_type = super_object_type;
         this.type = type;
         this.node = node;

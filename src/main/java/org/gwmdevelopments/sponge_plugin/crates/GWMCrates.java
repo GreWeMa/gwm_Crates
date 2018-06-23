@@ -58,7 +58,7 @@ import java.util.*;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.1",
+        version = "beta-3.1.1",
         description = "Universal (in all meanings of this word) crates plugin!",
         authors = {"GWM"/*
                          * Nazar Kalinovskiy
@@ -71,7 +71,7 @@ import java.util.*;
         })
 public class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 1);
+    public static final Version VERSION = new Version("beta", 3, 1, 1);
 
     private static GWMCrates instance = null;
 
@@ -319,7 +319,7 @@ public class GWMCrates extends SpongePlugin {
         registrationEvent.register(SuperObjectType.OPEN_MANAGER, "SECOND", SecondOpenManager.class, Optional.of(SecondOpenManagerConfigurationDialog.class));
         registrationEvent.register(SuperObjectType.OPEN_MANAGER, "ANIMATION1", Animation1OpenManager.class, Optional.of(Animation1OpenManagerConfigurationDialog.class));
         registrationEvent.register(SuperObjectType.OPEN_MANAGER, "PERMISSION", PermissionOpenManager.class, Optional.of(PermissionOpenManagerConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.OPEN_MANAGER, "CASINO", CasinoOpenManager.class, Optional.empty());
+        registrationEvent.register(SuperObjectType.OPEN_MANAGER, "CASINO", CasinoOpenManager.class, Optional.of(CasinoOpenManagerConfigurationDialog.class));
         registrationEvent.register(SuperObjectType.PREVIEW, "FIRST", FirstGuiPreview.class, Optional.of(FirstPreviewConfigurationDialog.class));
         registrationEvent.register(SuperObjectType.PREVIEW, "SECOND", SecondGuiPreview.class, Optional.of(SecondPreviewConfigurationDialog.class));
         registrationEvent.register(SuperObjectType.PREVIEW, "PERMISSION", PermissionPreview.class, Optional.of(PermissionPreviewConfigurationDialog.class));
