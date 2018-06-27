@@ -458,14 +458,8 @@ public class GWMCratesUtils {
                 }
             }
         }
-        int maxLevel = 1;
-        for (int level : sortedDrops.keySet()) {
-            if (level > maxLevel) {
-                maxLevel = level;
-            }
-        }
         int level;
-        while (!sortedDrops.containsKey(level = GWMLibraryUtils.getRandomIntLevel(1, maxLevel))) {
+        while (!sortedDrops.containsKey(level = GWMLibraryUtils.getRandomIntLevel())) {
         }
         List<Drop> actualDrops = sortedDrops.get(level);
         return actualDrops.get(new Random().nextInt(actualDrops.size()));
