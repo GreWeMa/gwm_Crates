@@ -58,7 +58,7 @@ import java.util.*;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.1.2",
+        version = "beta-3.1.3",
         description = "Universal (in all meanings of this word) crates plugin!",
         authors = {"GWM"/*
                          * Nazar Kalinovskiy
@@ -71,7 +71,7 @@ import java.util.*;
         })
 public class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 1, 2);
+    public static final Version VERSION = new Version("beta", 3, 1, 3);
 
     private static GWMCrates instance = null;
 
@@ -442,8 +442,7 @@ public class GWMCrates extends SpongePlugin {
     }
 
     private void createMySQLTables() {
-        try {
-            Statement statement = dataSource.get().getConnection().createStatement();
+        try (Statement statement = dataSource.get().getConnection().createStatement()) {
             statement.execute("CREATE TABLE IF NOT EXISTS virtual_cases " +
                     "(uuid VARCHAR(36), " +
                     "name VARCHAR(" + maxVirtualNamesLength + "), " +
@@ -460,7 +459,6 @@ public class GWMCrates extends SpongePlugin {
                     "(uuid VARCHAR(36), " +
                     "name VARCHAR(" + maxVirtualNamesLength + "), " +
                     "delay BIGINT);");
-            statement.close();
         } catch (Exception e) {
             logger.warn("Failed to create MySQL tables!", e);
         }

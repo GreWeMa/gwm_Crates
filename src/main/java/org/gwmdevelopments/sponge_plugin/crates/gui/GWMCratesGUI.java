@@ -296,7 +296,7 @@ public class GWMCratesGUI extends JFrame {
         key_panel.clear();
         open_manager_panel.clear();
         preview_panel.clear();
-        new ArrayList<FlatSuperObjectPanel>(drops). //Prevents ConcurrentModificationException
+        new ArrayList<>(drops). //Prevents ConcurrentModificationException
                 forEach(this::removeDrop);
         ConfigurationNode manager_id_node = node.getNode("ID");
         ConfigurationNode manager_name_node = node.getNode("NAME");
