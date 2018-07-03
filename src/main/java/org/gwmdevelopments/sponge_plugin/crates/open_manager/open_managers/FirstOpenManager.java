@@ -56,7 +56,7 @@ public class FirstOpenManager extends OpenManager {
     }
 
     private Optional<Text> displayName = Optional.empty();
-    private List<ItemStack> decorativeItems = GWMCratesUtils.DEFAULT_FIRST_DECORATIVE_ITEMS;
+    private List<ItemStack> decorativeItems;
     private List<Integer> scrollDelays = DEFAULT_SCROLL_DELAYS;
     private boolean clearDecorativeItems;
     private boolean clearOtherDrops;
@@ -82,8 +82,8 @@ public class FirstOpenManager extends OpenManager {
             if (!displayNameNode.isVirtual()) {
                 displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
             }
+            decorativeItems = new ArrayList<>();
             if (!decorativeItemsNode.isVirtual()) {
-                decorativeItems = new ArrayList<>();
                 for (ConfigurationNode decorativeItemNode : decorativeItemsNode.getChildrenList()) {
                     decorativeItems.add(GWMCratesUtils.parseItem(decorativeItemNode));
                 }
@@ -141,13 +141,15 @@ public class FirstOpenManager extends OpenManager {
         Inventory inventory = builder.build(GWMCrates.getInstance());
         List<Drop> dropList = new ArrayList<>();
         OrderedInventory ordered = GWMCratesUtils.castToOrdered(inventory);
-        int index = 0;
-        for (int i = 0; i < DECORATIVE_ITEMS_INDICES.size(); i++, index++) {
-            if (index == decorativeItems.size()) {
-                index = 0;
+        if (!decorativeItems.isEmpty()) {
+            int index = 0;
+            for (int i = 0; i < DECORATIVE_ITEMS_INDICES.size(); i++, index++) {
+                if (index == decorativeItems.size()) {
+                    index = 0;
+                }
+                ordered.getSlot(new SlotIndex(DECORATIVE_ITEMS_INDICES.get(i))).get().
+                        set(decorativeItems.get(index));
             }
-            ordered.getSlot(new SlotIndex(DECORATIVE_ITEMS_INDICES.get(i))).get().
-                    set(decorativeItems.get(index));
         }
         for (int i = 10; i < 17; i++) {
             ordered.getSlot(new SlotIndex(i)).get().
@@ -157,10 +159,12 @@ public class FirstOpenManager extends OpenManager {
         Container container = player.openInventory(inventory).get();
         getOpenSound().ifPresent(open_sound -> player.playSound(open_sound, player.getLocation().getPosition(), 1.));
         FIRST_GUI_CONTAINERS.put(container, new Pair<>(this, manager));
-        decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
+        if (!decorativeItems.isEmpty()) {
+            decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
                     createTaskBuilder().delayTicks(mode.getChangeDelay()).
                     execute(new DecorativeDropChangeRunnable(player, container, ordered, new ArrayList<>(decorativeItems), mode, DECORATIVE_ITEMS_INDICES)).
                     submit(GWMCrates.getInstance()));
+        }
         int waitTime = 0;
         for (int i = 0; i < scrollDelays.size() - 1; i++) {
             waitTime += scrollDelays.get(i);

@@ -44,17 +44,8 @@ import java.util.stream.Collectors;
 public class GWMCratesUtils {
 
     public static final ItemStack EMPTY_ITEM = ItemStack.of(ItemTypes.NONE, 0);
-    public static final List<ItemStack> DEFAULT_FIRST_DECORATIVE_ITEMS;
     public static final Drop EMPTY_DROP = new EmptyDrop(Optional.empty(), 1,
             Optional.empty(), Optional.empty(), Collections.EMPTY_MAP, Collections.EMPTY_MAP);
-
-    static {
-        List<ItemStack> defaultFirstDecorativeItems = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            defaultFirstDecorativeItems.add(GWMCratesUtils.EMPTY_ITEM);
-        }
-        DEFAULT_FIRST_DECORATIVE_ITEMS = Collections.unmodifiableList(defaultFirstDecorativeItems);
-    }
 
     public static void asyncImportToMySQL() {
         new Thread(() -> {

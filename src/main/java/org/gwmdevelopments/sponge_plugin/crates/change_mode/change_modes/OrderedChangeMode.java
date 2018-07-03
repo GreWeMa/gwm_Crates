@@ -49,7 +49,7 @@ public class OrderedChangeMode extends DecorativeItemsChangeMode {
             ItemStack previous = decorativeItems.get(indicesToSwap.get(indicesToSwap.size() - 1));
             ItemStack temp;
             decorativeItems.set(indicesToSwap.get(indicesToSwap.size() - 1), decorativeItems.get(indicesToSwap.get(0)));
-            for (int i = indicesToSwap.size() - 2 ; i > -1; i--) {
+            for (int i = indicesToSwap.size() - 2 ; i >= 0; i--) {
                 temp = previous;
                 previous = decorativeItems.get(indicesToSwap.get(i));
                 decorativeItems.set(indicesToSwap.get(i), temp);

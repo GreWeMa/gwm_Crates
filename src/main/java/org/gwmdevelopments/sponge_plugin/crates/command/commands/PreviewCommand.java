@@ -24,7 +24,7 @@ public class PreviewCommand implements CommandExecutor {
         boolean self = src.equals(player);
         if (self) {
             if (!player.hasPermission("gwm_crates.preview." + managerId) ||
-                    player.hasPermission("gwm_crates.command.preview." + managerId)) {
+                    !player.hasPermission("gwm_crates.command.preview." + managerId)) {
                 player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
                 return CommandResult.success();
             }

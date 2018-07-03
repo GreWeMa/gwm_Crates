@@ -40,8 +40,6 @@ public class CasinoOpenManager extends OpenManager {
 
     public static final List<Integer> DECORATIVE_ITEMS_INDICES;
 
-    public static final List<ItemStack> DEFAULT_CASINO_DECORATIVE_ITEMS;
-
     static {
         List<Integer> firstRowIndices = new ArrayList<>();
         List<Integer> secondRowIndices = new ArrayList<>();
@@ -72,15 +70,10 @@ public class CasinoOpenManager extends OpenManager {
             }
         }
         DECORATIVE_ITEMS_INDICES = Collections.unmodifiableList(decorativeItemsIndices);
-        List<ItemStack> defaultCasinoDecorativeItems = new ArrayList<>();
-        for (int i = 0; i < decorativeItemsIndices.size(); i++) {
-            defaultCasinoDecorativeItems.add(GWMCratesUtils.EMPTY_ITEM);
-        }
-        DEFAULT_CASINO_DECORATIVE_ITEMS = Collections.unmodifiableList(defaultCasinoDecorativeItems);
     }
 
     private Optional<Text> displayName = Optional.empty();
-    private List<ItemStack> decorativeItems = DEFAULT_CASINO_DECORATIVE_ITEMS;
+    private List<ItemStack> decorativeItems;
     private List<Integer> scrollDelays = DEFAULT_SCROLL_DELAYS;
     private boolean clearDecorativeItems;
     private boolean clearOtherDrops;
@@ -114,8 +107,8 @@ public class CasinoOpenManager extends OpenManager {
             if (!displayNameNode.isVirtual()) {
                 displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
             }
+            decorativeItems = new ArrayList<>();
             if (!decorativeItemsNode.isVirtual()) {
-                decorativeItems = new ArrayList<>();
                 for (ConfigurationNode decorativeItemNode : decorativeItemsNode.getChildrenList()) {
                     decorativeItems.add(GWMCratesUtils.parseItem(decorativeItemNode));
                 }
@@ -191,13 +184,15 @@ public class CasinoOpenManager extends OpenManager {
             dropList.add(new ArrayList<>());
         }
         OrderedInventory ordered = GWMCratesUtils.castToOrdered(inventory);
-        int index = 0;
-        for (int i = 0; i < DECORATIVE_ITEMS_INDICES.size(); i++, index++) {
-            if (index == decorativeItems.size()) {
-                index = 0;
+        if (!decorativeItems.isEmpty()) {
+            int index = 0;
+            for (int i = 0; i < DECORATIVE_ITEMS_INDICES.size(); i++, index++) {
+                if (index == decorativeItems.size()) {
+                    index = 0;
+                }
+                ordered.getSlot(new SlotIndex(DECORATIVE_ITEMS_INDICES.get(i))).get().
+                        set(decorativeItems.get(index));
             }
-            ordered.getSlot(new SlotIndex(DECORATIVE_ITEMS_INDICES.get(i))).get().
-                    set(decorativeItems.get(index));
         }
         ROW_INDICES.forEach(list ->
                 list.forEach(i ->
@@ -207,10 +202,12 @@ public class CasinoOpenManager extends OpenManager {
         Container container = player.openInventory(inventory).get();
         getOpenSound().ifPresent(open_sound -> player.playSound(open_sound, player.getLocation().getPosition(), 1.));
         CASINO_GUI_CONTAINERS.put(container, new Pair<>(this, manager));
-        decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
-                createTaskBuilder().delayTicks(mode.getChangeDelay()).
-                execute(new DecorativeDropChangeRunnable(player, container, ordered, new ArrayList<>(decorativeItems), mode, DECORATIVE_ITEMS_INDICES)).
-                submit(GWMCrates.getInstance()));
+        if (!decorativeItems.isEmpty()) {
+            decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
+                    createTaskBuilder().delayTicks(mode.getChangeDelay()).
+                    execute(new DecorativeDropChangeRunnable(player, container, ordered, new ArrayList<>(decorativeItems), mode, DECORATIVE_ITEMS_INDICES)).
+                    submit(GWMCrates.getInstance()));
+        }
         int waitTime = 0;
         for (int i = 0; i < scrollDelays.size() - 1; i++) {
             int scrollDelay = scrollDelays.get(i);
