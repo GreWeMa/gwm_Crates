@@ -1,4 +1,4 @@
-beta-3.14
+beta-3.1.4
 1. Fixed bug with permissions in '/gwmcrates preview' command.
 2. Added 'casino_example.conf' to example managers folder.
 3. Some changes with decorative items and refactoring.
