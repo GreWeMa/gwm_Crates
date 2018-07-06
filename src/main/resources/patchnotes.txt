@@ -1,3 +1,6 @@
+beta-3.1.5
+1. Fixed critical bug in 'ANIMATION1' Open Manager.
+
 beta-3.1.4
 1. Fixed bug with permissions in '/gwmcrates preview' command.
 2. Added 'casino_example.conf' to example managers folder.

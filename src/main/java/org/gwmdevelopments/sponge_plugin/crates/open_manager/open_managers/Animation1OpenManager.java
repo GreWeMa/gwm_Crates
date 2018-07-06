@@ -63,7 +63,7 @@ public class Animation1OpenManager extends OpenManager {
                 crateBlockType = crateBlockTypeNode.getValue(TypeToken.of(BlockType.class));
             }
             if (!openManagerNode.isVirtual()) {
-                openManager = (OpenManager) GWMCratesUtils.createSuperObject(node, SuperObjectType.OPEN_MANAGER);
+                openManager = (OpenManager) GWMCratesUtils.createSuperObject(openManagerNode, SuperObjectType.OPEN_MANAGER);
             }
             closeDelay = closeDelayNode.getInt(0);
             if (!hologramNode.isVirtual()) {
@@ -102,11 +102,11 @@ public class Animation1OpenManager extends OpenManager {
         int positionX = position.getX();
         int positionY = position.getY();
         int positionZ = position.getZ();
-        HashMap<Location<World>, BlockState> originalBlockStates = new HashMap<Location<World>, BlockState>();
+        HashMap<Location<World>, BlockState> originalBlockStates = new HashMap<>();
         for (int x = -2; x <= 2; x++) {
             for (int y = -1; y <= 3; y++) {
                 for (int z = -2; z <= 2; z++) {
-                    Location targetLocation = new Location<World>(
+                    Location<World> targetLocation = new Location<>(
                             world, positionX + x, positionY + y, positionZ + z);
                     BlockState blockState = targetLocation.getBlock();
                     originalBlockStates.put(targetLocation, blockState);
@@ -116,34 +116,34 @@ public class Animation1OpenManager extends OpenManager {
         }
         for (int x = -2; x <= 2; x++) {
             for (int z = -2; z <= 2; z++) {
-                new Location<World>(world, positionX + x, positionY - 1, positionZ + z).
+                new Location<>(world, positionX + x, positionY - 1, positionZ + z).
                         setBlockType(floorBlockType, BlockChangeFlags.NONE);
                 if (z == 2 || z == -2 || x == 2 || x == -2) {
-                    new Location<World>(world, positionX + x, positionY , positionZ + z).
+                    new Location<>(world, positionX + x, positionY , positionZ + z).
                             setBlockType(fenceBlockType, BlockChangeFlags.NONE);
                 }
             }
         }
         HashSet<HologramsService.Hologram> holograms = new HashSet<HologramsService.Hologram>();
-        Location<World> location1 = new Location<World>(world, positionX + 2, positionY, positionZ);
+        Location<World> location1 = new Location<>(world, positionX + 2, positionY, positionZ);
         location1.setBlock(BlockState.builder().
                         blockType(crateBlockType).
                         add(Keys.DIRECTION, Direction.WEST).
                         build(),
                 BlockChangeFlags.NONE);
-        Location<World> location2 = new Location<World>(world, positionX - 2, positionY, positionZ);
+        Location<World> location2 = new Location<>(world, positionX - 2, positionY, positionZ);
         location2.setBlock(BlockState.builder().
                         blockType(crateBlockType).
                         add(Keys.DIRECTION, Direction.EAST).
                         build(),
                 BlockChangeFlags.NONE);
-        Location<World> location3 = new Location<World>(world, positionX, positionY, positionZ + 2);
+        Location<World> location3 = new Location<>(world, positionX, positionY, positionZ + 2);
         location3.setBlock(BlockState.builder().
                         blockType(crateBlockType).
                         add(Keys.DIRECTION, Direction.NORTH).
                         build(),
                 BlockChangeFlags.NONE);
-        Location<World> location4 = new Location<World>(world, positionX, positionY, positionZ - 2);
+        Location<World> location4 = new Location<>(world, positionX, positionY, positionZ - 2);
         location4.setBlock(BlockState.builder().
                         blockType(crateBlockType).
                         add(Keys.DIRECTION, Direction.SOUTH).

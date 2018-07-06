@@ -6,7 +6,7 @@
 
     <groupId>ua.gwm.sponge_plugin</groupId>
     <artifactId>crates</artifactId>
-    <version>beta-3.1.4</version>
+    <version>beta-3.1.5</version>
 
     <repositories>
         <repository>
