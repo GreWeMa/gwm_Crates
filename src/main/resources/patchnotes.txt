@@ -1,3 +1,12 @@
+beta-3.1.6
+1. 'config.conf', 'language.conf' and 'saved_super_objects.conf' are no more being rewritten after '/gwmcrates reload' command.
+2. If player have a delay to open case, plugin now can tell remaining time.
+3. Managers with equal id can not be loaded any more.
+4. SSO with equal saved id can not be loaded any more.
+5. Fixed wrong holograms location in 'ANIMATION1' Open Manager.
+6. Default value for 'ROWS' parameter in 'SECOND' Open Manager is now '6'.
+7. Corrected default scroll delays for 'FIRST' and 'CASINO' Open Managers.
+
 beta-3.1.5
 1. Fixed critical bug in 'ANIMATION1' Open Manager.
 

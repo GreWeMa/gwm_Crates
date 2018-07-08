@@ -149,10 +149,21 @@ public class Animation1OpenManager extends OpenManager {
                         add(Keys.DIRECTION, Direction.SOUTH).
                         build(),
                 BlockChangeFlags.NONE);
-        GWMLibraryUtils.tryCreateHolograms(location1, hologram).ifPresent(holograms::addAll);
-        GWMLibraryUtils.tryCreateHolograms(location2, hologram).ifPresent(holograms::addAll);
-        GWMLibraryUtils.tryCreateHolograms(location3, hologram).ifPresent(holograms::addAll);
-        GWMLibraryUtils.tryCreateHolograms(location4, hologram).ifPresent(holograms::addAll);
+        GWMLibraryUtils.tryCreateHolograms(location1, hologram,
+                GWMCrates.getInstance().getHologramOffset(),
+                GWMCrates.getInstance().getMultilineHologramsDistance()).ifPresent(holograms::addAll);
+        GWMLibraryUtils.tryCreateHolograms(location2, hologram,
+                GWMCrates.getInstance().getHologramOffset(),
+                GWMCrates.getInstance().getMultilineHologramsDistance()).
+                ifPresent(holograms::addAll);
+        GWMLibraryUtils.tryCreateHolograms(location3, hologram,
+                GWMCrates.getInstance().getHologramOffset(),
+                GWMCrates.getInstance().getMultilineHologramsDistance()).
+                ifPresent(holograms::addAll);
+        GWMLibraryUtils.tryCreateHolograms(location4, hologram,
+                GWMCrates.getInstance().getHologramOffset(),
+                GWMCrates.getInstance().getMultilineHologramsDistance()).
+                ifPresent(holograms::addAll);
         getOpenSound().ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
         PLAYERS_OPENING_ANIMATION1.put(player, new Information(this, manager,
                 new HashMap<Location<World>, Boolean>(){{

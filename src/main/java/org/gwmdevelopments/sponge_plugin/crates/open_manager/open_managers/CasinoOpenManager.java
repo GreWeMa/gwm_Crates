@@ -60,6 +60,8 @@ public class CasinoOpenManager extends OpenManager {
                 defaultScrollDelays.add(i);
             }
         }
+        defaultScrollDelays.add(10);
+        defaultScrollDelays.add(20);
         DEFAULT_SCROLL_DELAYS = Collections.unmodifiableList(defaultScrollDelays);
         List<Integer> decorativeItemsIndices = new ArrayList<>();
         for (int i = 0; i < 9 * 5; i++) {

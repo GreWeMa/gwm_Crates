@@ -64,10 +64,10 @@ public class SecondOpenManager extends OpenManager {
                 hiddenItem = GWMCratesUtils.parseItem(hiddenItemNode);
             }
             increaseHiddenItemQuantity = increaseHiddenItemQuantityNode.getBoolean(true);
-            rows = rowsNode.getInt(3);
+            rows = rowsNode.getInt(6);
             if (rows < 1 || rows > 6) {
                 GWMCrates.getInstance().getLogger().info("ROWS value is more than 6 or less than 1! Force set it to 3!");
-                rows = 3;
+                rows = 6;
             }
             showOtherDrops = showOtherDropsNode.getBoolean(true);
             showOtherDropsDelay = showOtherDropsDelayNode.getInt(20);

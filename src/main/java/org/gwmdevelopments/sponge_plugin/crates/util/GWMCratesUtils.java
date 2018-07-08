@@ -283,16 +283,18 @@ public class GWMCratesUtils {
         return time / 1000 + "." + time % 1000;
     }
     
-    public static boolean hasCrateOpenDelay(UUID uuid) {
+    public static long getCrateOpenDelay(UUID uuid) {
         if (GWMCrates.getInstance().getCrateOpenDelays().containsKey(uuid)) {
-            if (GWMCrates.getInstance().getCrateOpenDelays().get(uuid) > System.currentTimeMillis()) {
-                return true;
+            long current = System.currentTimeMillis();
+            long delay = GWMCrates.getInstance().getCrateOpenDelays().get(uuid);
+            if (delay > current) {
+                return delay - current;
             } else {
                 GWMCrates.getInstance().getCrateOpenDelays().remove(uuid);
-                return false;
+                return 0L;
             }
         } else {
-            return false;
+            return 0L;
         }
     }
 
@@ -573,7 +575,7 @@ public class GWMCratesUtils {
             Constructor<? extends SuperObject> superObjectConstructor = superObjectClass.getConstructor(ConfigurationNode.class);
             return superObjectConstructor.newInstance(node);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to Super Object \"" + superObjectType + "\" with type \"" + type + "\" and ID \"" + id + "\"!", e);
+            throw new RuntimeException("Failed to create Super Object \"" + superObjectType + "\" with type \"" + type + "\" and ID \"" + id + "\"!", e);
         }
     }
 

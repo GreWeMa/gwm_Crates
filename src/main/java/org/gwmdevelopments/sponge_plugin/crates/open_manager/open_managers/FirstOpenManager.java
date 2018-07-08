@@ -44,6 +44,8 @@ public class FirstOpenManager extends OpenManager {
                 defaultScrollDelays.add(i);
             }
         }
+        defaultScrollDelays.add(20);
+        defaultScrollDelays.add(40);
         DEFAULT_SCROLL_DELAYS = Collections.unmodifiableList(defaultScrollDelays);
         List<Integer> decorativeItemsIndices = new ArrayList<>();
         for (int i = 0; i < 10; i++) {

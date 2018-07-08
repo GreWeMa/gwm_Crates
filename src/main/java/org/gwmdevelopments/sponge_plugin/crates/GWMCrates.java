@@ -34,6 +34,7 @@ import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObject;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectStorage;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
+import org.gwmdevelopments.sponge_plugin.library.utils.*;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
@@ -47,7 +48,6 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.sql.SqlService;
-import org.gwmdevelopments.sponge_plugin.library.utils.*;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -58,7 +58,7 @@ import java.util.*;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.1.5",
+        version = "beta-3.1.6",
         description = "Universal (in all meanings of this word) crates plugin!",
         authors = {"GWM"/*
                          * Nazar Kalinovskiy
@@ -71,7 +71,7 @@ import java.util.*;
         })
 public class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 1, 5);
+    public static final Version VERSION = new Version("beta", 3, 1, 6);
 
     private static GWMCrates instance = null;
 
@@ -245,13 +245,10 @@ public class GWMCrates extends SpongePlugin {
     }
 
     public void save() {
-        config.save();
-        languageConfig.save();
         virtualCasesConfig.save();
         virtualKeysConfig.save();
         timedCasesConfig.save();
         timedKeysConfig.save();
-        savedSuperObjectsConfig.save();
         logger.info("All plugin configs have been saved!");
     }
 
@@ -338,7 +335,7 @@ public class GWMCrates extends SpongePlugin {
             superObjects.add(superObjectStorage);
             logger.info("Successfully added Super Object \"" + superObjectType + "\" with type \"" + type + "\"!");
         }
-        logger.info("Registration complete!");
+        logger.info("Registration completed!");
     }
 
     private void loadConfigValues() {
@@ -378,12 +375,20 @@ public class GWMCrates extends SpongePlugin {
                 throw new RuntimeException("SAVED_ID node does not exist for Saved Super Object \"" + superObjectType + "\" with id \"" + id + "\"!");
             }
             String savedId = savedIdNode.getString();
+            if (savedSuperObjects.keySet().stream().map(Pair::getValue).anyMatch(s -> s.equals(savedId))) {
+                logger.warn("Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\" and ID \"" + id + "\" is not loaded because its SAVED_ID is not unique!");
+                return;
+            }
             Pair<SuperObjectType, String> pair = new Pair<SuperObjectType, String>(superObjectType, savedId);
             if (savedSuperObjects.containsKey(pair)) {
                 throw new RuntimeException("Saved Super Objects already contains Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\"!");
             }
-            logger.info("Successfully loaded Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\" and ID \"" + id + "\"!");
-            savedSuperObjects.put(pair, GWMCratesUtils.createSuperObject(node, superObjectType));
+            try {
+                savedSuperObjects.put(pair, GWMCratesUtils.createSuperObject(node, superObjectType));
+                logger.info("Successfully loaded Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\" and ID \"" + id + "\"!");
+            } catch (Exception e) {
+                logger.info("Failed to load Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\" and ID \"" + id + "\"!", e);
+            }
         });
         logger.info("All Saved Super Objects loaded!");
     }
@@ -399,10 +404,16 @@ public class GWMCrates extends SpongePlugin {
                         ConfigurationNode managerNode = managerConfigurationLoader.load();
                         if (managerNode.getNode("LOAD").getBoolean(true)) {
                             Manager manager = new Manager(managerNode);
+                            for (Manager createdManager : createdManagers) {
+                                if (manager.getId().equals(createdManager.getId())) {
+                                    logger.warn("Manager from file \"" + managerFile.getName() + "\" is not loaded because its ID is not unique!");
+                                    return;
+                                }
+                            }
                             createdManagers.add(manager);
                             logger.info("Manager \"" + manager.getId() + "\" (\"" + manager.getName() + "\") successfully loaded!");
                         } else {
-                            logger.info("Skipping manager file \"" + managerFile.getName() + "\"!");
+                            logger.info("Skipping manager from file \"" + managerFile.getName() + "\"!");
                         }
                     } catch (Exception e) {
                         logger.warn("Failed to load manager \"" + managerFile.getName() + "\"!", e);

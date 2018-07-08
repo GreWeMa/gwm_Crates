@@ -11,11 +11,9 @@ import org.gwmdevelopments.sponge_plugin.crates.command.commands.give.GiveDropCo
 import org.gwmdevelopments.sponge_plugin.crates.command.commands.give.GiveKeyCommand;
 import org.gwmdevelopments.sponge_plugin.crates.command.commands.give.GiveSSOCommand;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 import java.util.Optional;
 
@@ -27,6 +25,7 @@ public class GWMCratesCommandUtils {
                 executor(new HelpCommand()).
                 build();
         CommandSpec guiCommand = CommandSpec.builder().
+                permission("gwm_crates.command.gui").
                 description(Text.of("GUI for creating crates")).
                 executor(new GUICommand()).
                 build();

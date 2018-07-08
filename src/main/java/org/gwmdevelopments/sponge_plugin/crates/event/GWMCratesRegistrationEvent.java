@@ -15,7 +15,7 @@ import java.util.Set;
 public class GWMCratesRegistrationEvent extends AbstractEvent {
 
     private final HashSet<SuperObjectStorage> superObjectStorage =
-            new HashSet<SuperObjectStorage>();
+            new HashSet<>();
 
     public void register(SuperObjectType superObjectType, String type, Class<? extends SuperObject> superObjectClass,
                          Optional<Class<? extends ConfigurationDialog>> configurationDialog) {

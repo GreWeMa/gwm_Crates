@@ -40,8 +40,10 @@ public class ItemCaseListener {
                 player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
                 return;
             }
-            if (GWMCratesUtils.hasCrateOpenDelay(uuid)) {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CRATE_OPEN_DELAY"));
+            long delay = GWMCratesUtils.getCrateOpenDelay(uuid);
+            if (delay > 0L) {
+                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CRATE_OPEN_DELAY",
+                        new Pair<>("%TIME%", GWMCratesUtils.millisToString(delay))));
                 return;
             }
             OpenManager openManager = manager.getOpenManager();

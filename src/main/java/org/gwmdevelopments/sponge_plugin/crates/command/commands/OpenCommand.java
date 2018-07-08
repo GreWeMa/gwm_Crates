@@ -37,9 +37,10 @@ public class OpenCommand implements CommandExecutor {
             player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
             return CommandResult.success();
         }
-        if (GWMCratesUtils.hasCrateOpenDelay(uuid)) {
+        long delay = GWMCratesUtils.getCrateOpenDelay(uuid);
+        if (delay > 0L) {
             player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CRATE_OPEN_DELAY",
-                    new Pair<>("%TIME%", GWMCrates.getInstance().getCrateOpenDelay()/1000)));
+                    new Pair<>("%TIME%", GWMCratesUtils.millisToString(delay))));
             return CommandResult.success();
         }
         if (!openManager.canOpen(player, manager)) {
