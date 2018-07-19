@@ -60,10 +60,9 @@ import java.util.*;
         name = "GWMCrates",
         version = "beta-3.1.6",
         description = "Universal (in all meanings of this word) crates plugin!",
-        authors = {"GWM"/*
-                         * Nazar Kalinovskiy
-                         * My contacts:
-                         * E-Mail(gwm@tutanota.com),
+        authors = {"GWM"/* My contacts:
+                         * E-Mail(nazark@tutanota.com),
+                         * Telegram(@grewema),
                          * Discord(GWM#2192)*/},
         dependencies = {
                 @Dependency(id = "gwm_library"),
