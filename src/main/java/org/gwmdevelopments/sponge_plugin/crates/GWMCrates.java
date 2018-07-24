@@ -58,7 +58,7 @@ import java.util.*;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.1.6",
+        version = "beta-3.1.7",
         description = "Universal (in all meanings of this word) crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -70,7 +70,7 @@ import java.util.*;
         })
 public class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 1, 6);
+    public static final Version VERSION = new Version("beta", 3, 1, 7);
 
     private static GWMCrates instance = null;
 
@@ -107,8 +107,6 @@ public class GWMCrates extends SpongePlugin {
 
     private boolean checkUpdates = true;
     private boolean logOpenedCrates = false;
-    private boolean tellForceCrateOpenInfo = true;
-    private boolean tellGiveInfo = true;
     private Vector3d hologramOffset = new Vector3d(0.5, 1, 0.5);
     private double multilineHologramsDistance = 0.2;
     private int maxVirtualNamesLength = 100;
@@ -117,6 +115,7 @@ public class GWMCrates extends SpongePlugin {
     private boolean useMySQLForTimedCases = false;
     private boolean useMySQLForTimedKeys = false;
     private long crateOpenDelay = 10000;
+    private long managersLoadDelay = 20;
 
     private Optional<EconomyService> economyService = Optional.empty();
     private Optional<DataSource> dataSource = Optional.empty();
@@ -225,8 +224,9 @@ public class GWMCrates extends SpongePlugin {
     public void onStarting(GameStartingServerEvent event) {
         loadSavedSuperObjects();
         Sponge.getScheduler().createTaskBuilder().
-                delayTicks(config.getNode("MANAGERS_LOAD_DELAY").getLong(20)).
-                execute(this::loadManagers).submit(this);
+                delayTicks(managersLoadDelay).
+                execute(this::loadManagers).
+                submit(this);
         logger.info("\"GameStarting\" completed!");
     }
 
@@ -341,8 +341,6 @@ public class GWMCrates extends SpongePlugin {
         try {
             checkUpdates = config.getNode("CHECK_UPDATES").getBoolean(true);
             logOpenedCrates = config.getNode("LOG_OPENED_CRATES").getBoolean(false);
-            tellForceCrateOpenInfo = config.getNode("TELL_FORCE_CRATE_OPEN_INFO").getBoolean(true);
-            tellGiveInfo = config.getNode("TELL_GIVE_INFO").getBoolean(true);
             hologramOffset = GWMLibraryUtils.parseVector3d(config.getNode("HOLOGRAM_OFFSET"));
             multilineHologramsDistance = config.getNode("MULTILINE_HOLOGRAMS_DISTANCE").getDouble(0.2);
             maxVirtualNamesLength = config.getNode("MAX_VIRTUAL_NAMES_LENGTH").getInt(100);
@@ -351,6 +349,7 @@ public class GWMCrates extends SpongePlugin {
             useMySQLForTimedCases = config.getNode("USE_MYSQL_FOR_TIMED_CASES").getBoolean(false);
             useMySQLForTimedKeys = config.getNode("USE_MYSQL_FOR_TIMED_KEYS").getBoolean(false);
             crateOpenDelay = config.getNode("CRATE_OPEN_DELAY").getLong(10000);
+            managersLoadDelay = config.getNode("MANAGERS_LOAD_DELAY").getLong(20);
         } catch (Exception e) {
             logger.warn("Failed to load config values!", e);
         }
@@ -561,14 +560,6 @@ public class GWMCrates extends SpongePlugin {
         return logOpenedCrates;
     }
 
-    public boolean isTellForceCrateOpenInfo() {
-        return tellForceCrateOpenInfo;
-    }
-
-    public boolean isTellGiveInfo() {
-        return tellGiveInfo;
-    }
-
     public Vector3d getHologramOffset() {
         return hologramOffset;
     }
@@ -599,6 +590,10 @@ public class GWMCrates extends SpongePlugin {
 
     public long getCrateOpenDelay() {
         return crateOpenDelay;
+    }
+
+    public long getManagersLoadDelay() {
+        return managersLoadDelay;
     }
 
     public Optional<EconomyService> getEconomyService() {

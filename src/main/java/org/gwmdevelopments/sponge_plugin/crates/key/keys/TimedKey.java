@@ -3,7 +3,6 @@ package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.key.Key;
-import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
 
@@ -36,6 +35,10 @@ public class TimedKey extends Key {
                 throw new RuntimeException("DELAY node does not exist!");
             }
             virtualName = virtualNameNode.getString();
+            if (virtualName.length() > GWMCrates.getInstance().getMaxVirtualNamesLength()) {
+                throw new RuntimeException("VIRTUAL_NAME length is more than \"MAX_VIRTUAL_NAMES_LENGTH\" (" +
+                        GWMCrates.getInstance().getMaxVirtualNamesLength() + ")!");
+            }
             delay = delayNode.getLong();
         } catch (Exception e) {
             throw new RuntimeException("Failed to create Timed Key!", e);

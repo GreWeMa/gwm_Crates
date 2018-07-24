@@ -8,6 +8,7 @@ import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -15,7 +16,6 @@ import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackComparators;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 import java.util.Optional;
 import java.util.UUID;

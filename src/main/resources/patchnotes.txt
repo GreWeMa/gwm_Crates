@@ -1,3 +1,9 @@
+beta-3.1.7
+1. Removed unused parameters 'TELL_FORCE_CRATE_OPEN_INFO' and 'TELL_GIVE_INFO' from 'config.conf'.
+2. Refactored 'MANAGERS_LOAD_DELAY' property.
+3. You can not now create 'VIRTUAL'/'TIMED' Case/Key with 'VIRTUAL_NAME' length more than 'MAX_VIRTUAL_NAMES_LENGTH'.
+4. Small changes to 'pom.xml'
+
 beta-3.1.6
 1. 'config.conf', 'language.conf' and 'saved_super_objects.conf' are no more being rewritten after '/gwmcrates reload' command.
 2. If player have a delay to open case, plugin now can tell remaining time.
