@@ -58,7 +58,7 @@ import java.util.*;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.1.7",
+        version = "beta-3.1.8",
         description = "Universal (in all meanings of this word) crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -70,7 +70,7 @@ import java.util.*;
         })
 public class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 1, 7);
+    public static final Version VERSION = new Version("beta", 3, 1, 8);
 
     private static GWMCrates instance = null;
 
@@ -167,16 +167,29 @@ public class GWMCrates extends SpongePlugin {
             }
         }
 
-        //For backwards compatibility.
-        File oldTimedCasesFile = new File(configDirectory, "timed_cases_delays.conf");
-        File oldTimedKeysFile = new File(configDirectory, "timed_keys_delays.conf");
-        File newTimedCasesFile = new File(configDirectory, "timed_cases.conf");
-        File newTimedKeysFile = new File(configDirectory, "timed_keys.conf");
-        if (oldTimedCasesFile.exists()) {
-            oldTimedCasesFile.renameTo(newTimedCasesFile);
-        }
-        if (oldTimedKeysFile.exists()) {
-            oldTimedKeysFile.renameTo(newTimedKeysFile);
+        { //Backwards compatibility
+            File oldTimedCasesFile = new File(configDirectory, "timed_cases_delays.conf");
+            File oldTimedKeysFile = new File(configDirectory, "timed_keys_delays.conf");
+            File newTimedCasesFile = new File(configDirectory, "timed_cases.conf");
+            File newTimedKeysFile = new File(configDirectory, "timed_keys.conf");
+            if (oldTimedCasesFile.exists()) {
+                logger.warn("[BACKWARD COMPATIBILITY] Trying to rename file \"" + oldTimedCasesFile.getName() + "\" to \"" + newTimedCasesFile.getName() + "\"!");
+                try {
+                    oldTimedCasesFile.renameTo(newTimedCasesFile);
+                    logger.warn("[BACKWARD COMPATIBILITY] Successfully renamed!");
+                } catch (Exception e) {
+                    logger.warn("[BACKWARD COMPATIBILITY] Failed to rename!", e);
+                }
+            }
+            if (oldTimedKeysFile.exists()) {
+                logger.warn("[BACKWARD COMPATIBILITY] Trying to rename file \"" + oldTimedKeysFile.getName() + "\" to \"" + newTimedKeysFile.getName() + "\"!");
+                try {
+                    oldTimedKeysFile.renameTo(newTimedKeysFile);
+                    logger.warn("[BACKWARD COMPATIBILITY] Successfully renamed!");
+                } catch (Exception e) {
+                    logger.warn("[BACKWARD COMPATIBILITY] Failed to rename!", e);
+                }
+            }
         }
 
         cause = Cause.of(EventContext.empty(), container);
@@ -404,17 +417,17 @@ public class GWMCrates extends SpongePlugin {
                             Manager manager = new Manager(managerNode);
                             for (Manager createdManager : createdManagers) {
                                 if (manager.getId().equals(createdManager.getId())) {
-                                    logger.warn("Manager from file \"" + managerFile.getName() + "\" is not loaded because its ID is not unique!");
+                                    logger.warn("Manager from file \"" + GWMCratesUtils.getManagerRelativePath(managerFile) + "\" is not loaded because its ID is not unique!");
                                     return;
                                 }
                             }
                             createdManagers.add(manager);
-                            logger.info("Manager \"" + manager.getId() + "\" (\"" + manager.getName() + "\") successfully loaded!");
+                            logger.info("Manager \"" + manager.getId() + "\" (\"" + manager.getName() + "\") from file \"" + GWMCratesUtils.getManagerRelativePath(managerFile) + "\" successfully loaded!");
                         } else {
-                            logger.info("Skipping manager from file \"" + managerFile.getName() + "\"!");
+                            logger.info("Skipping manager from file \"" + GWMCratesUtils.getManagerRelativePath(managerFile) + "\"!");
                         }
                     } catch (Exception e) {
-                        logger.warn("Failed to load manager \"" + managerFile.getName() + "\"!", e);
+                        logger.warn("Failed to load manager from file \"" + GWMCratesUtils.getManagerRelativePath(managerFile) + "\"!", e);
                     }
                 }
             });

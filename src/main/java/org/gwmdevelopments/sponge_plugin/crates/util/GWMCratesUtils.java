@@ -36,7 +36,9 @@ import org.spongepowered.api.world.World;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 import javax.swing.*;
+import java.io.File;
 import java.lang.reflect.Constructor;
+import java.nio.file.Path;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -348,7 +350,7 @@ public class GWMCratesUtils {
                 item.offer(Keys.ITEM_LORE, lore);
             }
             if (!enchantmentsNode.isVirtual()) {
-                List<Enchantment> itemEnchantments = new ArrayList<Enchantment>();
+                List<Enchantment> itemEnchantments = new ArrayList<>();
                 for (ConfigurationNode enchantment_node : enchantmentsNode.getChildrenList()) {
                     itemEnchantments.add(parseEnchantment(enchantment_node));
                 }
@@ -380,11 +382,40 @@ public class GWMCratesUtils {
 
     public static CommandsDrop.ExecutableCommand parseCommand(ConfigurationNode node) {
         ConfigurationNode commandNode = node.getNode("COMMAND");
+        { //Backward compatibility
+            if (commandNode.isVirtual()) {
+                GWMCrates.getInstance().getLogger().warn("[BACKWARD COMPATIBILITY] COMMAND node does not exist! Trying to use CMD node!");
+                commandNode = node.getNode("CMD");
+            }
+        }
         ConfigurationNode consoleNode = node.getNode("CONSOLE");
         if (commandNode.isVirtual()) {
             throw new RuntimeException("COMMAND node does not exist!");
         }
         String command = commandNode.getString();
+        breakpoint:
+        { //Backward compatibility
+            if (!command.contains("")) {
+                break breakpoint;
+            }
+            String[] splited = command.split(" ");
+            if (splited.length < 5) {
+                break breakpoint;
+            }
+            String cmd = splited[0].toLowerCase();
+            String give = splited[1].toLowerCase();
+            String player = splited[2];
+            String type = splited[3].toLowerCase();
+            String id = splited[4];
+            String amount = splited.length > 5 ? splited[5] : "1";
+            if (give.equals("give") &&
+                    (cmd.equals("gwmcrates") || cmd.equals("gwmcrate") || cmd.equals("crates") || cmd.equals("crate")) &&
+                    (type.equals("case")) || type.equals("key") || type.equals("drop")) {
+                String newCommand = "gwmcrates give " + type + " " + id + " " + player + " " + amount;
+                GWMCrates.getInstance().getLogger().warn("[BACKWARD COMPATIBILITY] Replacing command \"" + command + "\" by \"" + newCommand + "\"!");
+                command = newCommand;
+            }
+        }
         boolean console = consoleNode.getBoolean(true);
         return new CommandsDrop.ExecutableCommand(command, console);
     }
@@ -728,5 +759,9 @@ public class GWMCratesUtils {
             }
         }
         throw new RuntimeException("Inventory can not be casted to Ordered Inventory!");
+    }
+
+    public static Path getManagerRelativePath(File managerFile) {
+        return GWMCrates.getInstance().getManagersDirectory().toPath().relativize(managerFile.toPath());
     }
 }
