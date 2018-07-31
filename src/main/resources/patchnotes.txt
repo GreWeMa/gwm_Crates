@@ -1,3 +1,6 @@
+beta-3.1.9
+1. 'HOLOGRAM_OFFSET' is now optional parameter.
+
 beta-3.1.8
 1. Removed 'commons-io' dependency.
 2. Plugin now tells relative path instead of file name when loading managers.

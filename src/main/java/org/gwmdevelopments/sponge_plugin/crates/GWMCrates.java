@@ -58,7 +58,7 @@ import java.util.*;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.1.8",
+        version = "beta-3.1.9",
         description = "Universal (in all meanings of this word) crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -70,7 +70,7 @@ import java.util.*;
         })
 public class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 1, 8);
+    public static final Version VERSION = new Version("beta", 3, 1, 9);
 
     private static GWMCrates instance = null;
 
@@ -354,7 +354,7 @@ public class GWMCrates extends SpongePlugin {
         try {
             checkUpdates = config.getNode("CHECK_UPDATES").getBoolean(true);
             logOpenedCrates = config.getNode("LOG_OPENED_CRATES").getBoolean(false);
-            hologramOffset = GWMLibraryUtils.parseVector3d(config.getNode("HOLOGRAM_OFFSET"));
+            hologramOffset = GWMLibraryUtils.parseVector3d(config.getNode("HOLOGRAM_OFFSET"), new Vector3d(0.5, 1, 0.5));
             multilineHologramsDistance = config.getNode("MULTILINE_HOLOGRAMS_DISTANCE").getDouble(0.2);
             maxVirtualNamesLength = config.getNode("MAX_VIRTUAL_NAMES_LENGTH").getInt(100);
             useMySQLForVirtualCases = config.getNode("USE_MYSQL_FOR_VIRTUAL_CASES").getBoolean(false);
