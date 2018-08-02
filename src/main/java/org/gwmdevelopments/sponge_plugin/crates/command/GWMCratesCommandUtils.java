@@ -133,7 +133,7 @@ public class GWMCratesCommandUtils {
                 ).
                 build();
         CommandSpec buyDropCommand = CommandSpec.builder().
-                description(Text.of("Buy the case")).
+                description(Text.of("Buy the drop")).
                 executor(new BuyDropCommand()).
                 arguments(
                         new ManagerCommandElement(Text.of("manager")),

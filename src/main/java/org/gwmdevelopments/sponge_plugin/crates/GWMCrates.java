@@ -58,7 +58,7 @@ import java.util.*;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.1.9",
+        version = "beta-3.1.10",
         description = "Universal (in all meanings of this word) crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -70,7 +70,7 @@ import java.util.*;
         })
 public class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 1, 9);
+    public static final Version VERSION = new Version("beta", 3, 1, 10);
 
     private static GWMCrates instance = null;
 
@@ -450,7 +450,7 @@ public class GWMCrates extends SpongePlugin {
             ConfigurationNode userNode = mysqlNode.getNode("USER");
             ConfigurationNode passwordNode = mysqlNode.getNode("PASSWORD");
             String ip = ipNode.getString();
-            int port = portNode.getInt();
+            int port = portNode.getInt(3306);
             String db = dbNode.getString();
             String user = userNode.getString();
             String password = passwordNode.getString();

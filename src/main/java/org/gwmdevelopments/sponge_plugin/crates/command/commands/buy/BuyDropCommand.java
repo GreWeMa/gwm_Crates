@@ -40,7 +40,7 @@ public class BuyDropCommand implements CommandExecutor {
             return CommandResult.success();
         }
         Drop drop = optionalDrop.get();
-        if (!player.hasPermission("gwm_crates.command.buy." + managerId + ".drop." + dropId)) {
+        if (!player.hasPermission("gwm_crates.command.buy.manager." + managerId + ".drop." + dropId)) {
             player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
             return CommandResult.success();
         }

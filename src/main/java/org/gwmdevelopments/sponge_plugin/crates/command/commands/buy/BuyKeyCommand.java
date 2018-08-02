@@ -33,7 +33,7 @@ public class BuyKeyCommand implements CommandExecutor {
         String managerId = manager.getId();
         Key key = manager.getKey();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
-        if (!player.hasPermission("gwm_crates.command.buy." + managerId + ".key")) {
+        if (!player.hasPermission("gwm_crates.command.buy.manager." + managerId + ".key")) {
             player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
             return CommandResult.success();
         }

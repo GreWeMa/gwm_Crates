@@ -33,7 +33,7 @@ public class BuyCaseCommand implements CommandExecutor {
         String managerId = manager.getId();
         Case caze = manager.getCase();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
-        if (!player.hasPermission("gwm_crates.command.buy." + managerId + ".key")) {
+        if (!player.hasPermission("gwm_crates.command.buy.manager." + managerId + ".case")) {
             player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
             return CommandResult.success();
         }

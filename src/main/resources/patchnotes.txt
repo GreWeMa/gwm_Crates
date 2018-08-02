@@ -1,3 +1,8 @@
+beta-3.1.10
+1. 3306 is now default value for "MYSQL.PORT" parameter.
+2. Fixed bug in the description of the command '/gwmcrates buy drop'.
+3. Changed permissions in '/gwmcrates buy' commands.
+
 beta-3.1.9
 1. 'HOLOGRAM_OFFSET' is now optional parameter.
 
