@@ -7,7 +7,6 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
-import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
 import org.gwmdevelopments.sponge_plugin.crates.caze.cases.*;
 import org.gwmdevelopments.sponge_plugin.crates.change_mode.change_modes.OrderedChangeMode;
 import org.gwmdevelopments.sponge_plugin.crates.change_mode.change_modes.RandomChangeMode;
@@ -34,6 +33,7 @@ import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObject;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectStorage;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
+import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
 import org.gwmdevelopments.sponge_plugin.library.utils.*;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -48,6 +48,8 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.sql.SqlService;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -58,7 +60,7 @@ import java.util.*;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.1.10",
+        version = "beta-3.1.11",
         description = "Universal (in all meanings of this word) crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -70,7 +72,7 @@ import java.util.*;
         })
 public class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 1, 10);
+    public static final Version VERSION = new Version("beta", 3, 1, 11);
 
     private static GWMCrates instance = null;
 
@@ -291,22 +293,38 @@ public class GWMCrates extends SpongePlugin {
     }
 
     private void deleteHolograms() {
-        try {
-            for (Manager manager : createdManagers) {
-                Case caze = manager.getCase();
-                if (caze instanceof BlockCase) {
-                    BlockCase blockCase = (BlockCase) caze;
-                    Optional<List<HologramsService.Hologram>> optionalHologram = blockCase.getCreatedHolograms();
-                    optionalHologram.ifPresent(holograms ->
-                            holograms.forEach(HologramsService.Hologram::remove));
-                }
-                for (Animation1OpenManager.Information information : Animation1OpenManager.PLAYERS_OPENING_ANIMATION1.values()) {
-                    information.getHolograms().forEach(HologramsService.Hologram::remove);
-                }
-            }
-        } catch (Exception e) {
-            logger.debug("Failed to delete holograms (Ignore this if you have no holograms)!", e);
+        if (!GWMLibrary.getInstance().getHologramsService().isPresent()) {
+            return;
         }
+        createdManagers.stream().
+                filter(manager -> manager.getCase() instanceof BlockCase).
+                forEach(manager -> {
+                    BlockCase blockCase = (BlockCase) manager.getCase();
+                    Optional<List<HologramsService.Hologram>> optionalHolograms = blockCase.getCreatedHolograms();
+                    if (optionalHolograms.isPresent()) {
+                        List<HologramsService.Hologram> holograms = optionalHolograms.get();
+                        for (HologramsService.Hologram hologram : holograms) {
+                            try {
+                                Location<World> location = blockCase.getLocation();
+                                location.getExtent().loadChunk(location.getChunkPosition(), true);
+                                hologram.remove();
+                            } catch (Exception e) {
+                                logger.warn("Failed to remove hologram!", e);
+                            }
+                        }
+                    }
+                });
+        Animation1OpenManager.PLAYERS_OPENING_ANIMATION1.values().forEach(information -> {
+            information.getLocations().keySet().forEach(location ->
+                    location.getExtent().loadChunk(location.getChunkPosition(), true));
+            information.getHolograms().forEach(hologram -> {
+                try {
+                    hologram.remove();
+                } catch (Exception e) {
+                    logger.warn("Failed to remove hologram (ANIMATION1)!", e);
+                }
+            });
+        });
     }
 
     private void register() {

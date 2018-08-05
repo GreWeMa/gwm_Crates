@@ -1,3 +1,6 @@
+beta-3.1.11
+1. (Probably) Fixed bug when holograms were not deleted automatically.
+
 beta-3.1.10
 1. 3306 is now default value for "MYSQL.PORT" parameter.
 2. Fixed bug in the description of the command '/gwmcrates buy drop'.
