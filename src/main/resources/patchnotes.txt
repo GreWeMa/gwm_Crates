@@ -1,3 +1,6 @@
+v. 3.1.12
+1. No changes, just moving to stable on Ore.
+
 beta-3.1.11
 1. (Probably) Fixed bug when holograms were not deleted automatically.
 
