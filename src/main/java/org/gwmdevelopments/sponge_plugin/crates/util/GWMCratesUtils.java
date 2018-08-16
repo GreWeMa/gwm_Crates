@@ -5,6 +5,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import org.apache.commons.lang3.StringUtils;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
+import org.gwmdevelopments.sponge_plugin.crates.caze.cases.BlockCase;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.CommandsDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.EmptyDrop;
@@ -12,7 +13,10 @@ import org.gwmdevelopments.sponge_plugin.crates.gui.GWMCratesGUI;
 import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.ConfigurationDialog;
 import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.SavedSuperObjectConfigurationDialog;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
+import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.Animation1OpenManager;
+import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
 import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
+import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
@@ -33,7 +37,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 import javax.swing.*;
 import java.io.File;
@@ -48,6 +51,35 @@ public class GWMCratesUtils {
     public static final ItemStack EMPTY_ITEM = ItemStack.of(ItemTypes.NONE, 0);
     public static final Drop EMPTY_DROP = new EmptyDrop(Optional.empty(), 1,
             Optional.empty(), Optional.empty(), Collections.EMPTY_MAP, Collections.EMPTY_MAP);
+
+    public static void deleteHolograms() {
+        if (!GWMLibrary.getInstance().getHologramsService().isPresent()) {
+            return;
+        }
+        GWMCrates.getInstance().getCreatedManagers().stream().
+                filter(manager -> manager.getCase() instanceof BlockCase).
+                map(manager -> (BlockCase) manager.getCase()).
+                forEach(caze -> caze.getCreatedHolograms().ifPresent(holograms -> holograms.forEach(hologram -> {
+                    try {
+                        Location<World> location = caze.getLocation();
+                        location.getExtent().loadChunk(location.getChunkPosition(), true);
+                        hologram.remove();
+                    } catch (Exception e) {
+                        GWMCrates.getInstance().getLogger().warn("Failed to remove hologram!", e);
+                    }
+                })));
+        Animation1OpenManager.PLAYERS_OPENING_ANIMATION1.values().forEach(information -> {
+            information.getLocations().keySet().forEach(location ->
+                    location.getExtent().loadChunk(location.getChunkPosition(), true));
+            information.getHolograms().forEach(hologram -> {
+                try {
+                    hologram.remove();
+                } catch (Exception e) {
+                    GWMCrates.getInstance().getLogger().warn("Failed to remove hologram (ANIMATION1)!", e);
+                }
+            });
+        });
+    }
 
     public static void asyncImportToMySQL() {
         new Thread(() -> {

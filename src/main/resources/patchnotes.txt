@@ -1,3 +1,6 @@
+v. 3.1.13
+1. Moved method 'deleteHolograms' from 'GWMCrates' to 'GWMCratesUtils', to fix issue #12.
+
 v. 3.1.12
 1. No changes, just moving to stable on Ore.
 

@@ -2,7 +2,6 @@ package org.gwmdevelopments.sponge_plugin.crates;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
-import de.randombyte.holograms.api.HologramsService;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -33,7 +32,6 @@ import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObject;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectStorage;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
-import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
 import org.gwmdevelopments.sponge_plugin.library.utils.*;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -48,8 +46,6 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.sql.SqlService;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -60,7 +56,7 @@ import java.util.*;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "3.1.12",
+        version = "3.1.13",
         description = "Universal crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -72,7 +68,7 @@ import java.util.*;
         })
 public class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version(null, 3, 1, 12);
+    public static final Version VERSION = new Version(null, 3, 1, 13);
 
     private static GWMCrates instance = null;
 
@@ -247,7 +243,7 @@ public class GWMCrates extends SpongePlugin {
 
     @Listener
     public void onStopping(GameStoppingServerEvent event) {
-        deleteHolograms();
+        GWMCratesUtils.deleteHolograms();
         save();
         logger.info("\"Stopping\" completed!");
     }
@@ -267,7 +263,7 @@ public class GWMCrates extends SpongePlugin {
     }
 
     public void reload() {
-        deleteHolograms();
+        GWMCratesUtils.deleteHolograms();
         createdManagers.clear();
         cause = Cause.of(EventContext.empty(), container);
         config.reload();
@@ -290,41 +286,6 @@ public class GWMCrates extends SpongePlugin {
             checkUpdates();
         }
         logger.info("Plugin has been reloaded.");
-    }
-
-    private void deleteHolograms() {
-        if (!GWMLibrary.getInstance().getHologramsService().isPresent()) {
-            return;
-        }
-        createdManagers.stream().
-                filter(manager -> manager.getCase() instanceof BlockCase).
-                forEach(manager -> {
-                    BlockCase blockCase = (BlockCase) manager.getCase();
-                    Optional<List<HologramsService.Hologram>> optionalHolograms = blockCase.getCreatedHolograms();
-                    if (optionalHolograms.isPresent()) {
-                        List<HologramsService.Hologram> holograms = optionalHolograms.get();
-                        for (HologramsService.Hologram hologram : holograms) {
-                            try {
-                                Location<World> location = blockCase.getLocation();
-                                location.getExtent().loadChunk(location.getChunkPosition(), true);
-                                hologram.remove();
-                            } catch (Exception e) {
-                                logger.warn("Failed to remove hologram!", e);
-                            }
-                        }
-                    }
-                });
-        Animation1OpenManager.PLAYERS_OPENING_ANIMATION1.values().forEach(information -> {
-            information.getLocations().keySet().forEach(location ->
-                    location.getExtent().loadChunk(location.getChunkPosition(), true));
-            information.getHolograms().forEach(hologram -> {
-                try {
-                    hologram.remove();
-                } catch (Exception e) {
-                    logger.warn("Failed to remove hologram (ANIMATION1)!", e);
-                }
-            });
-        });
     }
 
     private void register() {
