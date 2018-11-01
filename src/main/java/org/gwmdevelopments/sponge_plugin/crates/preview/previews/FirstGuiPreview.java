@@ -6,10 +6,11 @@ import org.gwmdevelopments.sponge_plugin.crates.change_mode.DecorativeItemsChang
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.FirstOpenManager;
-import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
+import org.gwmdevelopments.sponge_plugin.crates.preview.AbstractPreview;
 import org.gwmdevelopments.sponge_plugin.crates.util.DecorativeDropChangeRunnable;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
+import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Container;
@@ -21,11 +22,10 @@ import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 import java.util.*;
 
-public class FirstGuiPreview extends Preview {
+public class FirstGuiPreview extends AbstractPreview {
 
     public static final Map<Container, Pair<FirstGuiPreview, Manager>> FIRST_GUI_CONTAINERS = new HashMap<>();
 

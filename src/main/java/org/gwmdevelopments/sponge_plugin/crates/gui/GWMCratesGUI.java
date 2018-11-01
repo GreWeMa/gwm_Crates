@@ -107,7 +107,7 @@ public class GWMCratesGUI extends JFrame {
     private AddButton add_drop_button;
     private JPanel drops_panel;
 
-    private ArrayList<FlatSuperObjectPanel> drops = new ArrayList<FlatSuperObjectPanel>();
+    private ArrayList<FlatSuperObjectPanel> drops = new ArrayList<>();
 
     public GWMCratesGUI() {
         super("GWMCrates " + GWMCrates.VERSION + " GUI");
@@ -368,7 +368,7 @@ public class GWMCratesGUI extends JFrame {
         if (!preview_type.equals("NO PREVIEW")) {
             node.getNode("PREVIEW").setValue(preview_panel.getNode());
         }
-        List<ConfigurationNode> drops_node_list = new ArrayList<ConfigurationNode>();
+        List<ConfigurationNode> drops_node_list = new ArrayList<>();
         for (FlatSuperObjectPanel drop : drops) {
             String drop_type = drop.getType();
             if (drop_type == null) {

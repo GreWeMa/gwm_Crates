@@ -1,7 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.drop.drops;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
+import org.gwmdevelopments.sponge_plugin.crates.drop.AbstractDrop;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Optional;
 
-public class ItemDrop extends Drop {
+public class ItemDrop extends AbstractDrop {
 
     private ItemStack item;
 
@@ -37,8 +37,10 @@ public class ItemDrop extends Drop {
     }
 
     @Override
-    public void apply(Player player) {
-        player.getInventory().offer(item.copy());
+    public void give(Player player, int amount) {
+        for (int i = 0; i < amount; i++) {
+            player.getInventory().offer(item.copy());
+        }
     }
 
     @Override

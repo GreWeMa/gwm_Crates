@@ -2,7 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
-import org.gwmdevelopments.sponge_plugin.crates.key.Key;
+import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
 
@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-public class TimedKey extends Key {
+public class TimedKey extends GiveableKey {
 
     private Map<UUID, Long> cache = new WeakHashMap<>();
 
@@ -53,7 +53,7 @@ public class TimedKey extends Key {
     }
 
     @Override
-    public void add(Player player, int amount) {
+    public void withdraw(Player player, int amount) {
         UUID uuid = player.getUniqueId();
         if (GWMCrates.getInstance().isUseMySQLForTimedKeys()) {
             try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
@@ -94,6 +94,11 @@ public class TimedKey extends Key {
                 delayNode.setValue(System.currentTimeMillis() + delay);
             }
         }
+    }
+
+    @Override
+    public void give(Player player, int amount) {
+
     }
 
     @Override

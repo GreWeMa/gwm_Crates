@@ -2,15 +2,13 @@ package org.gwmdevelopments.sponge_plugin.crates.caze.cases;
 
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
+import org.gwmdevelopments.sponge_plugin.crates.caze.AbstractCase;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.economy.Currency;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
-public class EntityCase extends Case {
+public class EntityCase extends AbstractCase {
 
     private UUID entityUuid;
     private boolean startPreviewOnLeftClick;
@@ -30,15 +28,15 @@ public class EntityCase extends Case {
         }
     }
 
-    public EntityCase(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
+    public EntityCase(Optional<String> id,
                       UUID entityUuid, boolean startPreviewOnLeftClick) {
-        super("ENTITY", id, price, sellCurrency);
+        super("ENTITY", id);
         this.entityUuid = entityUuid;
         this.startPreviewOnLeftClick = startPreviewOnLeftClick;
     }
 
     @Override
-    public void add(Player player, int amount) {
+    public void withdraw(Player player, int amount) {
     }
 
     @Override

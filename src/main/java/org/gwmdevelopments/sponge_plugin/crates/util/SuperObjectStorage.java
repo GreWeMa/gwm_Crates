@@ -1,6 +1,5 @@
 package org.gwmdevelopments.sponge_plugin.crates.util;
 
-
 import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.ConfigurationDialog;
 
 import java.util.Optional;

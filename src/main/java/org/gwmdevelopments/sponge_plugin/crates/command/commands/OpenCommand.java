@@ -6,6 +6,7 @@ import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -13,14 +14,13 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 import java.util.UUID;
 
 public class OpenCommand implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         if (!(src instanceof Player)) {
             src.sendMessage(GWMCrates.getInstance().getLanguage().getText("COMMAND_EXECUTABLE_ONLY_BY_PLAYER"));
             return CommandResult.success();
@@ -55,8 +55,8 @@ public class OpenCommand implements CommandExecutor {
             player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_KEY"));
             return CommandResult.success();
         }
-        caze.add(player, -1);
-        key.add(player, -1);
+        caze.withdraw(player, 1);
+        key.withdraw(player, 1);
         GWMCratesUtils.updateCrateOpenDelay(uuid);
         openManager.open(player, manager);
         return CommandResult.success();

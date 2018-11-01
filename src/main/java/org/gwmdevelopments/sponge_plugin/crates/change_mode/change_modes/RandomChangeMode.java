@@ -1,7 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.change_mode.change_modes;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.change_mode.DecorativeItemsChangeMode;
+import org.gwmdevelopments.sponge_plugin.crates.change_mode.AbstractDecorativeItemsChangeMode;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class RandomChangeMode extends DecorativeItemsChangeMode {
+public class RandomChangeMode extends AbstractDecorativeItemsChangeMode {
 
     public RandomChangeMode(ConfigurationNode node) {
         super(node);
@@ -22,7 +22,7 @@ public class RandomChangeMode extends DecorativeItemsChangeMode {
     @Override
     public List<ItemStack> shuffle(List<ItemStack> decorativeItems) {
         List<Integer> ignoredIndices = getIgnoredIndices();
-        List<Integer> indicesToSwap = new ArrayList<Integer>();
+        List<Integer> indicesToSwap = new ArrayList<>();
         for (int i = 0; i < decorativeItems.size(); i++) {
             if (!ignoredIndices.contains(i)) {
                 indicesToSwap.add(i);

@@ -1,7 +1,6 @@
 package org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.key;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.util.CheckLongFunction;
 import org.gwmdevelopments.sponge_plugin.crates.gui.AdvancedTextField;
 import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.CaseConfigurationDialog;
 import org.gwmdevelopments.sponge_plugin.crates.util.CheckLongFunction;

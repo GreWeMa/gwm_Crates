@@ -3,6 +3,7 @@ package org.gwmdevelopments.sponge_plugin.crates.command.commands.give;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
+import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -10,14 +11,13 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 import java.util.Optional;
 
 public class GiveDropCommand implements CommandExecutor  {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
         String managerId = manager.getId();
         String dropId = args.<String>getOne(Text.of("drop")).get();

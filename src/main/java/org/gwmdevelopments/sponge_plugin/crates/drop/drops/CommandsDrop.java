@@ -1,7 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.drop.drops;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
+import org.gwmdevelopments.sponge_plugin.crates.drop.AbstractDrop;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.source.ConsoleSource;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class CommandsDrop extends Drop {
+public class CommandsDrop extends AbstractDrop {
 
     private List<ExecutableCommand> executableCommands;
 
@@ -26,7 +26,7 @@ public class CommandsDrop extends Drop {
             if (commandsNode.isVirtual()) {
                 throw new RuntimeException("COMMANDS node does not exist!");
             }
-            executableCommands = new ArrayList<ExecutableCommand>();
+            executableCommands = new ArrayList<>();
             for (ConfigurationNode command_node : commandsNode.getChildrenList()) {
                 executableCommands.add(GWMCratesUtils.parseCommand(command_node));
             }
@@ -44,12 +44,14 @@ public class CommandsDrop extends Drop {
     }
 
     @Override
-    public void apply(Player player) {
+    public void give(Player player, int amount) {
         ConsoleSource consoleSource = Sponge.getServer().getConsole();
-        for (ExecutableCommand executableCommand : executableCommands) {
-            String command = executableCommand.getCommand().replace("%PLAYER%", player.getName());
-            boolean console = executableCommand.isConsole();
-            Sponge.getCommandManager().process(console ? consoleSource : player, command);
+        for (int i = 0; i < amount; i++) {
+            for (ExecutableCommand executableCommand : executableCommands) {
+                String command = executableCommand.getCommand().replace("%PLAYER%", player.getName());
+                boolean console = executableCommand.isConsole();
+                Sponge.getCommandManager().process(console ? consoleSource : player, command);
+            }
         }
     }
 

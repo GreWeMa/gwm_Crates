@@ -10,6 +10,10 @@ public interface Giveable {
 
     void give(Player player, int amount);
 
+    default void give(Player player) {
+        give(player, 1);
+    }
+
     Optional<BigDecimal> getPrice();
 
     Optional<Currency> getSellCurrency();

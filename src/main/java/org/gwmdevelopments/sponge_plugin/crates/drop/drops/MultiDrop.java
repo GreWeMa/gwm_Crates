@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.drop.drops;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.drop.AbstractDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class MultiDrop extends Drop {
+public class MultiDrop extends AbstractDrop {
 
     private List<Drop> drops;
     private boolean giveAll;
@@ -27,7 +28,7 @@ public class MultiDrop extends Drop {
             if (dropsNode.isVirtual()) {
                 throw new RuntimeException("DROPS node does not exist");
             }
-            drops = new ArrayList<Drop>();
+            drops = new ArrayList<>();
             for (ConfigurationNode drop_node : dropsNode.getChildrenList()) {
                 drops.add((Drop) GWMCratesUtils.createSuperObject(drop_node, SuperObjectType.DROP));
             }
@@ -47,11 +48,13 @@ public class MultiDrop extends Drop {
     }
 
     @Override
-    public void apply(Player player) {
+    public void give(Player player, int amount) {
         if (giveAll) {
-            drops.forEach(drop -> drop.apply(player));
+            drops.forEach(drop -> drop.give(player, amount));
         } else {
-            GWMCratesUtils.chooseDropByLevel(drops, player, false).apply(player);
+            for (int i = 0; i < amount; i++) {
+                GWMCratesUtils.chooseDropByLevel(drops, player, false).give(player);
+            }
         }
     }
 

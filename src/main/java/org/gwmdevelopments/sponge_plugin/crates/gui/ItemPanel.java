@@ -37,7 +37,7 @@ public class ItemPanel extends JPanel {
     private JLabel hide_enchantments_label;
     private JCheckBox hide_enchantments_check_box;
 
-    private ArrayList<GUIEnchantment> enchantments = new ArrayList<GUIEnchantment>();
+    private ArrayList<GUIEnchantment> enchantments = new ArrayList<>();
 
     public ItemPanel() {
         Dimension size = new Dimension(190, 530);
@@ -219,7 +219,7 @@ public class ItemPanel extends JPanel {
             display_name_node.setValue(display_name_field.hasText() ? display_name_field.getText() : null);
             lore_node.setValue(lore_text_area.hasText() ? GWMCratesUtils.stringToList(lore_text_area.getText()) : null);
             if (!enchantments.isEmpty()) {
-                List<ConfigurationNode> enchantments_node_list = new ArrayList<ConfigurationNode>();
+                List<ConfigurationNode> enchantments_node_list = new ArrayList<>();
                 for (GUIEnchantment enchantment : enchantments) {
                     ConfigurationNode enchantment_node = SimpleConfigurationNode.root();
                     enchantment_node.getNode("ENCHANTMENT").setValue(enchantment.getEnchantmentComboBox().getSelectedText());

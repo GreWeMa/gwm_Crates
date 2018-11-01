@@ -17,7 +17,7 @@ public class CommandsDropConfigurationDialog extends DropConfigurationDialog {
     private JScrollPane commands_scroll_pane;
     private AddButton add_command_panel_button;
 
-    private List<CommandPanel> commands = new ArrayList<CommandPanel>();
+    private List<CommandPanel> commands = new ArrayList<>();
 
     public CommandsDropConfigurationDialog(ConfigurationNode node) {
         super("COMMANDS", node);
@@ -87,7 +87,7 @@ public class CommandsDropConfigurationDialog extends DropConfigurationDialog {
             if (commands.isEmpty()) {
                 commands_node.setValue(null);
             } else {
-                List<ConfigurationNode> command_nodes = new ArrayList<ConfigurationNode>();
+                List<ConfigurationNode> command_nodes = new ArrayList<>();
                 for (CommandPanel command_panel : commands) {
                     if (command_panel.getCommandField().hasText()) {
                         ConfigurationNode command_node = SimpleConfigurationNode.root();

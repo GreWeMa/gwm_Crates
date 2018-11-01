@@ -28,10 +28,7 @@ import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.*;
 import org.gwmdevelopments.sponge_plugin.crates.preview.previews.FirstGuiPreview;
 import org.gwmdevelopments.sponge_plugin.crates.preview.previews.PermissionPreview;
 import org.gwmdevelopments.sponge_plugin.crates.preview.previews.SecondGuiPreview;
-import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
-import org.gwmdevelopments.sponge_plugin.crates.util.SuperObject;
-import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectStorage;
-import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
+import org.gwmdevelopments.sponge_plugin.crates.util.*;
 import org.gwmdevelopments.sponge_plugin.library.utils.*;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -56,7 +53,7 @@ import java.util.*;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "3.1.13",
+        version = "beta-3.2",
         description = "Universal crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -66,9 +63,9 @@ import java.util.*;
                 @Dependency(id = "gwm_library"),
                 @Dependency(id = "holograms", optional = true)
         })
-public class GWMCrates extends SpongePlugin {
+public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version(null, 3, 1, 13);
+    public static final Version VERSION = new Version("beta", 3, 2);
 
     private static GWMCrates instance = null;
 
@@ -369,7 +366,7 @@ public class GWMCrates extends SpongePlugin {
                 logger.warn("Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\" and ID \"" + id + "\" is not loaded because its SAVED_ID is not unique!");
                 return;
             }
-            Pair<SuperObjectType, String> pair = new Pair<SuperObjectType, String>(superObjectType, savedId);
+            Pair<SuperObjectType, String> pair = new Pair<>(superObjectType, savedId);
             if (savedSuperObjects.containsKey(pair)) {
                 throw new RuntimeException("Saved Super Objects already contains Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\"!");
             }

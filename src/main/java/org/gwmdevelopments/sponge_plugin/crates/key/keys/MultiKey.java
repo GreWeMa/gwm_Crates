@@ -1,8 +1,10 @@
 package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import org.gwmdevelopments.sponge_plugin.crates.util.Giveable;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
@@ -12,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class MultiKey extends Key {
+public class MultiKey extends GiveableKey {
 
     private List<Key> keys;
     private boolean allKeysNeeded;
@@ -43,27 +45,34 @@ public class MultiKey extends Key {
     }
 
     @Override
-    public void add(Player player, int amount) {
+    public void withdraw(Player player, int amount) {
         if (allKeysNeeded) {
             for (Key key : keys) {
-                key.add(player, amount);
+                key.withdraw(player, amount);
             }
         } else if (keys.size() > 0) {
-            if (amount > 0) {
-                keys.iterator().next().add(player, amount);
-            } else if (amount < 0) {
-                amount = -amount;
-                for (Key key : keys) {
-                    int value = key.get(player);
-                    if (value > 0) {
-                        if (value >= amount) {
-                            key.add(player, -amount);
-                            break;
-                        } else {
-                            key.add(player, 0);
-                            amount -= value;
-                        }
+            for (Key key : keys) {
+                int value = key.get(player);
+                if (value > 0) {
+                    if (value >= amount) {
+                        key.withdraw(player, amount);
+                        break;
+                    } else {
+                        key.withdraw(player, value);
+                        amount -= value;
                     }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void give(Player player, int amount) {
+        for (Key key : keys) {
+            if (key instanceof Giveable) {
+                ((Giveable) key).give(player, amount);
+                if (!allKeysNeeded) {
+                    break;
                 }
             }
         }

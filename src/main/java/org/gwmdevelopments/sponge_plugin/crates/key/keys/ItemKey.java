@@ -1,7 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.key.Key;
+import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -10,7 +10,7 @@ import org.spongepowered.api.service.economy.Currency;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-public class ItemKey extends Key {
+public class ItemKey extends GiveableKey {
 
     private ItemStack item;
 
@@ -34,7 +34,12 @@ public class ItemKey extends Key {
     }
 
     @Override
-    public void add(Player player, int amount) {
+    public void withdraw(Player player, int amount) {
+        GWMCratesUtils.removeItemStack(player, item, amount);
+    }
+
+    @Override
+    public void give(Player player, int amount) {
         GWMCratesUtils.addItemStack(player, item, amount);
     }
 

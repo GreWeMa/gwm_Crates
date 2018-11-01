@@ -14,7 +14,7 @@ import java.sql.SQLException;
 public class ImportFromMySQLCommand implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         boolean async = args.hasAny("a");
         src.sendMessage(GWMCrates.getInstance().getLanguage().getText("STARTING_IMPORT_FROM_MYSQL"));
         if (async) {

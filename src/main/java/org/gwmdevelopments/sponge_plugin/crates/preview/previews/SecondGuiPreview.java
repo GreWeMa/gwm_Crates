@@ -4,8 +4,9 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
+import org.gwmdevelopments.sponge_plugin.crates.preview.AbstractPreview;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -17,14 +18,13 @@ import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
-public class SecondGuiPreview extends Preview {
+public class SecondGuiPreview extends AbstractPreview {
 
     public static final Map<Container, Pair<SecondGuiPreview, Manager>> SECOND_GUI_CONTAINERS = new HashMap<>();
 
@@ -69,7 +69,7 @@ public class SecondGuiPreview extends Preview {
             i++;
         }
         Container container = player.openInventory(inventory).get();
-        SECOND_GUI_CONTAINERS.put(container, new Pair<SecondGuiPreview, Manager>(this, manager));
+        SECOND_GUI_CONTAINERS.put(container, new Pair<>(this, manager));
     }
 
     public Optional<Text> getDisplayName() {

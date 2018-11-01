@@ -2,7 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
-import org.gwmdevelopments.sponge_plugin.crates.key.Key;
+import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
 
@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-public class VirtualKey extends Key {
+public class VirtualKey extends GiveableKey {
 
     private Map<UUID, Integer> cache = new WeakHashMap<>();
 
@@ -46,9 +46,9 @@ public class VirtualKey extends Key {
     }
 
     @Override
-    public void add(Player player, int amount) {
+    public void withdraw(Player player, int amount) {
         UUID uuid = player.getUniqueId();
-        int value = get(player) + amount;
+        int value = get(player) - amount;
         if (GWMCrates.getInstance().isUseMySQLForVirtualKeys()) {
             try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
                  Statement statement = connection.createStatement()) {
@@ -66,12 +66,17 @@ public class VirtualKey extends Key {
                 }
                 cache.put(uuid, value);
             } catch (SQLException e) {
-                throw new RuntimeException("Failed to add virtual keys \"" + virtualName + "\" for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
+                throw new RuntimeException("Failed to withdraw virtual keys \"" + virtualName + "\" for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
             }
         } else {
             GWMCrates.getInstance().getVirtualKeysConfig().
                     getNode(uuid.toString(), virtualName).setValue(value);
         }
+    }
+
+    @Override
+    public void give(Player player, int amount) {
+        withdraw(player, -amount);
     }
 
     @Override

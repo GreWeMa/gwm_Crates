@@ -21,7 +21,7 @@ public class MultiDropConfigurationDialog extends DropConfigurationDialog {
     private JLabel give_all_label;
     private JCheckBox give_all_check_box;
 
-    private ArrayList<FlatSuperObjectPanel> drops = new ArrayList<FlatSuperObjectPanel>();
+    private ArrayList<FlatSuperObjectPanel> drops = new ArrayList<>();
 
     public MultiDropConfigurationDialog(ConfigurationNode node) {
         super("MULTI", node);

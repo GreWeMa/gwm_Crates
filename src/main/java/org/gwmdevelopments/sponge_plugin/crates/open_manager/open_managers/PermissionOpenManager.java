@@ -2,6 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
+import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
@@ -10,7 +11,7 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Optional;
 
-public class PermissionOpenManager extends OpenManager {
+public class PermissionOpenManager extends AbstractOpenManager {
 
     private String permission;
     private OpenManager openManager1;

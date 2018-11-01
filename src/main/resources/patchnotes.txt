@@ -1,3 +1,6 @@
+v. beta-3.2
+1. Code refactoring.
+
 v. 3.1.13
 1. Moved method 'deleteHolograms' from 'GWMCrates' to 'GWMCratesUtils', to fix issue #12.
 

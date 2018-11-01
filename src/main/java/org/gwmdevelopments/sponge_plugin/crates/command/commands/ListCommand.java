@@ -15,7 +15,7 @@ import java.util.Iterator;
 public class ListCommand implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         Iterator<Manager> managerIterator = GWMCrates.getInstance().getCreatedManagers().iterator();
         Text.Builder messageBuilder = Text.builder();
         boolean hasNext = managerIterator.hasNext();

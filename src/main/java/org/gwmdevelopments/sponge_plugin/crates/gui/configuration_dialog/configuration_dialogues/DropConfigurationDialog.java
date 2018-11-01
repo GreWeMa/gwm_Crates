@@ -34,8 +34,8 @@ public abstract class DropConfigurationDialog extends ConfigurationDialog {
     private JLabel drop_item_label;
     private ItemPanel item_configuration_panel;
 
-    private List<PermissionLevelsPanel> permission_levels = new ArrayList<PermissionLevelsPanel>();
-    private List<PermissionLevelsPanel> permission_fake_levels = new ArrayList<PermissionLevelsPanel>();
+    private List<PermissionLevelsPanel> permission_levels = new ArrayList<>();
+    private List<PermissionLevelsPanel> permission_fake_levels = new ArrayList<>();
 
     public DropConfigurationDialog(String type, ConfigurationNode node) {
         super(SuperObjectType.DROP, type, node);
@@ -207,7 +207,7 @@ public abstract class DropConfigurationDialog extends ConfigurationDialog {
             if (permission_levels.isEmpty()) {
                 permission_levels_node.setValue(null);
             } else {
-                HashMap<String, Integer> map = new HashMap<String, Integer>();
+                HashMap<String, Integer> map = new HashMap<>();
                 for (PermissionLevelsPanel panel : permission_levels) {
                     if (panel.getPermissionField().hasText()) {
                         map.put(panel.getPermissionField().getText(), Integer.valueOf(panel.getLevelSpinner().getValue().toString()));
@@ -218,7 +218,7 @@ public abstract class DropConfigurationDialog extends ConfigurationDialog {
             if (permission_fake_levels.isEmpty()) {
                 permission_fake_levels_node.setValue(null);
             } else {
-                HashMap<String, Integer> map = new HashMap<String, Integer>();
+                HashMap<String, Integer> map = new HashMap<>();
                 for (PermissionLevelsPanel panel : permission_fake_levels) {
                     if (panel.getPermissionField().hasText()) {
                         map.put(panel.getPermissionField().getText(), Integer.valueOf(panel.getLevelSpinner().getValue().toString()));

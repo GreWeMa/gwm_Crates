@@ -2,7 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.caze.cases;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
-import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
+import org.gwmdevelopments.sponge_plugin.crates.caze.GiveableCase;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
 
@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-public class TimedCase extends Case {
+public class TimedCase extends GiveableCase {
 
     private Map<UUID, Long> cache = new WeakHashMap<>();
 
@@ -53,7 +53,12 @@ public class TimedCase extends Case {
     }
 
     @Override
-    public void add(Player player, int amount) {
+    public void withdraw(Player player, int amount) {
+
+    }
+
+    @Override
+    public void give(Player player, int amount) {
         UUID uuid = player.getUniqueId();
         if (GWMCrates.getInstance().isUseMySQLForTimedCases()) {
             try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();

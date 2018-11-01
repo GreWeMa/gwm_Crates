@@ -1,7 +1,10 @@
 package org.gwmdevelopments.sponge_plugin.crates.command.commands.give;
 
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
+import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
+import org.gwmdevelopments.sponge_plugin.crates.util.Giveable;
+import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -9,12 +12,11 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 public class GiveCaseCommand implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
         String managerId = manager.getId();
         Player player = args.<Player>getOne(Text.of("player")).get();
@@ -31,7 +33,13 @@ public class GiveCaseCommand implements CommandExecutor {
                 return CommandResult.success();
             }
         }
-        manager.getCase().give(player, amount);
+        Case caze = manager.getCase();
+        if (!(caze instanceof Giveable)) {
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SSO_IS_NOT_GIVEABLE",
+                    new Pair<>("%SUPER_OBJECT%", caze)));
+            return CommandResult.success();
+        }
+        ((Giveable) caze).give(player, amount);
         if (self) {
             player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_GOT_CASE",
                     new Pair<>("%MANAGER%", manager.getName())));

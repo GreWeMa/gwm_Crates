@@ -18,7 +18,7 @@ import java.util.Optional;
 public class InfoCommand implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
         String managerId = manager.getId();
         if (!src.hasPermission("gwm_crates.command.info." + managerId)) {

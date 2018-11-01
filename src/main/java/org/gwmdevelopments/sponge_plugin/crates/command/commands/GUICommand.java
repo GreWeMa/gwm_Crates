@@ -13,7 +13,7 @@ import org.spongepowered.api.text.format.TextColors;
 public class GUICommand implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         try {
             GWMCratesGUI.initialize();
         } catch (Exception e) {

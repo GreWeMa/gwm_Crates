@@ -2,6 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.drop.drops;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
+import org.gwmdevelopments.sponge_plugin.crates.drop.AbstractDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
@@ -15,7 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-public class DelayDrop extends Drop {
+public class DelayDrop extends AbstractDrop {
 
     private Drop childDrop;
     private long delay;
@@ -47,13 +48,6 @@ public class DelayDrop extends Drop {
         this.delay = delay;
     }
 
-    @Override
-    public void apply(Player player) {
-        Sponge.getScheduler().createTaskBuilder().delay(delay, TimeUnit.MILLISECONDS).
-                execute(() -> childDrop.apply(player)).
-                submit(GWMCrates.getInstance());
-    }
-
     public Drop getChildDrop() {
         return childDrop;
     }
@@ -68,5 +62,12 @@ public class DelayDrop extends Drop {
 
     public void setDelay(long delay) {
         this.delay = delay;
+    }
+
+    @Override
+    public void give(Player player, int amount) {
+        Sponge.getScheduler().createTaskBuilder().delay(delay, TimeUnit.MILLISECONDS).
+                execute(() -> childDrop.give(player, amount)).
+                submit(GWMCrates.getInstance());
     }
 }

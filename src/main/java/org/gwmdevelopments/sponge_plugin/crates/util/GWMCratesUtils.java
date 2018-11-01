@@ -33,6 +33,8 @@ import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.item.inventory.type.OrderedInventory;
+import org.spongepowered.api.service.economy.Currency;
+import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
@@ -46,11 +48,23 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class GWMCratesUtils {
+public final class GWMCratesUtils {
+
+    private GWMCratesUtils() {
+    }
 
     public static final ItemStack EMPTY_ITEM = ItemStack.of(ItemTypes.NONE, 0);
     public static final Drop EMPTY_DROP = new EmptyDrop(Optional.empty(), 1,
             Optional.empty(), Optional.empty(), Collections.EMPTY_MAP, Collections.EMPTY_MAP);
+
+    public static Optional<Currency> getCurrencyById(EconomyService economyService, String id) {
+        for (Currency currency : economyService.getCurrencies()) {
+            if (currency.getId().equals(id)) {
+                return Optional.of(currency);
+            }
+        }
+        return Optional.empty();
+    }
 
     public static void deleteHolograms() {
         if (!GWMLibrary.getInstance().getHologramsService().isPresent()) {
@@ -522,71 +536,70 @@ public class GWMCratesUtils {
     }
 
     public static void addItemStack(Player player, ItemStack item, int amount) {
-        if (amount > 0) {
-            int maxStackQuantity = item.getMaxStackQuantity();
-            Iterator<Slot> slotIterator = ((PlayerInventory) player.getInventory()).getMain().<Slot>slots().iterator();
-            while (slotIterator.hasNext() && amount > 0) {
-                Slot slot = slotIterator.next();
-                Optional<ItemStack> optionalInventoryItem = slot.peek();
-                if (optionalInventoryItem.isPresent()) {
-                    ItemStack inventoryItem = optionalInventoryItem.get();
-                    if (ItemStackComparators.IGNORE_SIZE.compare(inventoryItem, item) == 0) {
-                        int inventoryItemQuantity = inventoryItem.getQuantity();
-                        if (inventoryItemQuantity < maxStackQuantity) {
-                            int difference = maxStackQuantity - inventoryItemQuantity;
-                            if (amount >= difference) {
-                                inventoryItem.setQuantity(maxStackQuantity);
-                                slot.set(inventoryItem);
-                                amount -= difference;
-                            } else {
-                                inventoryItem.setQuantity(inventoryItemQuantity + amount);
-                                slot.set(inventoryItem);
-                                amount = 0;
-                            }
+        int maxStackQuantity = item.getMaxStackQuantity();
+        Iterator<Slot> slotIterator = ((PlayerInventory) player.getInventory()).getMain().<Slot>slots().iterator();
+        while (slotIterator.hasNext() && amount > 0) {
+            Slot slot = slotIterator.next();
+            Optional<ItemStack> optionalInventoryItem = slot.peek();
+            if (optionalInventoryItem.isPresent()) {
+                ItemStack inventoryItem = optionalInventoryItem.get();
+                if (ItemStackComparators.IGNORE_SIZE.compare(inventoryItem, item) == 0) {
+                    int inventoryItemQuantity = inventoryItem.getQuantity();
+                    if (inventoryItemQuantity < maxStackQuantity) {
+                        int difference = maxStackQuantity - inventoryItemQuantity;
+                        if (amount >= difference) {
+                            inventoryItem.setQuantity(maxStackQuantity);
+                            slot.set(inventoryItem);
+                            amount -= difference;
+                        } else {
+                            inventoryItem.setQuantity(inventoryItemQuantity + amount);
+                            slot.set(inventoryItem);
+                            amount = 0;
                         }
-                    }
-                } else {
-                    if (amount >= maxStackQuantity) {
-                        ItemStack copy = item.copy();
-                        copy.setQuantity(maxStackQuantity);
-                        slot.set(copy);
-                        amount -= maxStackQuantity;
-                    } else {
-                        ItemStack copy = item.copy();
-                        copy.setQuantity(amount);
-                        slot.set(copy);
-                        amount = 0;
                     }
                 }
+            } else {
+                if (amount >= maxStackQuantity) {
+                    ItemStack copy = item.copy();
+                    copy.setQuantity(maxStackQuantity);
+                    slot.set(copy);
+                    amount -= maxStackQuantity;
+                } else {
+                    ItemStack copy = item.copy();
+                    copy.setQuantity(amount);
+                    slot.set(copy);
+                    amount = 0;
+                }
             }
-            if (amount > 0) {
-                ItemStack copy = item.copy();
-                copy.setQuantity(amount);
-                Location<World> playerLocation = player.getLocation();
-                World world = playerLocation.getExtent();
-                Entity entity = world.createEntity(EntityTypes.ITEM, playerLocation.getPosition());
-                world.spawnEntity(entity);
-                entity.offer(Keys.REPRESENTED_ITEM, copy.createSnapshot());
-            }
-        } else if (amount < 0) {
-            amount = -amount;
-            Inventory inventory = player.getInventory();
-            Iterator<Slot> slotIterator = inventory.<Slot>slots().iterator();
-            while (slotIterator.hasNext() && amount > 0) {
-                Slot slot = slotIterator.next();
-                Optional<ItemStack> optionalInventoryItem = slot.peek();
-                if (optionalInventoryItem.isPresent()) {
-                    ItemStack inventoryItem = optionalInventoryItem.get();
-                    if (ItemStackComparators.IGNORE_SIZE.compare(inventoryItem, item) == 0) {
-                        int itemQuantity = inventoryItem.getQuantity();
-                        if (itemQuantity > amount) {
-                            item.setQuantity(itemQuantity - amount);
-                            slot.set(item);
-                            amount = 0;
-                        } else {
-                            slot.set(ItemStack.of(ItemTypes.NONE, 1));
-                            amount -= itemQuantity;
-                        }
+        }
+        if (amount > 0) {
+            ItemStack copy = item.copy();
+            copy.setQuantity(amount);
+            Location<World> playerLocation = player.getLocation();
+            World world = playerLocation.getExtent();
+            Entity entity = world.createEntity(EntityTypes.ITEM, playerLocation.getPosition());
+            world.spawnEntity(entity);
+            entity.offer(Keys.REPRESENTED_ITEM, copy.createSnapshot());
+        }
+    }
+
+    public static void removeItemStack(Player player, ItemStack item, int amount) {
+        Inventory inventory = player.getInventory();
+        Iterator<Slot> slotIterator = inventory.<Slot>slots().iterator();
+        while (slotIterator.hasNext() && amount > 0) {
+            Slot slot = slotIterator.next();
+            Optional<ItemStack> optionalInventoryItem = slot.peek();
+            if (optionalInventoryItem.isPresent()) {
+                ItemStack inventoryItem = optionalInventoryItem.get();
+                if (ItemStackComparators.IGNORE_SIZE.compare(inventoryItem, item) == 0) {
+                    int itemQuantity = inventoryItem.getQuantity();
+                    if (itemQuantity > amount) {
+                        item.setQuantity(itemQuantity - amount);
+                        slot.set(item);
+                        amount = 0;
+                    } else {
+                        slot.set(ItemStack.of(ItemTypes.NONE, 1));
+                        amount -= itemQuantity;
                     }
                 }
             }

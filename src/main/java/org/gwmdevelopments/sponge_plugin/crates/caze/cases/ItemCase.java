@@ -1,7 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.caze.cases;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
+import org.gwmdevelopments.sponge_plugin.crates.caze.GiveableCase;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -10,7 +10,7 @@ import org.spongepowered.api.service.economy.Currency;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-public class ItemCase extends Case {
+public class ItemCase extends GiveableCase {
 
     private ItemStack item;
     private boolean startPreviewOnLeftClick;
@@ -38,7 +38,12 @@ public class ItemCase extends Case {
     }
 
     @Override
-    public void add(Player player, int amount) {
+    public void withdraw(Player player, int amount) {
+        GWMCratesUtils.removeItemStack(player, item, amount);
+    }
+
+    @Override
+    public void give(Player player, int amount) {
         GWMCratesUtils.addItemStack(player, item, amount);
     }
 

@@ -1,20 +1,20 @@
-package org.gwmdevelopments.sponge_plugin.crates.util;
+package org.gwmdevelopments.sponge_plugin.crates.caze;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
-import org.spongepowered.api.entity.living.player.Player;
+import org.gwmdevelopments.sponge_plugin.crates.util.Giveable;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 
-public abstract class GiveableSuperObject extends SuperObject implements Giveable {
+public abstract class GiveableCase extends AbstractCase implements Giveable {
 
     private Optional<BigDecimal> price = Optional.empty();
     private Optional<Currency> sellCurrency = Optional.empty();
 
-    public GiveableSuperObject(ConfigurationNode node) {
+    public GiveableCase(ConfigurationNode node) {
         super(node);
         try {
             ConfigurationNode priceNode = node.getNode("PRICE");
@@ -42,25 +42,22 @@ public abstract class GiveableSuperObject extends SuperObject implements Giveabl
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Giveable Super Object!", e);
+            throw new RuntimeException("Failed to create Giveable Case!", e);
         }
     }
 
-    public GiveableSuperObject(String type, Optional<String> id,
-                               Optional<BigDecimal> price, Optional<Currency> sellCurrency) {
+    public GiveableCase(String type, Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency) {
         super(type, id);
         this.price = price;
         this.sellCurrency = sellCurrency;
     }
-
-    public abstract void give(Player player, int amount);
 
     @Override
     public Optional<BigDecimal> getPrice() {
         return price;
     }
 
-    public void setPrice(Optional<BigDecimal> price) {
+    protected void setPrice(Optional<BigDecimal> price) {
         this.price = price;
     }
 
@@ -69,7 +66,7 @@ public abstract class GiveableSuperObject extends SuperObject implements Giveabl
         return sellCurrency;
     }
 
-    public void setSellCurrency(Optional<Currency> sellCurrency) {
+    protected void setSellCurrency(Optional<Currency> sellCurrency) {
         this.sellCurrency = sellCurrency;
     }
 }

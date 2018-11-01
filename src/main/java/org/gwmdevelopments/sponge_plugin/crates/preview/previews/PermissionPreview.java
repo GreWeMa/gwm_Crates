@@ -2,6 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.preview.previews;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
+import org.gwmdevelopments.sponge_plugin.crates.preview.AbstractPreview;
 import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
@@ -9,7 +10,7 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Optional;
 
-public class PermissionPreview extends Preview {
+public class PermissionPreview extends AbstractPreview {
 
     private String permission;
     private Preview preview1;
@@ -38,7 +39,8 @@ public class PermissionPreview extends Preview {
         }
     }
 
-    public PermissionPreview(Optional<String> id, String permission, Preview preview1, Preview preview2) {
+    public PermissionPreview(Optional<String> id,
+                             String permission, Preview preview1, Preview preview2) {
         super("PERMISSION", id);
         this.permission = permission;
         this.preview1 = preview1;

@@ -1,23 +1,23 @@
 package org.gwmdevelopments.sponge_plugin.crates.caze.cases;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
+import org.gwmdevelopments.sponge_plugin.crates.caze.AbstractCase;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Optional;
 
-public class EmptyCase extends Case {
+public class EmptyCase extends AbstractCase {
 
     public EmptyCase(ConfigurationNode node) {
         super(node);
     }
 
     public EmptyCase(Optional<String> id) {
-        super("EMPTY", id, Optional.empty(), Optional.empty());
+        super("EMPTY", id);
     }
 
     @Override
-    public void add(Player player, int amount) {
+    public void withdraw(Player player, int amount) {
     }
 
     @Override

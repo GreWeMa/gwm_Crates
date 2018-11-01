@@ -27,7 +27,7 @@ import java.util.Optional;
 
 public class Animation1Listener {
 
-    public static HashMap<Player, Animation1OpenManager> OPENED_PLAYERS = new HashMap<Player, Animation1OpenManager>();
+    public static HashMap<Player, Animation1OpenManager> OPENED_PLAYERS = new HashMap<>();
 
     @Listener(order = Order.LATE)
     public void moveListener(MoveEntityEvent event) {

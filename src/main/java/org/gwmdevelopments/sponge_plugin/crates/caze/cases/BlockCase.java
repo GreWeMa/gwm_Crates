@@ -4,21 +4,19 @@ import com.google.common.reflect.TypeToken;
 import de.randombyte.holograms.api.HologramsService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
-import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
+import org.gwmdevelopments.sponge_plugin.crates.caze.AbstractCase;
 import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class BlockCase extends Case {
+public class BlockCase extends AbstractCase {
 
     private Location<World> location;
     private Optional<List<Text>> hologram = Optional.empty();
@@ -49,10 +47,10 @@ public class BlockCase extends Case {
         }
     }
 
-    public BlockCase(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
+    public BlockCase(Optional<String> id,
                      Location<World> location, Optional<List<Text>> hologram, boolean startPreviewOnLeftClick,
                      Optional<List<HologramsService.Hologram>> createdHolograms) {
-        super("BLOCK", id, price, sellCurrency);
+        super("BLOCK", id);
         this.location = location;
         this.hologram = hologram;
         this.startPreviewOnLeftClick = startPreviewOnLeftClick;
@@ -60,7 +58,7 @@ public class BlockCase extends Case {
     }
 
     @Override
-    public void add(Player player, int amount) {
+    public void withdraw(Player player, int amount) {
     }
 
     @Override

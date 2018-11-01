@@ -3,6 +3,7 @@ package org.gwmdevelopments.sponge_plugin.crates.command.commands.buy;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
+import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -13,7 +14,6 @@ import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.text.Text;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -22,7 +22,7 @@ import java.util.UUID;
 public class BuyDropCommand implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         if (!(src instanceof Player)) {
             src.sendMessage(GWMCrates.getInstance().getLanguage().getText("COMMAND_EXECUTABLE_ONLY_BY_PLAYER"));
             return CommandResult.success();

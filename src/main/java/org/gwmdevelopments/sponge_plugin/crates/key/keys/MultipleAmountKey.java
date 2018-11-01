@@ -1,8 +1,11 @@
 package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.key.AbstractKey;
+import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import org.gwmdevelopments.sponge_plugin.crates.util.Giveable;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
@@ -10,7 +13,7 @@ import org.spongepowered.api.service.economy.Currency;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-public class MultipleAmountKey extends Key {
+public class MultipleAmountKey extends GiveableKey {
 
     private Key childKey;
     private int amount;
@@ -31,15 +34,22 @@ public class MultipleAmountKey extends Key {
     }
 
     public MultipleAmountKey(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
-                             Key childKey, int amount) {
+                             AbstractKey childKey, int amount) {
         super("TIMED", id, price, sellCurrency);
         this.childKey = childKey;
         this.amount = amount;
     }
 
     @Override
-    public void add(Player player, int amount) {
-        childKey.add(player, amount * this.amount);
+    public void withdraw(Player player, int amount) {
+        childKey.withdraw(player, amount * this.amount);
+    }
+
+    @Override
+    public void give(Player player, int amount) {
+        if (childKey instanceof Giveable) {
+            ((Giveable) childKey).give(player, amount * this.amount);
+        }
     }
 
     @Override

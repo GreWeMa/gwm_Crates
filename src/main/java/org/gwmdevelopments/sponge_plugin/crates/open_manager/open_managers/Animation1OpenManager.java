@@ -8,6 +8,7 @@ import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.listener.Animation1Listener;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
+import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
@@ -29,7 +30,7 @@ import org.spongepowered.api.world.World;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Animation1OpenManager extends OpenManager {
+public class Animation1OpenManager extends AbstractOpenManager {
 
     public static Map<Player, Information> PLAYERS_OPENING_ANIMATION1 = new HashMap<>();
 
@@ -124,7 +125,7 @@ public class Animation1OpenManager extends OpenManager {
                 }
             }
         }
-        HashSet<HologramsService.Hologram> holograms = new HashSet<HologramsService.Hologram>();
+        HashSet<HologramsService.Hologram> holograms = new HashSet<>();
         Location<World> location1 = new Location<>(world, positionX + 2, positionY, positionZ);
         location1.setBlock(BlockState.builder().
                         blockType(crateBlockType).

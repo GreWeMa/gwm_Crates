@@ -5,7 +5,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
+import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class SecondOpenManager extends OpenManager {
+public class SecondOpenManager extends AbstractOpenManager {
 
     public static final Map<Container, Pair<SecondOpenManager, Manager>> SECOND_GUI_INVENTORIES = new HashMap<>();
 

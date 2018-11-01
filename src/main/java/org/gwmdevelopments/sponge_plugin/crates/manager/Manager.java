@@ -61,7 +61,7 @@ public class Manager {
         name = nameNode.getString();
         caze = (Case) GWMCratesUtils.createSuperObject(caseNode, SuperObjectType.CASE);
         key = (Key) GWMCratesUtils.createSuperObject(keyNode, SuperObjectType.KEY);
-        drops = new ArrayList<Drop>();
+        drops = new ArrayList<>();
         for (ConfigurationNode drop_node : dropsNode.getChildrenList()) {
             drops.add((Drop) GWMCratesUtils.createSuperObject(drop_node, SuperObjectType.DROP));
         }

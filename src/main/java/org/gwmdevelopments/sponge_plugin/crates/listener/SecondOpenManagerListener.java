@@ -6,6 +6,7 @@ import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenedCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.SecondOpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -19,7 +20,6 @@ import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 import org.spongepowered.api.item.inventory.type.OrderedInventory;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -67,7 +67,7 @@ public class SecondOpenManagerListener {
                             }
                         }).submit(GWMCrates.getInstance());
                     }
-                    Sponge.getScheduler().createTaskBuilder().delay(1, TimeUnit.SECONDS).execute(() -> drop.apply(player)).submit(GWMCrates.getInstance());
+                    Sponge.getScheduler().createTaskBuilder().delay(1, TimeUnit.SECONDS).execute(() -> drop.give(player)).submit(GWMCrates.getInstance());
                     openManager.getClickSound().ifPresent(click_sound -> player.playSound(click_sound, player.getLocation().getPosition(), 1.));
                     PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, drop);
                     Sponge.getEventManager().post(openedEvent);
@@ -100,7 +100,7 @@ public class SecondOpenManagerListener {
                 event.setCancelled(true);
             } else if (open_manager.isGiveRandomOnClose()) {
                 Drop drop = GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, false);
-                drop.apply(player);
+                drop.give(player);
                 PlayerOpenedCrateEvent opened_event = new PlayerOpenedCrateEvent(player, manager, drop);
                 Sponge.getEventManager().post(opened_event);
                 SecondOpenManager.SECOND_GUI_INVENTORIES.remove(container);

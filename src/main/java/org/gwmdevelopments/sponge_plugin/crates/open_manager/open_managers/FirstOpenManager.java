@@ -8,7 +8,7 @@ import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenedCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
+import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.DecorativeDropChangeRunnable;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
@@ -28,7 +28,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.*;
 
-public class FirstOpenManager extends OpenManager {
+public class FirstOpenManager extends AbstractOpenManager {
 
     public static final Map<Container, Pair<FirstOpenManager, Manager>> FIRST_GUI_CONTAINERS = new HashMap<>();
     public static final Set<Container> SHOWN_GUI = new HashSet<>();
@@ -189,11 +189,11 @@ public class FirstOpenManager extends OpenManager {
                 delayTicks(waitTime).
                 execute(() -> {
                     Drop drop = dropList.get(dropList.size() - 4);
-                    drop.apply(player);
+                    drop.give(player);
                     winSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
                     if (clearDecorativeItems) {
-                        for (int i = 0; i < DECORATIVE_ITEMS_INDICES.size(); i++) {
-                            ordered.getSlot(new SlotIndex(DECORATIVE_ITEMS_INDICES.get(i))).get().
+                        for (Integer decorative_item_index : DECORATIVE_ITEMS_INDICES) {
+                            ordered.getSlot(new SlotIndex(decorative_item_index)).get().
                                     set(GWMCratesUtils.EMPTY_ITEM);
                         }
                     }

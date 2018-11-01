@@ -2,7 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.caze.cases;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
-import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
+import org.gwmdevelopments.sponge_plugin.crates.caze.GiveableCase;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
 
@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-public class VirtualCase extends Case {
+public class VirtualCase extends GiveableCase {
 
     private Map<UUID, Integer> cache = new WeakHashMap<>();
 
@@ -46,7 +46,12 @@ public class VirtualCase extends Case {
     }
 
     @Override
-    public void add(Player player, int amount) {
+    public void withdraw(Player player, int amount) {
+
+    }
+
+    @Override
+    public void give(Player player, int amount) {
         UUID uuid = player.getUniqueId();
         int value = get(player) + amount;
         if (GWMCrates.getInstance().isUseMySQLForVirtualCases()) {
@@ -66,7 +71,7 @@ public class VirtualCase extends Case {
                 }
                 cache.put(uuid, value);
             } catch (SQLException e) {
-                throw new RuntimeException("Failed to add virtual cases \"" + virtualName + "\" for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
+                throw new RuntimeException("Failed to withdraw virtual cases \"" + virtualName + "\" for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
             }
         } else {
             GWMCrates.getInstance().getVirtualCasesConfig().

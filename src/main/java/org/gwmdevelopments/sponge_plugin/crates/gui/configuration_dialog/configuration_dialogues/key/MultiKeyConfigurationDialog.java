@@ -1,7 +1,6 @@
 package org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.key;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.gwmdevelopments.sponge_plugin.crates.gui.AddButton;
 import org.gwmdevelopments.sponge_plugin.crates.gui.FlatSuperObjectPanel;
 import org.gwmdevelopments.sponge_plugin.crates.gui.GUIConstants;
@@ -21,7 +20,7 @@ public class MultiKeyConfigurationDialog extends KeyConfigurationDialog {
     private JLabel all_keys_needed_label;
     private JCheckBox all_keys_needed_checkbox;
 
-    private ArrayList<FlatSuperObjectPanel> keys = new ArrayList<FlatSuperObjectPanel>();
+    private ArrayList<FlatSuperObjectPanel> keys = new ArrayList<>();
 
     public MultiKeyConfigurationDialog(ConfigurationNode node) {
         super("MULTI", node);

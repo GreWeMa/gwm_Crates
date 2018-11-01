@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.drop.drops;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.drop.AbstractDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
@@ -12,7 +13,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Optional;
 
-public class PermissionDrop extends Drop {
+public class PermissionDrop extends AbstractDrop {
 
     private String permission;
     private Drop drop1;
@@ -36,7 +37,6 @@ public class PermissionDrop extends Drop {
             permission = permissionNode.getString();
             drop1 = (Drop) GWMCratesUtils.createSuperObject(drop1Node, SuperObjectType.DROP);
             drop2 = (Drop) GWMCratesUtils.createSuperObject(drop2Node, SuperObjectType.DROP);
-
         } catch (Exception e) {
             throw new RuntimeException("Failed to create Permission Drop!", e);
         }
@@ -53,11 +53,11 @@ public class PermissionDrop extends Drop {
     }
 
     @Override
-    public void apply(Player player) {
+    public void give(Player player, int amount) {
         if (player.hasPermission(permission)) {
-            drop1.apply(player);
+            drop1.give(player, amount);
         } else {
-            drop2.apply(player);
+            drop2.give(player, amount);
         }
     }
 

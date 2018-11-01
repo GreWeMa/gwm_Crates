@@ -1,8 +1,6 @@
 package org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.key;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.util.CheckIntegerFunction;
-import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.gwmdevelopments.sponge_plugin.crates.gui.AdvancedTextField;
 import org.gwmdevelopments.sponge_plugin.crates.gui.GUIConstants;
 import org.gwmdevelopments.sponge_plugin.crates.gui.SuperObjectPanel;

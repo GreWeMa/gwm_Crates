@@ -56,8 +56,8 @@ public class ItemCaseListener {
                 player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_KEY"));
                 return;
             }
-            caze.add(player, -1);
-            key.add(player, -1);
+            caze.withdraw(player, 1);
+            key.withdraw(player, 1);
             GWMCratesUtils.updateCrateOpenDelay(uuid);
             manager.getOpenManager().open(player, manager);
             break;
