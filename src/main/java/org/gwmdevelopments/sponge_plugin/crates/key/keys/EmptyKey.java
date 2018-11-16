@@ -22,6 +22,6 @@ public class EmptyKey extends AbstractKey {
 
     @Override
     public int get(Player player) {
-        return Integer.MAX_VALUE;
+        return 1;
     }
 }

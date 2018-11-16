@@ -22,6 +22,6 @@ public class EmptyCase extends AbstractCase {
 
     @Override
     public int get(Player player) {
-        return Integer.MAX_VALUE;
+        return 1;
     }
 }

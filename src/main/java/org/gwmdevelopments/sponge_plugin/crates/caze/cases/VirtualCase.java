@@ -111,9 +111,12 @@ public class VirtualCase extends GiveableCase {
                     "WHERE uuid = '" + uuid + "' AND " +
                     "name = '" + virtualName + "';");
             if (set.next()) {
-                return cache.put(uuid, set.getInt(1));
+                int value = set.getInt(1);
+                cache.put(uuid, value);
+                return value;
             } else {
-                return cache.put(uuid, 0);
+                cache.put(uuid, 0);
+                return 0;
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to get virtual cases \"" + virtualName + "\" for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);

@@ -128,17 +128,17 @@ public class TimedCase extends GiveableCase {
         ConfigurationNode delayNode = GWMCrates.getInstance().getTimedCasesConfig().
                 getNode(player.getUniqueId().toString(), virtualName);
         if (delayNode.isVirtual()) {
-            return Integer.MAX_VALUE;
+            return 1;
         }
         long delay = delayNode.getLong();
-        return System.currentTimeMillis() >= delay ? Integer.MAX_VALUE : 0;
+        return System.currentTimeMillis() >= delay ? 1 : 0;
     }
 
     private int getSQL(Player player) {
         UUID uuid = player.getUniqueId();
         if (cache.containsKey(uuid)) {
             long delay = cache.get(uuid);
-            return System.currentTimeMillis() >= delay ? Integer.MAX_VALUE : 0;
+            return System.currentTimeMillis() >= delay ? 1 : 0;
         }
         try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
              Statement statement = connection.createStatement()) {
@@ -148,10 +148,10 @@ public class TimedCase extends GiveableCase {
             if (set.next()) {
                 long delay = set.getLong(1);
                 cache.put(uuid, delay);
-                return System.currentTimeMillis() >= delay ? Integer.MAX_VALUE : 0;
+                return System.currentTimeMillis() >= delay ? 1 : 0;
             } else {
                 cache.put(uuid, 0L);
-                return Integer.MAX_VALUE;
+                return 1;
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to get timed case \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
