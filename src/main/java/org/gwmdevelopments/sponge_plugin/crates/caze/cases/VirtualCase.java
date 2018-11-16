@@ -47,61 +47,76 @@ public class VirtualCase extends GiveableCase {
 
     @Override
     public void withdraw(Player player, int amount) {
-
+        if (GWMCrates.getInstance().isUseMySQLForVirtualCases()) {
+            setSQL(player, getSQL(player) - amount);
+        } else {
+            setCfg(player, getCfg(player) - amount);
+        }
     }
 
     @Override
     public void give(Player player, int amount) {
-        UUID uuid = player.getUniqueId();
-        int value = get(player) + amount;
         if (GWMCrates.getInstance().isUseMySQLForVirtualCases()) {
-            try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
-                 Statement statement = connection.createStatement()) {
-                ResultSet set = statement.executeQuery("SELECT value FROM virtual_cases " +
+            setSQL(player, getSQL(player) + amount);
+        } else {
+            setCfg(player, getCfg(player) + amount);
+        }
+    }
+
+    private void setCfg(Player player, int value) {
+        GWMCrates.getInstance().getVirtualCasesConfig().
+                getNode(player.getUniqueId().toString(), virtualName).setValue(value);
+    }
+
+    private void setSQL(Player player, int value) {
+        UUID uuid = player.getUniqueId();
+        try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
+             Statement statement = connection.createStatement()) {
+            ResultSet set = statement.executeQuery("SELECT value FROM virtual_cases " +
+                    "WHERE uuid = '" + uuid + "' AND " +
+                    "name = '" + virtualName + "';");
+            if (set.next()) {
+                statement.executeQuery("UPDATE virtual_cases " +
+                        "SET value = " + value + " " +
                         "WHERE uuid = '" + uuid + "' AND " +
                         "name = '" + virtualName + "';");
-                if (set.next()) {
-                    statement.executeQuery("UPDATE virtual_cases " +
-                            "SET value = " + value + " " +
-                            "WHERE uuid = '" + uuid + "' AND " +
-                            "name = '" + virtualName + "';");
-                } else {
-                    statement.executeQuery("INSERT INTO virtual_cases (uuid, name, value)" +
-                            "VALUES ('" + uuid + "', '" + virtualName + "', " + value + ");");
-                }
-                cache.put(uuid, value);
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to withdraw virtual cases \"" + virtualName + "\" for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
+            } else {
+                statement.executeQuery("INSERT INTO virtual_cases (uuid, name, value)" +
+                        "VALUES ('" + uuid + "', '" + virtualName + "', " + value + ");");
             }
-        } else {
-            GWMCrates.getInstance().getVirtualCasesConfig().
-                    getNode(uuid.toString(), virtualName).setValue(value);
+            cache.put(uuid, value);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to withdraw virtual cases \"" + virtualName + "\" for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
         }
     }
 
     @Override
     public int get(Player player) {
+        return GWMCrates.getInstance().isUseMySQLForVirtualCases() ? getSQL(player) : getCfg(player);
+    }
+
+    private int getCfg(Player player) {
+        return GWMCrates.getInstance().getVirtualCasesConfig().
+                getNode(player.getUniqueId().toString(), virtualName).getInt(0);
+    }
+
+    private int getSQL(Player player) {
         UUID uuid = player.getUniqueId();
-        if (GWMCrates.getInstance().isUseMySQLForVirtualCases()) {
-            if (cache.containsKey(uuid)) {
-                return cache.get(uuid);
+        if (cache.containsKey(uuid)) {
+            return cache.get(uuid);
+        }
+        try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
+             Statement statement = connection.createStatement()) {
+            ResultSet set = statement.executeQuery("SELECT value FROM virtual_cases " +
+                    "WHERE uuid = '" + uuid + "' AND " +
+                    "name = '" + virtualName + "';");
+            if (set.next()) {
+                return cache.put(uuid, set.getInt(1));
+            } else {
+                return cache.put(uuid, 0);
             }
-            try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
-                 Statement statement = connection.createStatement()) {
-                ResultSet set = statement.executeQuery("SELECT value FROM virtual_cases " +
-                        "WHERE uuid = '" + uuid + "' AND " +
-                        "name = '" + virtualName + "';");
-                if (set.next()) {
-                    return cache.put(uuid, set.getInt(1));
-                } else {
-                    return cache.put(uuid, 0);
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to get virtual cases \"" + virtualName + "\" for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
-            }
-        } else {
-            return GWMCrates.getInstance().getVirtualCasesConfig().
-                    getNode(uuid.toString(), virtualName).getInt(0);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get virtual cases \"" + virtualName + "\" for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
         }
     }
 

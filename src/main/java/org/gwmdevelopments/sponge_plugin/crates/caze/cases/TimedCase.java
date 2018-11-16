@@ -54,84 +54,107 @@ public class TimedCase extends GiveableCase {
 
     @Override
     public void withdraw(Player player, int amount) {
-
+        if (GWMCrates.getInstance().isUseMySQLForTimedCases()) {
+            setSQL(player, true);
+        } else {
+            setCfg(player, true);
+        }
     }
 
     @Override
     public void give(Player player, int amount) {
-        UUID uuid = player.getUniqueId();
         if (GWMCrates.getInstance().isUseMySQLForTimedCases()) {
-            try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
-                 Statement statement = connection.createStatement()) {
-                ResultSet set = statement.executeQuery("SELECT delay FROM timed_cases " +
-                        "WHERE uuid = '" + uuid + "' AND " +
-                        "name = '" + virtualName + "';");
-                if (set.next()) {
-                    if (amount > 0) {
-                        statement.executeQuery("UPDATE timed_cases " +
-                                "SET delay = " + 0L + " " +
-                                "WHERE uuid = '" + uuid + "' AND" +
-                                "name = '" + virtualName + "';");
-                    } else if (amount < 0) {
-                        statement.executeQuery("UPDATE timed_cases " +
-                                "SET delay = " + (System.currentTimeMillis() + delay) + " " +
-                                "WHERE uuid = '" + uuid + "' AND" +
-                                "name = '" + virtualName + "';");
-                    }
-                } else {
-                    if (amount > 0) {
-                        statement.executeQuery("INSERT INTO timed_cases (uuid, name, delay)" +
-                                "VALUES ('" + uuid + "', '" + virtualName + "', " + 0L + ");");
-                    } else if (amount < 0) {
-                        statement.executeQuery("INSERT INTO timed_cases (uuid, name, delay)" +
-                                "VALUES ('" + uuid + "', '" + virtualName + "', " + (System.currentTimeMillis() + delay) + ");");
-                    }
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to set timed case \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
-            }
+            setSQL(player, false);
         } else {
-            ConfigurationNode delayNode = GWMCrates.getInstance().getTimedCasesConfig().
-                    getNode(uuid.toString(), virtualName);
-            if (amount > 0) {
-                delayNode.setValue(0L);
-            } else if (amount < 0) {
-                delayNode.setValue(System.currentTimeMillis() + delay);
+            setCfg(player, false);
+        }
+    }
+
+    private void setCfg(Player player, boolean withdraw) {
+        ConfigurationNode delayNode = GWMCrates.getInstance().getTimedCasesConfig().
+                getNode(player.getUniqueId().toString(), virtualName);
+        if (withdraw) {
+            delayNode.setValue(System.currentTimeMillis() + delay);
+        } else {
+            delayNode.setValue(0L);
+        }
+    }
+
+    private void setSQL(Player player, boolean withdraw) {
+        UUID uuid = player.getUniqueId();
+        try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
+             Statement statement = connection.createStatement()) {
+            ResultSet set = statement.executeQuery("SELECT delay FROM timed_cases " +
+                    "WHERE uuid = '" + uuid + "' AND " +
+                    "name = '" + virtualName + "';");
+            if (set.next()) {
+                if (withdraw) {
+                    long expire = System.currentTimeMillis() + delay;
+                    cache.put(uuid, expire);
+                    statement.executeQuery("UPDATE timed_cases " +
+                            "SET delay = " + expire + " " +
+                            "WHERE uuid = '" + uuid + "' AND " +
+                            "name = '" + virtualName + "';");
+                } else {
+                    cache.put(uuid, 0L);
+                    statement.executeQuery("UPDATE timed_cases " +
+                            "SET delay = " + 0L + " " +
+                            "WHERE uuid = '" + uuid + "' AND " +
+                            "name = '" + virtualName + "';");
+                }
+            } else {
+                if (withdraw) {
+                    long expire = System.currentTimeMillis() + delay;
+                    cache.put(uuid, expire);
+                    statement.executeQuery("INSERT INTO timed_cases (uuid, name, delay) " +
+                            "VALUES ('" + uuid + "', '" + virtualName + "', " + expire + ");");
+                } else {
+                    cache.put(uuid, 0L);
+                    statement.executeQuery("INSERT INTO timed_cases (uuid, name, delay) " +
+                            "VALUES ('" + uuid + "', '" + virtualName + "', " + 0L + ");");
+                }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to set timed case \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
         }
     }
 
     @Override
     public int get(Player player) {
+        return GWMCrates.getInstance().isUseMySQLForTimedCases() ? getSQL(player) : getCfg(player);
+    }
+
+    private int getCfg(Player player) {
+        ConfigurationNode delayNode = GWMCrates.getInstance().getTimedCasesConfig().
+                getNode(player.getUniqueId().toString(), virtualName);
+        if (delayNode.isVirtual()) {
+            return Integer.MAX_VALUE;
+        }
+        long delay = delayNode.getLong();
+        return System.currentTimeMillis() >= delay ? Integer.MAX_VALUE : 0;
+    }
+
+    private int getSQL(Player player) {
         UUID uuid = player.getUniqueId();
-        if (GWMCrates.getInstance().isUseMySQLForTimedCases()) {
-            try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
-                 Statement statement = connection.createStatement()) {
-                if (cache.containsKey(uuid)) {
-                    long delay = cache.get(uuid);
-                    return System.currentTimeMillis() >= delay ? Integer.MAX_VALUE : 0;
-                }
-                ResultSet set = statement.executeQuery("SELECT delay FROM timed_cases " +
-                        "WHERE uuid = '" + uuid + "' AND " +
-                        "name = '" + virtualName + "';");
-                if (set.next()) {
-                    long delay = cache.put(uuid, set.getLong(1));
-                    return System.currentTimeMillis() >= delay ? Integer.MAX_VALUE : 0;
-                } else {
-                    cache.put(uuid, 0L);
-                    return Integer.MAX_VALUE;
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to get timed case \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
-            }
-        } else {
-            ConfigurationNode delayNode = GWMCrates.getInstance().getTimedCasesConfig().
-                    getNode(uuid.toString(), virtualName);
-            if (delayNode.isVirtual()) {
+        if (cache.containsKey(uuid)) {
+            long delay = cache.get(uuid);
+            return System.currentTimeMillis() >= delay ? Integer.MAX_VALUE : 0;
+        }
+        try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
+             Statement statement = connection.createStatement()) {
+            ResultSet set = statement.executeQuery("SELECT delay FROM timed_cases " +
+                    "WHERE uuid = '" + uuid + "' AND " +
+                    "name = '" + virtualName + "';");
+            if (set.next()) {
+                long delay = set.getLong(1);
+                cache.put(uuid, delay);
+                return System.currentTimeMillis() >= delay ? Integer.MAX_VALUE : 0;
+            } else {
+                cache.put(uuid, 0L);
                 return Integer.MAX_VALUE;
             }
-            long delay = delayNode.getLong();
-            return System.currentTimeMillis() >= delay ? Integer.MAX_VALUE : 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get timed case \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
         }
     }
 
