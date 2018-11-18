@@ -13,12 +13,14 @@ public abstract class GiveableKey extends AbstractKey implements Giveable {
 
     private Optional<BigDecimal> price = Optional.empty();
     private Optional<Currency> sellCurrency = Optional.empty();
+    private boolean doNotAdd;
 
     public GiveableKey(ConfigurationNode node) {
         super(node);
         try {
             ConfigurationNode priceNode = node.getNode("PRICE");
             ConfigurationNode sellCurrencyNode = node.getNode("SELL_CURRENCY");
+            ConfigurationNode doNotAddNode = node.getNode("DO_NOT_ADD");
             if (!priceNode.isVirtual()) {
                 price = Optional.of(new BigDecimal(priceNode.getString()));
             }
@@ -41,15 +43,18 @@ public abstract class GiveableKey extends AbstractKey implements Giveable {
                     throw new RuntimeException("Currency \"" + sellCurrencyName + "\" not found!");
                 }
             }
+            doNotAdd = doNotAddNode.getBoolean(false);
         } catch (Exception e) {
             throw new RuntimeException("Failed to create Giveable Key!", e);
         }
     }
 
-    public GiveableKey(String type, Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency) {
-        super(type, id);
+    public GiveableKey(String type, Optional<String> id, boolean doNotWithdraw,
+                       Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd) {
+        super(type, id, doNotWithdraw);
         this.price = price;
         this.sellCurrency = sellCurrency;
+        this.doNotAdd = doNotAdd;
     }
 
     @Override
@@ -68,5 +73,13 @@ public abstract class GiveableKey extends AbstractKey implements Giveable {
 
     protected void setSellCurrency(Optional<Currency> sellCurrency) {
         this.sellCurrency = sellCurrency;
+    }
+
+    public boolean isDoNotAdd() {
+        return doNotAdd;
+    }
+
+    public void setDoNotAdd(boolean doNotAdd) {
+        this.doNotAdd = doNotAdd;
     }
 }

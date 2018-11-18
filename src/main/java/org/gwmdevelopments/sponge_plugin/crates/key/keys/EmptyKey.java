@@ -13,11 +13,11 @@ public class EmptyKey extends AbstractKey {
     }
 
     public EmptyKey(Optional<String> id) {
-        super("EMPTY", id);
+        super("EMPTY", id, true);
     }
 
     @Override
-    public void withdraw(Player player, int amount) {
+    public void withdraw(Player player, int amount, boolean force) {
     }
 
     @Override

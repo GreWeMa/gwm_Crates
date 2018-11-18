@@ -5,6 +5,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.util.AbstractSuperObject;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
@@ -89,6 +90,11 @@ public abstract class AbstractDrop extends AbstractSuperObject implements Drop {
         this.fakeLevel = fakeLevel;
         this.permissionLevels = permissionLevels;
         this.permissionFakeLevels = permissionFakeLevels;
+    }
+
+    @Override
+    public final void give(Player player, int amount, boolean force) {
+        give(player, amount);
     }
 
     @Override

@@ -45,28 +45,33 @@ public class TimedCase extends GiveableCase {
         }
     }
 
-    public TimedCase(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
+    public TimedCase(Optional<String> id, boolean doNotWithdraw,
+                     Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                      String virtualName, long delay) {
-        super("TIMED", id, price, sellCurrency);
+        super("TIMED", id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.virtualName = virtualName;
         this.delay = delay;
     }
 
     @Override
-    public void withdraw(Player player, int amount) {
-        if (GWMCrates.getInstance().isUseMySQLForTimedCases()) {
-            setSQL(player, true);
-        } else {
-            setCfg(player, true);
+    public void withdraw(Player player, int amount, boolean force) {
+        if (!isDoNotWithdraw() || force) {
+            if (GWMCrates.getInstance().isUseMySQLForTimedCases()) {
+                setSQL(player, true);
+            } else {
+                setCfg(player, true);
+            }
         }
     }
 
     @Override
-    public void give(Player player, int amount) {
-        if (GWMCrates.getInstance().isUseMySQLForTimedCases()) {
-            setSQL(player, false);
-        } else {
-            setCfg(player, false);
+    public void give(Player player, int amount, boolean force) {
+        if (!isDoNotAdd() || force) {
+            if (GWMCrates.getInstance().isUseMySQLForTimedCases()) {
+                setSQL(player, false);
+            } else {
+                setCfg(player, false);
+            }
         }
     }
 

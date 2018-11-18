@@ -7,11 +7,29 @@ import java.util.Optional;
 
 public abstract class AbstractCase extends AbstractSuperObject implements Case {
 
+    private boolean doNotWithdraw;
+
     public AbstractCase(ConfigurationNode node) {
         super(node);
+        try {
+            ConfigurationNode doNotWithdrawNode = node.getNode("DO_NOT_WITHDRAW");
+            doNotWithdraw = doNotWithdrawNode.getBoolean(false);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create Abstract Case!", e);
+        }
     }
 
-    public AbstractCase(String type, Optional<String> id) {
+    public AbstractCase(String type, Optional<String> id, boolean doNotWithdraw) {
         super(type, id);
+        this.doNotWithdraw = doNotWithdraw;
+    }
+
+    @Override
+    public boolean isDoNotWithdraw() {
+        return doNotWithdraw;
+    }
+
+    public void setDoNotWithdraw(boolean doNotWithdraw) {
+        this.doNotWithdraw = doNotWithdraw;
     }
 }

@@ -39,27 +39,32 @@ public class VirtualCase extends GiveableCase {
         }
     }
 
-    public VirtualCase(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
+    public VirtualCase(Optional<String> id, boolean doNotWithdraw,
+                       Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                        String virtualName) {
-        super("VIRTUAL", id, price, sellCurrency);
+        super("VIRTUAL", id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.virtualName = virtualName;
     }
 
     @Override
-    public void withdraw(Player player, int amount) {
-        if (GWMCrates.getInstance().isUseMySQLForVirtualCases()) {
-            setSQL(player, getSQL(player) - amount);
-        } else {
-            setCfg(player, getCfg(player) - amount);
+    public void withdraw(Player player, int amount, boolean force) {
+        if (!isDoNotWithdraw() || force) {
+            if (GWMCrates.getInstance().isUseMySQLForVirtualCases()) {
+                setSQL(player, getSQL(player) - amount);
+            } else {
+                setCfg(player, getCfg(player) - amount);
+            }
         }
     }
 
     @Override
-    public void give(Player player, int amount) {
-        if (GWMCrates.getInstance().isUseMySQLForVirtualCases()) {
-            setSQL(player, getSQL(player) + amount);
-        } else {
-            setCfg(player, getCfg(player) + amount);
+    public void give(Player player, int amount, boolean force) {
+        if (!isDoNotAdd() || force) {
+            if (GWMCrates.getInstance().isUseMySQLForVirtualCases()) {
+                setSQL(player, getSQL(player) + amount);
+            } else {
+                setCfg(player, getCfg(player) + amount);
+            }
         }
     }
 

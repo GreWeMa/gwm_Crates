@@ -50,7 +50,7 @@ public class BlockCase extends AbstractCase {
     public BlockCase(Optional<String> id,
                      Location<World> location, Optional<List<Text>> hologram, boolean startPreviewOnLeftClick,
                      Optional<List<HologramsService.Hologram>> createdHolograms) {
-        super("BLOCK", id);
+        super("BLOCK", id, true);
         this.location = location;
         this.hologram = hologram;
         this.startPreviewOnLeftClick = startPreviewOnLeftClick;
@@ -58,7 +58,7 @@ public class BlockCase extends AbstractCase {
     }
 
     @Override
-    public void withdraw(Player player, int amount) {
+    public void withdraw(Player player, int amount, boolean force) {
     }
 
     @Override

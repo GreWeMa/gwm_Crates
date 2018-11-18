@@ -33,22 +33,27 @@ public class MultipleAmountKey extends GiveableKey {
         }
     }
 
-    public MultipleAmountKey(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
+    public MultipleAmountKey(Optional<String> id, boolean doNotWithdraw,
+                             Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                              AbstractKey childKey, int amount) {
-        super("TIMED", id, price, sellCurrency);
+        super("TIMED", id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.childKey = childKey;
         this.amount = amount;
     }
 
     @Override
-    public void withdraw(Player player, int amount) {
-        childKey.withdraw(player, amount * this.amount);
+    public void withdraw(Player player, int amount, boolean force) {
+        if (!isDoNotWithdraw() || force) {
+            childKey.withdraw(player, amount * this.amount, force);
+        }
     }
 
     @Override
-    public void give(Player player, int amount) {
-        if (childKey instanceof Giveable) {
-            ((Giveable) childKey).give(player, amount * this.amount);
+    public void give(Player player, int amount, boolean force) {
+        if (!isDoNotAdd() || force) {
+            if (childKey instanceof Giveable) {
+                ((Giveable) childKey).give(player, amount * this.amount, force);
+            }
         }
     }
 

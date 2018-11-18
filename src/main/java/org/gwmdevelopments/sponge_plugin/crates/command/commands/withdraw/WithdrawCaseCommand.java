@@ -1,10 +1,10 @@
-package org.gwmdevelopments.sponge_plugin.crates.command.commands.give;
+package org.gwmdevelopments.sponge_plugin.crates.command.commands.withdraw;
 
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
-import org.gwmdevelopments.sponge_plugin.crates.key.Key;
+import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.util.Giveable;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
+import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -12,10 +12,10 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
-public class GiveKeyCommand implements CommandExecutor {
+public class WithdrawCaseCommand implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) {
+    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
         String managerId = manager.getId();
         Player player = args.<Player>getOne(Text.of("player")).get();
@@ -23,28 +23,23 @@ public class GiveKeyCommand implements CommandExecutor {
         boolean force = args.<Boolean>getOne(Text.of("force")).orElse(true);
         boolean self = src.equals(player);
         if (self) {
-            if (!player.hasPermission("gwm_crates.command.give.manager." + managerId + ".key")) {
+            if (!player.hasPermission("gwm_crates.command.withdraw.manager." + managerId + ".case")) {
                 player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
                 return CommandResult.success();
             }
         } else {
-            if (!src.hasPermission("gwm_crates.command.give_others.manager." + managerId + ".key")) {
+            if (!src.hasPermission("gwm_crates.command.withdraw_others.manager." + managerId + ".case")) {
                 src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
                 return CommandResult.success();
             }
         }
-        Key key = manager.getKey();
-        if (!(key instanceof Giveable)) {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SSO_IS_NOT_GIVEABLE",
-                    new Pair<>("%SUPER_OBJECT%", key)));
-            return CommandResult.success();
-        }
-        ((Giveable) key).give(player, amount, force);
+        Case caze = manager.getCase();
+        caze.withdraw(player, amount, force);
         if (self) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_GOT_KEY",
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_WITHDREW_CASE",
                     new Pair<>("%MANAGER%", manager.getName())));
         } else {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_GAVE_KEY",
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_WITHDREW_OTHERS_CASE",
                     new Pair<>("%MANAGER%", manager.getName()),
                     new Pair<>("%PLAYER%", player.getName())));
         }

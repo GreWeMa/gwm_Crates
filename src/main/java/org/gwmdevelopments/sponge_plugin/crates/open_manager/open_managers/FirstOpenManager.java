@@ -189,7 +189,7 @@ public class FirstOpenManager extends AbstractOpenManager {
                 delayTicks(waitTime).
                 execute(() -> {
                     Drop drop = dropList.get(dropList.size() - 4);
-                    drop.give(player);
+                    drop.give(player, 1);
                     winSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
                     if (clearDecorativeItems) {
                         for (Integer decorative_item_index : DECORATIVE_ITEMS_INDICES) {

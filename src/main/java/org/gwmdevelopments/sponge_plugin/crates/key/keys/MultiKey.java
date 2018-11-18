@@ -37,29 +37,32 @@ public class MultiKey extends GiveableKey {
         }
     }
 
-    public MultiKey(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
+    public MultiKey(Optional<String> id, boolean doNotWithdraw,
+                    Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                     List<Key> keys, boolean allKeysNeeded) {
-        super("MULTI", id, price, sellCurrency);
+        super("MULTI", id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.keys = keys;
         this.allKeysNeeded = allKeysNeeded;
     }
 
     @Override
-    public void withdraw(Player player, int amount) {
-        if (allKeysNeeded) {
-            for (Key key : keys) {
-                key.withdraw(player, amount);
-            }
-        } else if (keys.size() > 0) {
-            for (Key key : keys) {
-                int value = key.get(player);
-                if (value > 0) {
-                    if (value >= amount) {
-                        key.withdraw(player, amount);
-                        break;
-                    } else {
-                        key.withdraw(player, value);
-                        amount -= value;
+    public void withdraw(Player player, int amount, boolean force) {
+        if (!isDoNotWithdraw() || force) {
+            if (allKeysNeeded) {
+                for (Key key : keys) {
+                    key.withdraw(player, amount, force);
+                }
+            } else if (keys.size() > 0) {
+                for (Key key : keys) {
+                    int value = key.get(player);
+                    if (value > 0) {
+                        if (value >= amount) {
+                            key.withdraw(player, amount, force);
+                            break;
+                        } else {
+                            key.withdraw(player, value, force);
+                            amount -= value;
+                        }
                     }
                 }
             }
@@ -67,12 +70,14 @@ public class MultiKey extends GiveableKey {
     }
 
     @Override
-    public void give(Player player, int amount) {
-        for (Key key : keys) {
-            if (key instanceof Giveable) {
-                ((Giveable) key).give(player, amount);
-                if (!allKeysNeeded) {
-                    break;
+    public void give(Player player, int amount, boolean force) {
+        if (!isDoNotAdd() || force) {
+            for (Key key : keys) {
+                if (key instanceof Giveable) {
+                    ((Giveable) key).give(player, amount, force);
+                    if (!allKeysNeeded) {
+                        break;
+                    }
                 }
             }
         }

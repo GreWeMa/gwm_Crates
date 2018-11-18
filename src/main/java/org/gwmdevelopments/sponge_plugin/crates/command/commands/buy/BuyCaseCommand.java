@@ -69,7 +69,7 @@ public class BuyCaseCommand implements CommandExecutor {
             return CommandResult.success();
         }
         playerAccount.withdraw(currency, totalPrice, GWMCrates.getInstance().getCause());
-        giveable.give(player, amount);
+        giveable.give(player, amount, false);
         player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_BOUGHT_CASE",
                 new Pair<>("%MANAGER%", manager.getName())));
         return CommandResult.success();

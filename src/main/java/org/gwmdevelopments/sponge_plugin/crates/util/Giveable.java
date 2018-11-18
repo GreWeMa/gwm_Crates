@@ -8,11 +8,7 @@ import java.util.Optional;
 
 public interface Giveable {
 
-    void give(Player player, int amount);
-
-    default void give(Player player) {
-        give(player, 1);
-    }
+    void give(Player player, int amount, boolean force);
 
     Optional<BigDecimal> getPrice();
 

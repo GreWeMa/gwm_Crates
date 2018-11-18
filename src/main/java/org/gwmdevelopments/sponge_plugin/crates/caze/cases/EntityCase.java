@@ -30,13 +30,13 @@ public class EntityCase extends AbstractCase {
 
     public EntityCase(Optional<String> id,
                       UUID entityUuid, boolean startPreviewOnLeftClick) {
-        super("ENTITY", id);
+        super("ENTITY", id, true);
         this.entityUuid = entityUuid;
         this.startPreviewOnLeftClick = startPreviewOnLeftClick;
     }
 
     @Override
-    public void withdraw(Player player, int amount) {
+    public void withdraw(Player player, int amount, boolean force) {
     }
 
     @Override

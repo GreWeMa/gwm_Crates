@@ -53,7 +53,7 @@ public class MultiDrop extends AbstractDrop {
             drops.forEach(drop -> drop.give(player, amount));
         } else {
             for (int i = 0; i < amount; i++) {
-                GWMCratesUtils.chooseDropByLevel(drops, player, false).give(player);
+                GWMCratesUtils.chooseDropByLevel(drops, player, false).give(player, 1, false);
             }
         }
     }

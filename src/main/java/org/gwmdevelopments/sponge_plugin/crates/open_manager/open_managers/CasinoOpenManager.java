@@ -270,10 +270,10 @@ public class CasinoOpenManager extends AbstractOpenManager {
                     Drop drop = dropList.get(0).get(dropList.get(0).size() - 3);
                     if (drop.equals(dropList.get(1).get(dropList.get(1).size() - 3)) &&
                             drop.equals(dropList.get(2).get(dropList.get(2).size() - 3))) {
-                        drop.give(player);
+                        drop.give(player, 1);
                         winSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
                     } else {
-                        loseDrop.give(player);
+                        loseDrop.give(player, 1);
                         loseSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
                     }
                     if (clearDecorativeItems) {

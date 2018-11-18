@@ -62,12 +62,14 @@ public class SecondOpenManagerListener {
                             for (Slot next : ordered.<Slot>slots()) {
                                 if (!Objects.equals(next.getProperty(SlotIndex.class, "slotindex").get().getValue(),
                                         slot.getProperty(SlotIndex.class, "slotindex").get().getValue())) {
-                                    next.set(GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, true).getDropItem().orElse(ItemStack.of(ItemTypes.NONE, 1)));
+                                    next.set(GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, true).getDropItem().
+                                            orElse(ItemStack.of(ItemTypes.NONE, 1)));
                                 }
                             }
                         }).submit(GWMCrates.getInstance());
                     }
-                    Sponge.getScheduler().createTaskBuilder().delay(1, TimeUnit.SECONDS).execute(() -> drop.give(player)).submit(GWMCrates.getInstance());
+                    Sponge.getScheduler().createTaskBuilder().delay(1, TimeUnit.SECONDS).execute(() ->
+                            drop.give(player, 1)).submit(GWMCrates.getInstance());
                     openManager.getClickSound().ifPresent(click_sound -> player.playSound(click_sound, player.getLocation().getPosition(), 1.));
                     PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, drop);
                     Sponge.getEventManager().post(openedEvent);
@@ -100,7 +102,7 @@ public class SecondOpenManagerListener {
                 event.setCancelled(true);
             } else if (open_manager.isGiveRandomOnClose()) {
                 Drop drop = GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, false);
-                drop.give(player);
+                drop.give(player, 1);
                 PlayerOpenedCrateEvent opened_event = new PlayerOpenedCrateEvent(player, manager, drop);
                 Sponge.getEventManager().post(opened_event);
                 SecondOpenManager.SECOND_GUI_INVENTORIES.remove(container);

@@ -5,11 +5,11 @@ import org.spongepowered.api.entity.living.player.Player;
 
 public interface Case extends SuperObject {
 
-    void withdraw(Player player, int amount);
-
-    default void withdraw(Player player) {
-        withdraw(player, 1);
-    }
+    void withdraw(Player player, int amount, boolean force);
 
     int get(Player player);
+
+    default boolean isDoNotWithdraw() {
+        return false;
+    }
 }

@@ -53,7 +53,7 @@ public class EntityCaseListener {
                         player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_KEY"));
                         return;
                     }
-                    key.withdraw(player);
+                    key.withdraw(player, 1, false);
                     GWMCratesUtils.updateCrateOpenDelay(uuid);
                     openManager.open(player, manager);
                     return;

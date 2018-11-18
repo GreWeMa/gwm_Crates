@@ -30,21 +30,26 @@ public class ItemCase extends GiveableCase {
         }
     }
 
-    public ItemCase(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
+    public ItemCase(Optional<String> id, boolean doNotWithdraw,
+                    Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                     ItemStack item, boolean startPreviewOnLeftClick) {
-        super("ITEM", id, price, sellCurrency);
+        super("ITEM", id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.item = item;
         this.startPreviewOnLeftClick = startPreviewOnLeftClick;
     }
 
     @Override
-    public void withdraw(Player player, int amount) {
-        GWMCratesUtils.removeItemStack(player, item, amount);
+    public void withdraw(Player player, int amount, boolean force) {
+        if (!isDoNotWithdraw() || force) {
+            GWMCratesUtils.removeItemStack(player, item, amount);
+        }
     }
 
     @Override
-    public void give(Player player, int amount) {
-        GWMCratesUtils.addItemStack(player, item, amount);
+    public void give(Player player, int amount, boolean force) {
+        if (!isDoNotAdd() || force) {
+            GWMCratesUtils.addItemStack(player, item, amount);
+        }
     }
 
     @Override

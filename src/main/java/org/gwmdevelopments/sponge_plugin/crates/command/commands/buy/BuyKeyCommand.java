@@ -5,7 +5,6 @@ import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.util.Giveable;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -70,7 +69,7 @@ public class BuyKeyCommand implements CommandExecutor {
             return CommandResult.success();
         }
         playerAccount.withdraw(currency, totalPrice, GWMCrates.getInstance().getCause());
-        giveable.give(player, amount);
+        giveable.give(player, amount, false);
         player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_BOUGHT_KEY",
                 new Pair<>("%MANAGER%", manager.getName())));
         return CommandResult.success();

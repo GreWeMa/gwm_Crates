@@ -60,7 +60,7 @@ public class BlockCaseListener {
                 player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_KEY"));
                 return;
             }
-            key.withdraw(player, 1);
+            key.withdraw(player, 1, false);
             GWMCratesUtils.updateCrateOpenDelay(uuid);
             manager.getOpenManager().open(player, manager);
             break;

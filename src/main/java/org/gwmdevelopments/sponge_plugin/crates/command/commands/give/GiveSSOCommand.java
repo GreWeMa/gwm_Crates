@@ -4,7 +4,6 @@ import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.util.Giveable;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObject;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -21,6 +20,7 @@ public class GiveSSOCommand implements CommandExecutor {
         String ssoId = sso.getId().get();
         Player player = args.<Player>getOne(Text.of("player")).get();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
+        boolean force = args.<Boolean>getOne(Text.of("force")).orElse(true);
         boolean self = src.equals(player);
         if (self) {
             if (!player.hasPermission("gwm_crates.command.give.sso." + ssoId)) {
@@ -38,7 +38,7 @@ public class GiveSSOCommand implements CommandExecutor {
                     new Pair<>("%SUPER_OBJECT%", ssoId)));
             return CommandResult.success();
         }
-        ((Giveable) sso).give(player, amount);
+        ((Giveable) sso).give(player, amount, force);
         if (self) {
             player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_GOT_SSO",
                     new Pair<>("%SUPER_OBJECT%", ssoId)));

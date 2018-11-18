@@ -10,6 +10,8 @@ import org.gwmdevelopments.sponge_plugin.crates.command.commands.give.GiveCaseCo
 import org.gwmdevelopments.sponge_plugin.crates.command.commands.give.GiveDropCommand;
 import org.gwmdevelopments.sponge_plugin.crates.command.commands.give.GiveKeyCommand;
 import org.gwmdevelopments.sponge_plugin.crates.command.commands.give.GiveSSOCommand;
+import org.gwmdevelopments.sponge_plugin.crates.command.commands.withdraw.WithdrawCaseCommand;
+import org.gwmdevelopments.sponge_plugin.crates.command.commands.withdraw.WithdrawKeyCommand;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
@@ -79,7 +81,8 @@ public class GWMCratesCommandUtils {
                 arguments(
                         new ManagerCommandElement(Text.of("manager")),
                         GenericArguments.playerOrSource(Text.of("player")),
-                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1)
+                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
+                        GenericArguments.optional(GenericArguments.bool(Text.of("force")))
                 ).
                 build();
         CommandSpec giveKeyCommand = CommandSpec.builder().
@@ -88,7 +91,8 @@ public class GWMCratesCommandUtils {
                 arguments(
                         new ManagerCommandElement(Text.of("manager")),
                         GenericArguments.playerOrSource(Text.of("player")),
-                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1)
+                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
+                        GenericArguments.optional(GenericArguments.bool(Text.of("force")))
                 ).
                 build();
         CommandSpec giveDropCommand = CommandSpec.builder().
@@ -107,7 +111,8 @@ public class GWMCratesCommandUtils {
                 arguments(
                         new SuperObjectCommandElement(Text.of("sso"), Optional.empty(), true),
                         GenericArguments.playerOrSource(Text.of("player")),
-                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1)
+                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
+                        GenericArguments.optional(GenericArguments.bool(Text.of("force")))
                 ).
                 build();
         CommandSpec giveCommand = CommandSpec.builder().
@@ -115,6 +120,30 @@ public class GWMCratesCommandUtils {
                 child(giveKeyCommand, "key").
                 child(giveDropCommand, "drop").
                 child(giveSSOCommand, "savedsuperobject", "sso").
+                build();
+        CommandSpec withdrawCaseCommand = CommandSpec.builder().
+                description(Text.of("Withdraw the case from the player")).
+                executor(new WithdrawCaseCommand()).
+                arguments(
+                        new ManagerCommandElement(Text.of("manager")),
+                        GenericArguments.playerOrSource(Text.of("player")),
+                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
+                        GenericArguments.optional(GenericArguments.bool(Text.of("force")))
+                ).
+                build();
+        CommandSpec withdrawKeyCommand = CommandSpec.builder().
+                description(Text.of("Withdraw the key from the player")).
+                executor(new WithdrawKeyCommand()).
+                arguments(
+                        new ManagerCommandElement(Text.of("manager")),
+                        GenericArguments.playerOrSource(Text.of("player")),
+                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
+                        GenericArguments.optional(GenericArguments.bool(Text.of("force")))
+                ).
+                build();
+        CommandSpec withdrawCommand = CommandSpec.builder().
+                child(withdrawCaseCommand).
+                child(withdrawKeyCommand).
                 build();
         CommandSpec buyCaseCommand = CommandSpec.builder().
                 description(Text.of("Buy the case")).
@@ -179,6 +208,7 @@ public class GWMCratesCommandUtils {
                 child(forceCommand, "force").
                 child(previewCommand, "preview").
                 child(giveCommand, "give").
+                child(withdrawCommand, "withdraw").
                 child(buyCommand, "buy").
                 child(listCommand, "list").
                 child(infoCommand, "info").
