@@ -1,5 +1,8 @@
 v. beta-3.2
 1. Code refactoring.
+2. Added a lot of useless keys.
+3. Added "withdraw" command.
+4. Added "check" command.
 
 v. 3.1.13
 1. Moved method 'deleteHolograms' from 'GWMCrates' to 'GWMCratesUtils', to fix issue #12.

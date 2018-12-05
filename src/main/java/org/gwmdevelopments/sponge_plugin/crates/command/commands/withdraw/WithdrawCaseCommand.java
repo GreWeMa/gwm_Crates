@@ -34,7 +34,8 @@ public class WithdrawCaseCommand implements CommandExecutor {
             }
         }
         Case caze = manager.getCase();
-        caze.withdraw(player, amount, force);
+        int caseAmount = caze.get(player);
+        caze.withdraw(player, amount < caseAmount ? amount : caseAmount, force);
         if (self) {
             player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_WITHDREW_CASE",
                     new Pair<>("%MANAGER%", manager.getName())));

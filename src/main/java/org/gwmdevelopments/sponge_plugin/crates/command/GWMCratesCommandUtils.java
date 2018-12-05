@@ -142,8 +142,15 @@ public class GWMCratesCommandUtils {
                 ).
                 build();
         CommandSpec withdrawCommand = CommandSpec.builder().
-                child(withdrawCaseCommand).
-                child(withdrawKeyCommand).
+                child(withdrawCaseCommand, "case").
+                child(withdrawKeyCommand, "key").
+                build();
+        CommandSpec checkCommand = CommandSpec.builder().
+                description(Text.of("Check player's amount of cases and keys")).
+                executor(new CheckCommand()).
+                arguments(
+                        new ManagerCommandElement(Text.of("manager")),
+                        GenericArguments.playerOrSource(Text.of("player"))).
                 build();
         CommandSpec buyCaseCommand = CommandSpec.builder().
                 description(Text.of("Buy the case")).
@@ -209,6 +216,7 @@ public class GWMCratesCommandUtils {
                 child(previewCommand, "preview").
                 child(giveCommand, "give").
                 child(withdrawCommand, "withdraw").
+                child(checkCommand, "check").
                 child(buyCommand, "buy").
                 child(listCommand, "list").
                 child(infoCommand, "info").

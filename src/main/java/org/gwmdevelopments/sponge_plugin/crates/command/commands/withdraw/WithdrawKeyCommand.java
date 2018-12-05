@@ -34,7 +34,8 @@ public class WithdrawKeyCommand implements CommandExecutor {
             }
         }
         Key key = manager.getKey();
-        key.withdraw(player, amount, force);
+        int keyAmount = key.get(player);
+        key.withdraw(player, amount < keyAmount ? amount : keyAmount, force);
         if (self) {
             player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_WITHDREW_KEY",
                     new Pair<>("%MANAGER%", manager.getName())));
