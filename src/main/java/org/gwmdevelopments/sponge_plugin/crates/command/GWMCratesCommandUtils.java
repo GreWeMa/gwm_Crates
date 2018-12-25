@@ -26,11 +26,6 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Help command")).
                 executor(new HelpCommand()).
                 build();
-        CommandSpec guiCommand = CommandSpec.builder().
-                permission("gwm_crates.command.gui").
-                description(Text.of("GUI for creating crates")).
-                executor(new GUICommand()).
-                build();
         CommandSpec importToMySQLCommand = CommandSpec.builder().
                 permission("gwm_crates.command.import_to_mysql").
                 description(Text.of("Import data to MySQL")).
@@ -206,7 +201,6 @@ public class GWMCratesCommandUtils {
                 permission("gwm_crates.command").
                 description(Text.of("Main plugin command.")).
                 child(helpCommand, "help").
-                child(guiCommand, "gui").
                 child(importToMySQLCommand, "importtomysql").
                 child(importFromMySQLCommand, "importfrommysql").
                 child(reloadCommand, "reload").

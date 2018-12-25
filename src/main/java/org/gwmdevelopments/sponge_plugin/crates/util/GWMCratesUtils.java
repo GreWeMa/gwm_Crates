@@ -9,9 +9,6 @@ import org.gwmdevelopments.sponge_plugin.crates.caze.cases.BlockCase;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.CommandsDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.EmptyDrop;
-import org.gwmdevelopments.sponge_plugin.crates.gui.GWMCratesGUI;
-import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.ConfigurationDialog;
-import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.SavedSuperObjectConfigurationDialog;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.Animation1OpenManager;
 import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
@@ -40,7 +37,6 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import javax.swing.*;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.nio.file.Path;
@@ -691,82 +687,6 @@ public final class GWMCratesUtils {
             }
         }
         return Optional.empty();
-    }
-
-    public static void createGUIConfigurationDialog(SuperObjectType superObjectType, String type, ConfigurationNode node) {
-        if (type.equals("SAVED")) {
-            SavedSuperObjectConfigurationDialog dialog = new SavedSuperObjectConfigurationDialog(superObjectType, type, node);
-            dialog.setVisible(true);
-            return;
-        }
-        Optional<SuperObjectStorage> optionalSuperObjectStorage = getSuperObjectStorage(superObjectType, type);
-        if (!optionalSuperObjectStorage.isPresent()) {
-            JOptionPane.showMessageDialog(null, "Wrong type \"" + type + "\" for Super Object \"" + superObjectType.toString() + "\"!", "Error!", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        SuperObjectStorage superObjectStorage = optionalSuperObjectStorage.get();
-        Optional<Class<? extends ConfigurationDialog>> optionalConfigurationDialogClass = superObjectStorage.getConfigurationDialog();
-        if (!optionalConfigurationDialogClass.isPresent()) {
-            JOptionPane.showMessageDialog(null, "Super Object \"" + superObjectType.toString() + "\" with type \"" + type + "\" does not supports graphical configurator!", "Error!", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        try {
-            Class<? extends ConfigurationDialog> configurationDialogClass = optionalConfigurationDialogClass.get();
-            Constructor<? extends ConfigurationDialog> configurationDialogConstructor = configurationDialogClass.getConstructor(ConfigurationNode.class);
-            ConfigurationDialog configurationDialog = configurationDialogConstructor.newInstance(node);
-            configurationDialog.setVisible(true);
-        } catch (Exception e) {
-            GWMCrates.getInstance().getLogger().warn("Exception creating graphical configurator for Super Object \"" + superObjectType.toString() + "\" with type \"" + type + "\"!", e);
-            JOptionPane.showMessageDialog(null, "Exception creating graphical configurator! See details in console!", "Error!", JOptionPane.WARNING_MESSAGE);
-        }
-    }
-
-    public static String[] getItemTypes(boolean withEmpty) {
-        if (withEmpty) {
-            String[] itemTypes = new String[GWMCratesGUI.ITEM_TYPES.size()+1];
-            itemTypes[0] = "NO ITEM";
-            for (int i = 0; i < GWMCratesGUI.ITEM_TYPES.size(); i++) {
-                itemTypes[i+1] = GWMCratesGUI.ITEM_TYPES.get(i);
-            }
-            return itemTypes;
-        }
-        return GWMCratesGUI.ITEM_TYPES.toArray(new String[GWMCratesGUI.ITEM_TYPES.size()]);
-    }
-
-    public static String[] getSoundTypes(boolean withEmpty) {
-        if (withEmpty) {
-            String[] soundTypes = new String[GWMCratesGUI.SOUND_TYPES.size()+1];
-            soundTypes[0] = "NO SOUND";
-            for (int i = 0; i < GWMCratesGUI.SOUND_TYPES.size(); i++) {
-                soundTypes[i+1] = GWMCratesGUI.SOUND_TYPES.get(i);
-            }
-            return soundTypes;
-        }
-        return GWMCratesGUI.SOUND_TYPES.toArray(new String[GWMCratesGUI.SOUND_TYPES.size()]);
-    }
-
-    public static String[] getEnchantments(boolean withEmpty) {
-        if (withEmpty) {
-            String[] enchantments = new String[GWMCratesGUI.ENCHANTMENTS.size()+1];
-            enchantments[0] = "NO ENCHANTMENT";
-            for (int i = 0; i < GWMCratesGUI.ENCHANTMENTS.size(); i++) {
-                enchantments[i+1] = GWMCratesGUI.ENCHANTMENTS.get(i);
-            }
-            return enchantments;
-        }
-        return GWMCratesGUI.ENCHANTMENTS.toArray(new String[GWMCratesGUI.ENCHANTMENTS.size()]);
-    }
-
-    public static String[] getBlockTypes(boolean withEmpty) {
-        if (withEmpty) {
-            String[] blockTypes = new String[GWMCratesGUI.BLOCK_TYPES.size()+1];
-            blockTypes[0] = "NO BLOCK";
-            for (int i = 0; i < GWMCratesGUI.BLOCK_TYPES.size(); i++) {
-                blockTypes[i+1] = GWMCratesGUI.BLOCK_TYPES.get(i);
-            }
-            return blockTypes;
-        }
-        return GWMCratesGUI.BLOCK_TYPES.toArray(new String[GWMCratesGUI.BLOCK_TYPES.size()]);
     }
 
     public static List<String> stringToList(String string) {
