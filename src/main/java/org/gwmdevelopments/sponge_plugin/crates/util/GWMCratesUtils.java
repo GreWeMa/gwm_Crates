@@ -3,7 +3,6 @@ package org.gwmdevelopments.sponge_plugin.crates.util;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
-import org.apache.commons.lang3.StringUtils;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.caze.cases.BlockCase;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
@@ -687,27 +686,6 @@ public final class GWMCratesUtils {
             }
         }
         return Optional.empty();
-    }
-
-    public static List<String> stringToList(String string) {
-        return Arrays.asList(string.split("\n"));
-    }
-
-    public static String listToString(List<String> list) {
-        return StringUtils.join(list, "\n");
-    }
-
-    public static List<Integer> stringToIntList(String string) {
-        List<Integer> list = new ArrayList<>();
-        String[] splited = string.split(" ");
-        for (String str : splited) {
-            list.add(Integer.valueOf(str));
-        }
-        return list;
-    }
-
-    public static String intListToString(List<Integer> list) {
-        return StringUtils.join(list, " ");
     }
 
     public static OrderedInventory castToOrdered(Inventory inventory) {
