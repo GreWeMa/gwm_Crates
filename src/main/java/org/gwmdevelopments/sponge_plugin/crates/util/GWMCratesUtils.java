@@ -18,6 +18,8 @@ import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
 import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.key.Keys;
@@ -97,17 +99,18 @@ public final class GWMCratesUtils {
 
     public static void asyncImportToMySQL() {
         new Thread(() -> {
+            ConsoleSource console = Sponge.getServer().getConsole();
             try {
                 final long time = importToMySQL();
                 Sponge.getScheduler().createTaskBuilder().execute(() ->
-                        Sponge.getServer().getConsole().sendMessage(GWMCrates.getInstance().getLanguage().
-                                getText("IMPORT_TO_MYSQL_SUCCESSFUL",
+                        console.sendMessage(GWMCrates.getInstance().getLanguage().
+                                getText("IMPORT_TO_MYSQL_SUCCESSFUL", console, null,
                                         new Pair<>("%TIME%", millisToString(time))))).
                         submit(GWMCrates.getInstance());
             } catch (SQLException e) {
                 Sponge.getScheduler().createTaskBuilder().execute(() ->
-                        Sponge.getServer().getConsole().sendMessage(GWMCrates.getInstance().getLanguage().
-                                getText("IMPORT_TO_MYSQL_FAILED")))
+                        console.sendMessage(GWMCrates.getInstance().getLanguage().
+                                getText("IMPORT_TO_MYSQL_FAILED", console, null)))
                         .submit(GWMCrates.getInstance());
                 GWMCrates.getInstance().getLogger().warn("Async import to MySQL failed!", e);
             }
@@ -273,17 +276,18 @@ public final class GWMCratesUtils {
 
     public static void asyncImportFromMySQL() {
         new Thread(() -> {
+            ConsoleSource console = Sponge.getServer().getConsole();
             try {
                 final long time = importFromMySQL();
                 Sponge.getScheduler().createTaskBuilder().execute(() ->
-                        Sponge.getServer().getConsole().sendMessage(GWMCrates.getInstance().getLanguage().
-                                getText("IMPORT_FROM_MYSQL_SUCCESSFUL",
+                        console.sendMessage(GWMCrates.getInstance().getLanguage().
+                                getText("IMPORT_FROM_MYSQL_SUCCESSFUL", console, null,
                                         new Pair<>("%TIME%", millisToString(time))))).
                         submit(GWMCrates.getInstance());
             } catch (SQLException e) {
                 Sponge.getScheduler().createTaskBuilder().execute(() ->
-                        Sponge.getServer().getConsole().sendMessage(GWMCrates.getInstance().getLanguage().
-                                getText("IMPORT_FROM_MYSQL_FAILED")))
+                        console.sendMessage(GWMCrates.getInstance().getLanguage().
+                                getText("IMPORT_FROM_MYSQL_FAILED", console, null)))
                         .submit(GWMCrates.getInstance());
                 GWMCrates.getInstance().getLogger().warn("Async import from MySQL failed!", e);
             }

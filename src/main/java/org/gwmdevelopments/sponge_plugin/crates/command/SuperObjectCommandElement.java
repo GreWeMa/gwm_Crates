@@ -29,10 +29,10 @@ public class SuperObjectCommandElement extends CommandElement {
     }
 
     @Override
-    public SuperObject parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
+    public SuperObject parseValue(CommandSource src, CommandArgs args) throws ArgumentParseException {
         String superObjectId = args.next();
         return GWMCratesUtils.getSavedSuperObject(superObjectId).orElseThrow(() ->
-                new ArgumentParseException(GWMCrates.getInstance().getLanguage().getText("SSO_NOT_EXIST",
+                new ArgumentParseException(GWMCrates.getInstance().getLanguage().getText("SSO_NOT_EXIST", src, null,
                         new Pair<>("%SUPER_OBJECT%", superObjectId)), superObjectId, 0));
     }
 

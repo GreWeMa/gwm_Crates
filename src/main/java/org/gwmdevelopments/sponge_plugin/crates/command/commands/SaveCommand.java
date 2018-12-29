@@ -12,7 +12,7 @@ public class SaveCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
         GWMCrates.getInstance().save();
-        src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_SAVED"));
+        src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_SAVED", src, null));
         return CommandResult.success();
     }
 }

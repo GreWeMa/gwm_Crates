@@ -22,21 +22,21 @@ public class ListCommand implements CommandExecutor {
         while (hasNext) {
             Manager next = managerIterator.next();
             if (hasNext = managerIterator.hasNext()) {
-                messageBuilder.append(GWMCrates.getInstance().getLanguage().getText("MANAGER_LIST_FORMAT",
+                messageBuilder.append(GWMCrates.getInstance().getLanguage().getText("MANAGER_LIST_FORMAT", src, null,
                         new Pair<>("%MANAGER_ID%", next.getId()),
                         new Pair<>("%MANAGER_NAME%", next.getName())));
             } else {
-                messageBuilder.append(GWMCrates.getInstance().getLanguage().getText("LAST_MANAGER_LIST_FORMAT",
+                messageBuilder.append(GWMCrates.getInstance().getLanguage().getText("LAST_MANAGER_LIST_FORMAT", src, null,
                         new Pair<>("%MANAGER_ID%", next.getId()),
                         new Pair<>("%MANAGER_NAME%", next.getName())));
             }
         }
         if (GWMCrates.getInstance().getLanguage().exists("MANAGER_LIST_HEADER")) {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("MANAGER_LIST_HEADER"));
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("MANAGER_LIST_HEADER", src, null));
         }
         src.sendMessage(messageBuilder.build());
         if (GWMCrates.getInstance().getLanguage().exists("MANAGER_LIST_FOOTER")) {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("MANAGER_LIST_FOOTER"));
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("MANAGER_LIST_FOOTER", src, null));
         }
         return CommandResult.success();
     }

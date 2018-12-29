@@ -24,12 +24,12 @@ public class WithdrawCaseCommand implements CommandExecutor {
         boolean self = src.equals(player);
         if (self) {
             if (!player.hasPermission("gwm_crates.command.withdraw.manager." + managerId + ".case")) {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
+                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
                 return CommandResult.success();
             }
         } else {
             if (!src.hasPermission("gwm_crates.command.withdraw_others.manager." + managerId + ".case")) {
-                src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
+                src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
                 return CommandResult.success();
             }
         }
@@ -37,10 +37,10 @@ public class WithdrawCaseCommand implements CommandExecutor {
         int caseAmount = caze.get(player);
         caze.withdraw(player, amount < caseAmount ? amount : caseAmount, force);
         if (self) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_WITHDREW_CASE",
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_WITHDREW_CASE", src, null,
                     new Pair<>("%MANAGER%", manager.getName())));
         } else {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_WITHDREW_OTHERS_CASE",
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_WITHDREW_OTHERS_CASE", src, null,
                     new Pair<>("%MANAGER%", manager.getName()),
                     new Pair<>("%PLAYER%", player.getName())));
         }

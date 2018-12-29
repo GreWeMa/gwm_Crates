@@ -24,7 +24,7 @@ public class BuyCaseCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
         if (!(src instanceof Player)) {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("COMMAND_EXECUTABLE_ONLY_BY_PLAYER"));
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("COMMAND_EXECUTABLE_ONLY_BY_PLAYER", src, null));
             return CommandResult.success();
         }
         Player player = (Player) src;
@@ -33,31 +33,31 @@ public class BuyCaseCommand implements CommandExecutor {
         String managerId = manager.getId();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
         if (!player.hasPermission("gwm_crates.command.buy.manager." + managerId + ".case")) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
             return CommandResult.success();
         }
         Case caze = manager.getCase();
         if (!(caze instanceof Giveable)) {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SSO_IS_NOT_GIVEABLE",
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SSO_IS_NOT_GIVEABLE", src, null,
                     new Pair<>("%SUPER_OBJECT%", caze)));
             return CommandResult.success();
         }
         Giveable giveable = (Giveable) caze;
         Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
         if (!optionalEconomyService.isPresent()) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("ECONOMY_SERVICE_NOT_FOUND"));
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("ECONOMY_SERVICE_NOT_FOUND", src, null));
             return CommandResult.success();
         }
         EconomyService economyService = optionalEconomyService.get();
         Optional<UniqueAccount> optionalPlayerAccount = economyService.getOrCreateAccount(uuid);
         if (!optionalPlayerAccount.isPresent()) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("ECONOMY_ACCOUNT_NOT_FOUND"));
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("ECONOMY_ACCOUNT_NOT_FOUND", src, null));
             return CommandResult.success();
         }
         UniqueAccount playerAccount = optionalPlayerAccount.get();
         Optional<BigDecimal> optionalPrice = giveable.getPrice();
         if (!optionalPrice.isPresent()) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CASE_IS_NOT_FOR_SALE",
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CASE_IS_NOT_FOR_SALE", src, null,
                     new Pair<>("%MANAGER%", manager.getName())));
         }
         BigDecimal price = optionalPrice.get();
@@ -65,12 +65,12 @@ public class BuyCaseCommand implements CommandExecutor {
         Currency currency = giveable.getSellCurrency().orElse(economyService.getDefaultCurrency());
         BigDecimal balance = playerAccount.getBalance(currency);
         if (balance.compareTo(totalPrice) < 0) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("NOT_ENOUGH_MONEY"));
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("NOT_ENOUGH_MONEY", src, null));
             return CommandResult.success();
         }
         playerAccount.withdraw(currency, totalPrice, GWMCrates.getInstance().getCause());
         giveable.give(player, amount, false);
-        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_BOUGHT_CASE",
+        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_BOUGHT_CASE", src, null,
                 new Pair<>("%MANAGER%", manager.getName())));
         return CommandResult.success();
     }

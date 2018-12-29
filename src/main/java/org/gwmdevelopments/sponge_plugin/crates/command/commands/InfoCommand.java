@@ -1,5 +1,6 @@
 package org.gwmdevelopments.sponge_plugin.crates.command.commands;
 
+import me.rojo8399.placeholderapi.PlaceholderService;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
@@ -22,7 +23,7 @@ public class InfoCommand implements CommandExecutor {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
         String managerId = manager.getId();
         if (!src.hasPermission("gwm_crates.command.info." + managerId)) {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
             return CommandResult.success();
         }
         Optional<Text> optionalCustomInfo = manager.getCustomInfo();
@@ -42,7 +43,7 @@ public class InfoCommand implements CommandExecutor {
                         new Pair<>("%ID%", drop.getId().orElse("Unknown ID"))));
             }
         }
-        src.sendMessages(GWMCrates.getInstance().getLanguage().getTextList("MANAGER_INFO_MESSAGE",
+        src.sendMessages(GWMCrates.getInstance().getLanguage().getTextList("MANAGER_INFO_MESSAGE", src, null,
                 new Pair<>("%MANAGER_ID%", manager.getId()),
                 new Pair<>("%MANAGER_NAME%", manager.getName()),
                 new Pair<>("%CASE_TYPE%", manager.getCase().getType()),

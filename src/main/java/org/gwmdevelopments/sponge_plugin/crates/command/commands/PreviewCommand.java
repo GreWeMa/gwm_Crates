@@ -25,28 +25,28 @@ public class PreviewCommand implements CommandExecutor {
         if (self) {
             if (!player.hasPermission("gwm_crates.preview." + managerId) ||
                     !player.hasPermission("gwm_crates.command.preview." + managerId)) {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
+                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
                 return CommandResult.success();
             }
         } else {
             if (!src.hasPermission("gwm_crates.command.preview_others." + managerId)) {
-                src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
+                src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
                 return CommandResult.success();
             }
         }
         Optional<Preview> optionalPreview = manager.getPreview();
         if (!optionalPreview.isPresent()) {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("PREVIEW_NOT_AVAILABLE",
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("PREVIEW_NOT_AVAILABLE", src, null,
                     new Pair<>("%MANAGER%", manager.getName())));
             return CommandResult.success();
         }
         Preview preview = optionalPreview.get();
         preview.preview(player, manager);
         if (self) {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("PREVIEW_STARTED",
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("PREVIEW_STARTED", src, null,
                     new Pair<>("%MANAGER%", manager.getName())));
         } else {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("PREVIEW_STARTED_FOR_PLAYER",
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("PREVIEW_STARTED_FOR_PLAYER", src, null,
                     new Pair<>("%MANAGER%", manager.getName()),
                     new Pair<>("%PLAYER%", player.getName())));
         }

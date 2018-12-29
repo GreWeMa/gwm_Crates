@@ -21,7 +21,7 @@ public class OpenCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
         if (!(src instanceof Player)) {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("COMMAND_EXECUTABLE_ONLY_BY_PLAYER"));
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("COMMAND_EXECUTABLE_ONLY_BY_PLAYER", src, null));
             return CommandResult.success();
         }
         Player player = (Player) src;
@@ -33,25 +33,25 @@ public class OpenCommand implements CommandExecutor {
         OpenManager openManager = manager.getOpenManager();
         if (!player.hasPermission("gwm_crates.open." + managerId) ||
                 !player.hasPermission("gwm_crates.command.open." + managerId)) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
             return CommandResult.success();
         }
         long delay = GWMCratesUtils.getCrateOpenDelay(uuid);
         if (delay > 0L) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CRATE_OPEN_DELAY",
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CRATE_OPEN_DELAY", src, null,
                     new Pair<>("%TIME%", GWMCratesUtils.millisToString(delay))));
             return CommandResult.success();
         }
         if (!openManager.canOpen(player, manager)) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CAN_NOT_OPEN_MANAGER"));
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CAN_NOT_OPEN_MANAGER", src, null));
             return CommandResult.success();
         }
         if (caze.get(player) < 1) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_CASE"));
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_CASE", src, null));
             return CommandResult.success();
         }
         if (key.get(player) < 1) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_KEY"));
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_KEY", src, null));
             return CommandResult.success();
         }
         caze.withdraw(player, 1, false);

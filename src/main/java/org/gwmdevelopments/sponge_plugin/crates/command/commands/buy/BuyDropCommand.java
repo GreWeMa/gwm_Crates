@@ -24,7 +24,7 @@ public class BuyDropCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
         if (!(src instanceof Player)) {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("COMMAND_EXECUTABLE_ONLY_BY_PLAYER"));
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("COMMAND_EXECUTABLE_ONLY_BY_PLAYER", src, null));
             return CommandResult.success();
         }
         Player player = (Player) src;
@@ -35,30 +35,30 @@ public class BuyDropCommand implements CommandExecutor {
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
         Optional<Drop> optionalDrop = manager.getDropById(dropId);
         if (!optionalDrop.isPresent()) {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("DROP_NOT_EXIST",
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("DROP_NOT_EXIST", src, null,
                     new Pair<>("%DROP%", dropId)));
             return CommandResult.success();
         }
         Drop drop = optionalDrop.get();
         if (!player.hasPermission("gwm_crates.command.buy.manager." + managerId + ".drop." + dropId)) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
             return CommandResult.success();
         }
         Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
         if (!optionalEconomyService.isPresent()) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("ECONOMY_SERVICE_NOT_FOUND"));
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("ECONOMY_SERVICE_NOT_FOUND", src, null));
             return CommandResult.success();
         }
         EconomyService economyService = optionalEconomyService.get();
         Optional<UniqueAccount> optionalPlayerAccount = economyService.getOrCreateAccount(uuid);
         if (!optionalPlayerAccount.isPresent()) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("ECONOMY_ACCOUNT_NOT_FOUND"));
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("ECONOMY_ACCOUNT_NOT_FOUND", src, null));
             return CommandResult.success();
         }
         UniqueAccount playerAccount = optionalPlayerAccount.get();
         Optional<BigDecimal> optionalPrice = drop.getPrice();
         if (!optionalPrice.isPresent()) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("DROP_IS_NOT_FOR_SALE",
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("DROP_IS_NOT_FOR_SALE", src, null,
                     new Pair<>("%MANAGER%", manager.getName())));
         }
         BigDecimal price = optionalPrice.get();
@@ -66,12 +66,12 @@ public class BuyDropCommand implements CommandExecutor {
         Currency currency = drop.getSellCurrency().orElse(economyService.getDefaultCurrency());
         BigDecimal balance = playerAccount.getBalance(currency);
         if (balance.compareTo(totalPrice) < 0) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("NOT_ENOUGH_MONEY"));
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("NOT_ENOUGH_MONEY", src, null));
             return CommandResult.success();
         }
         playerAccount.withdraw(currency, totalPrice, GWMCrates.getInstance().getCause());
         drop.give(player, amount);
-        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_BOUGHT_DROP",
+        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_BOUGHT_DROP", src, null,
                 new Pair<>("%MANAGER%", manager.getName()),
                 new Pair<>("%DROP%", dropId)));
         return CommandResult.success();
