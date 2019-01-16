@@ -25,7 +25,7 @@ public class WorldTimeKey extends AbstractKey {
             whitelistMode = whitelistModeNode.getBoolean(true);
             timeValues = new HashMap<>();
             for (Map.Entry<Object, ? extends ConfigurationNode> entry : timeValuesNode.getChildrenMap().entrySet()) {
-                int key = Integer.valueOf(entry.getKey().toString());
+                int key = Integer.parseInt(entry.getKey().toString());
                 int value = entry.getValue().getInt();
                 timeValues.put(key, value);
             }
