@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
@@ -25,7 +26,7 @@ public class MultiKey extends GiveableKey {
             ConfigurationNode keysNode = node.getNode("KEYS");
             ConfigurationNode allKeysNeededNode = node.getNode("ALL_KEYS_NEEDED");
             if (keysNode.isVirtual()) {
-                throw new RuntimeException("KEYS node does not exist");
+                throw new IllegalArgumentException("KEYS node does not exist");
             }
             keys = new ArrayList<>();
             for (ConfigurationNode keyNode : keysNode.getChildrenList()) {
@@ -33,7 +34,7 @@ public class MultiKey extends GiveableKey {
             }
             allKeysNeeded = allKeysNeededNode.getBoolean(true);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Multi Key!", e);
+            throw new SSOCreationException("Failed to create Multi Key!", e);
         }
     }
 

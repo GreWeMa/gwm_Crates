@@ -24,27 +24,27 @@ public class GiveCaseCommand implements CommandExecutor {
         boolean self = src.equals(player);
         if (self) {
             if (!player.hasPermission("gwm_crates.command.give.manager." + managerId + ".case")) {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
+                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
                 return CommandResult.success();
             }
         } else {
             if (!src.hasPermission("gwm_crates.command.give_others.manager." + managerId + ".case")) {
-                src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
+                src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
                 return CommandResult.success();
             }
         }
         Case caze = manager.getCase();
         if (!(caze instanceof Giveable)) {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SSO_IS_NOT_GIVEABLE",
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SSO_IS_NOT_GIVEABLE", src, null,
                     new Pair<>("%SUPER_OBJECT%", caze)));
             return CommandResult.success();
         }
         ((Giveable) caze).give(player, amount, force);
         if (self) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_GOT_CASE",
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_GOT_CASE", src, null,
                     new Pair<>("%MANAGER%", manager.getName())));
         } else {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_GAVE_CASE",
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_GAVE_CASE", src, null,
                     new Pair<>("%MANAGER%", manager.getName()),
                     new Pair<>("%PLAYER%", player.getName())));
         }

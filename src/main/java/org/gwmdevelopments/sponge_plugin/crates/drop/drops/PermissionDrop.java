@@ -3,6 +3,7 @@ package org.gwmdevelopments.sponge_plugin.crates.drop.drops;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.drop.AbstractDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.spongepowered.api.entity.living.player.Player;
@@ -26,19 +27,19 @@ public class PermissionDrop extends AbstractDrop {
             ConfigurationNode drop1Node = node.getNode("DROP1");
             ConfigurationNode drop2Node = node.getNode("DROP2");
             if (permissionNode.isVirtual()) {
-                throw new RuntimeException("PERMISSION node does not exist!");
+                throw new IllegalArgumentException("PERMISSION node does not exist!");
             }
             if (drop1Node.isVirtual()) {
-                throw new RuntimeException("DROP1 node does not exist!");
+                throw new IllegalArgumentException("DROP1 node does not exist!");
             }
             if (drop2Node.isVirtual()) {
-                throw new RuntimeException("DROP2 node does not exist!");
+                throw new IllegalArgumentException("DROP2 node does not exist!");
             }
             permission = permissionNode.getString();
             drop1 = (Drop) GWMCratesUtils.createSuperObject(drop1Node, SuperObjectType.DROP);
             drop2 = (Drop) GWMCratesUtils.createSuperObject(drop2Node, SuperObjectType.DROP);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Permission Drop!", e);
+            throw new SSOCreationException("Failed to create Permission Drop!", e);
         }
     }
 

@@ -24,10 +24,10 @@ public class ManagerCommandElement extends CommandElement {
     }
 
     @Override
-    public Manager parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
+    public Manager parseValue(CommandSource src, CommandArgs args) throws ArgumentParseException {
         String managerId = args.next();
         return GWMCratesUtils.getManager(managerId).orElseThrow(() ->
-                new ArgumentParseException(GWMCrates.getInstance().getLanguage().getText("MANAGER_NOT_EXIST",
+                new ArgumentParseException(GWMCrates.getInstance().getLanguage().getText("MANAGER_NOT_EXIST", src, null,
                         new Pair<>("%MANAGER%", managerId)), managerId, 0));
     }
 

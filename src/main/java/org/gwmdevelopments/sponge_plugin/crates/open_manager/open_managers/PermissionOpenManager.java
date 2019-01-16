@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
@@ -24,19 +25,19 @@ public class PermissionOpenManager extends AbstractOpenManager {
             ConfigurationNode openManager1Node = node.getNode("OPEN_MANAGER1");
             ConfigurationNode openManager2Node = node.getNode("OPEN_MANAGER2");
             if (permissionNode.isVirtual()) {
-                throw new RuntimeException("PERMISSION node does not exist!");
+                throw new IllegalArgumentException("PERMISSION node does not exist!");
             }
             if (openManager1Node.isVirtual()) {
-                throw new RuntimeException("OPEN_MANAGER1 node does not exist!");
+                throw new IllegalArgumentException("OPEN_MANAGER1 node does not exist!");
             }
             if (openManager2Node.isVirtual()) {
-                throw new RuntimeException("OPEN_MANAGER2 node does not exist!");
+                throw new IllegalArgumentException("OPEN_MANAGER2 node does not exist!");
             }
             permission = permissionNode.getString();
             openManager1 = (OpenManager) GWMCratesUtils.createSuperObject(openManager1Node, SuperObjectType.OPEN_MANAGER);
             openManager2 = (OpenManager) GWMCratesUtils.createSuperObject(openManager2Node, SuperObjectType.OPEN_MANAGER);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Permission Open Manager!", e);
+            throw new SSOCreationException("Failed to create Permission Open Manager!", e);
         }
     }
 

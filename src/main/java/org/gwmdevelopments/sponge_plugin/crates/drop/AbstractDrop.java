@@ -3,6 +3,7 @@ package org.gwmdevelopments.sponge_plugin.crates.drop;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.AbstractSuperObject;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.entity.living.player.Player;
@@ -42,7 +43,7 @@ public abstract class AbstractDrop extends AbstractSuperObject implements Drop {
                 String sellCurrencyName = sellCurrencyNode.getString();
                 Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
                 if (!optionalEconomyService.isPresent()) {
-                    throw new RuntimeException("Economy Service not found, but parameter \"SELL_CURRENCY\" specified!");
+                    throw new IllegalArgumentException("Economy Service not found, but parameter \"SELL_CURRENCY\" specified!");
                 }
                 EconomyService economyService = optionalEconomyService.get();
                 boolean found = false;
@@ -54,7 +55,7 @@ public abstract class AbstractDrop extends AbstractSuperObject implements Drop {
                     }
                 }
                 if (!found) {
-                    throw new RuntimeException("Currency \"" + sellCurrencyName + "\" not found!");
+                    throw new IllegalArgumentException("Currency \"" + sellCurrencyName + "\" not found!");
                 }
             }
             level = levelNode.getInt(1);
@@ -75,7 +76,7 @@ public abstract class AbstractDrop extends AbstractSuperObject implements Drop {
                 permissionFakeLevels = permissionFakeLevelsNode.getValue(new TypeToken<Map<String, Integer>>(){});
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Abstract Drop!", e);
+            throw new SSOCreationException("Failed to create Abstract Drop!", e);
         }
     }
 

@@ -4,6 +4,7 @@ import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenCrateEvent;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
@@ -82,7 +83,7 @@ public class SecondOpenManager extends AbstractOpenManager {
                 clickSound = Optional.of(clickSoundNode.getValue(TypeToken.of(SoundType.class)));
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Second Open Manager!", e);
+            throw new SSOCreationException("Failed to create Second Open Manager!", e);
         }
     }
 

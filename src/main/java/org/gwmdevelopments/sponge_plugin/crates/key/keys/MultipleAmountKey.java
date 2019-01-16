@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.AbstractKey;
 import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.gwmdevelopments.sponge_plugin.crates.key.Key;
@@ -24,12 +25,12 @@ public class MultipleAmountKey extends GiveableKey {
             ConfigurationNode childKeyNode = node.getNode("CHILD_KEY");
             ConfigurationNode amountNode = node.getNode("AMOUNT");
             if (childKeyNode.isVirtual()) {
-                throw new RuntimeException("CHILD_KEY node does not exist!");
+                throw new IllegalArgumentException("CHILD_KEY node does not exist!");
             }
             childKey = (Key) GWMCratesUtils.createSuperObject(childKeyNode, SuperObjectType.KEY);
             amount = amountNode.getInt(1);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Multiple Amount Key!", e);
+            throw new SSOCreationException("Failed to create Multiple Amount Key!", e);
         }
     }
 

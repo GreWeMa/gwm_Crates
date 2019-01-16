@@ -3,6 +3,7 @@ package org.gwmdevelopments.sponge_plugin.crates.preview.previews;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.preview.AbstractPreview;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
@@ -38,7 +39,7 @@ public class SecondGuiPreview extends AbstractPreview {
                 displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Second Gui Preview!", e);
+            throw new SSOCreationException("Failed to create Second Gui Preview!", e);
         }
     }
 

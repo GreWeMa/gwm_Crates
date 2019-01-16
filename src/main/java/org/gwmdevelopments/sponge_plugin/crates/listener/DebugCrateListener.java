@@ -47,7 +47,7 @@ public class DebugCrateListener {
                         deserialize(optionalCustomOpenMessage.get().
                                 replace("%MANAGER%", manager.getName())));
             } else {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_OPENED_MANAGER",
+                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_OPENED_MANAGER", player, null,
                         new Pair<>("%MANAGER%", manager.getName())));
             }
         }

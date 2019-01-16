@@ -2,6 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.change_mode;
 
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.AbstractSuperObject;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public abstract class AbstractDecorativeItemsChangeMode extends AbstractSuperObj
             changeDelay = changeDelayNode.getInt(10);
             ignoredIndices = ignoredIndicesNode.getList(TypeToken.of(Integer.class), new ArrayList<>());
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Abstract Decorative Items Change Mode!", e);
+            throw new SSOCreationException("Failed to create Abstract Decorative Items Change Mode!", e);
         }
     }
 

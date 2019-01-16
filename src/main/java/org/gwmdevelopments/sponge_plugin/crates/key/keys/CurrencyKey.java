@@ -2,6 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
@@ -23,16 +24,16 @@ public class CurrencyKey extends GiveableKey {
             ConfigurationNode amountNode = node.getNode("AMOUNT");
             ConfigurationNode currencyNode = node.getNode("CURRENCY");
             if (amountNode.isVirtual()) {
-                throw new RuntimeException("AMOUNT node does not exist!");
+                throw new IllegalArgumentException("AMOUNT node does not exist!");
             }
             if (currencyNode.isVirtual()) {
-                throw new RuntimeException("CURRENCY node does not exist!");
+                throw new IllegalArgumentException("CURRENCY node does not exist!");
             }
             amount = new BigDecimal(amountNode.getString());
             String currencyName = currencyNode.getString();
             Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
             if (!optionalEconomyService.isPresent()) {
-                throw new RuntimeException("Economy Service not found!");
+                throw new IllegalStateException("Economy Service not found!");
             }
             EconomyService economyService = optionalEconomyService.get();
             boolean found = false;
@@ -44,10 +45,10 @@ public class CurrencyKey extends GiveableKey {
                 }
             }
             if (!found) {
-                throw new RuntimeException("Currency \"" + currencyName + "\" not found!");
+                throw new IllegalArgumentException("Currency \"" + currencyName + "\" not found!");
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Currency Key!", e);
+            throw new SSOCreationException("Failed to create Currency Key!", e);
         }
     }
 
@@ -64,7 +65,7 @@ public class CurrencyKey extends GiveableKey {
         if (!isDoNotWithdraw() || force) {
             Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
             if (!optionalEconomyService.isPresent()) {
-                throw new RuntimeException("Economy Service not found!");
+                throw new IllegalStateException("Economy Service not found!");
             }
             EconomyService economyService = optionalEconomyService.get();
             Optional<UniqueAccount> optionalAccount = economyService.getOrCreateAccount(player.getUniqueId());
@@ -85,7 +86,7 @@ public class CurrencyKey extends GiveableKey {
     public int get(Player player) {
         Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
         if (!optionalEconomyService.isPresent()) {
-            throw new RuntimeException("Economy Service not found!");
+            throw new IllegalStateException("Economy Service not found!");
         }
         EconomyService economyService = optionalEconomyService.get();
         Optional<UniqueAccount> optionalAccount = economyService.getOrCreateAccount(player.getUniqueId());
@@ -103,7 +104,7 @@ public class CurrencyKey extends GiveableKey {
         if (!isDoNotAdd() || force) {
             Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
             if (!optionalEconomyService.isPresent()) {
-                throw new RuntimeException("Economy Service not found!");
+                throw new IllegalStateException("Economy Service not found!");
             }
             EconomyService economyService = optionalEconomyService.get();
             Optional<UniqueAccount> optionalAccount = economyService.getOrCreateAccount(player.getUniqueId());

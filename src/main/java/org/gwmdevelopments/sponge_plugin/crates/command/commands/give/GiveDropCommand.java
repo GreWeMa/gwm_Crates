@@ -26,29 +26,29 @@ public class GiveDropCommand implements CommandExecutor  {
         boolean self = src.equals(player);
         Optional<Drop> optionalDrop = manager.getDropById(dropId);
         if (!optionalDrop.isPresent()) {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("DROP_NOT_EXIST",
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("DROP_NOT_EXIST", src, null,
                     new Pair<>("%DROP%", dropId)));
             return CommandResult.success();
         }
         Drop drop = optionalDrop.get();
         if (self) {
             if (!player.hasPermission("gwm_crates.command.give.manager." + managerId + ".drop." + dropId)) {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
+                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
                 return CommandResult.success();
             }
         } else {
             if (!src.hasPermission("gwm_crates.command.give_others.manager." + managerId + ".drop." + dropId)) {
-                src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
+                src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
                 return CommandResult.success();
             }
         }
         drop.give(player, amount);
         if (self) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_GOT_DROP",
+            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_GOT_DROP", src, null,
                     new Pair<>("%MANAGER%", manager.getName()),
                     new Pair<>("%DROP%", dropId)));
         } else {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_GAVE_DROP",
+            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_GAVE_DROP", src, null,
                     new Pair<>("%MANAGER%", manager.getName()),
                     new Pair<>("%DROP%", dropId),
                     new Pair<>("%PLAYER%", player.getName())));

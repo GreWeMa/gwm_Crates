@@ -47,7 +47,7 @@ import java.util.*;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.2",
+        version = "nogui-beta-3.3.1",
         description = "Universal crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -59,13 +59,13 @@ import java.util.*;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 2);
+    public static final Version VERSION = new Version("nogui-beta", 3, 3, 1);
 
     private static GWMCrates instance = null;
 
     public static GWMCrates getInstance() {
         if (instance == null) {
-            throw new RuntimeException("GWMCrates not initialized!");
+            throw new IllegalStateException("GWMCrates not initialized!");
         }
         return instance;
     }
@@ -130,29 +130,26 @@ public final class GWMCrates extends SpongePlugin {
         logsDirectory = new File(configDirectory, "logs");
         if (!configDirectory.exists()) {
             logger.info("Config directory does not exist! Trying to create it...");
-            try {
-                configDirectory.mkdirs();
+            if (configDirectory.mkdirs()) {
                 logger.info("Config directory successfully created!");
-            } catch (Exception e) {
-                logger.warn("Failed to create config directory!", e);
+            } else {
+                logger.error("Failed to create config directory!");
             }
         }
         if (!managersDirectory.exists()) {
             logger.info("Managers directory does not exist! Trying to create it...");
-            try {
-                managersDirectory.mkdirs();
+            if (managersDirectory.mkdirs()) {
                 logger.info("Managers directory successfully created!");
-            } catch (Exception e) {
-                logger.warn("Failed to create managers config directory!", e);
+            } else {
+                logger.error("Failed to create managers config directory!");
             }
         }
         if (!logsDirectory.exists()) {
             logger.info("Logs directory does not exist! Trying to create it...");
-            try {
-                logsDirectory.mkdirs();
+            if (logsDirectory.mkdirs()) {
                 logger.info("Logs directory successfully created!");
-            } catch (Exception e) {
-                logger.warn("Failed to create logs config directory!");
+            } else {
+                logger.error("Failed to create logs config directory!");
             }
         }
 
@@ -163,20 +160,18 @@ public final class GWMCrates extends SpongePlugin {
             File newTimedKeysFile = new File(configDirectory, "timed_keys.conf");
             if (oldTimedCasesFile.exists()) {
                 logger.warn("[BACKWARD COMPATIBILITY] Trying to rename file \"" + oldTimedCasesFile.getName() + "\" to \"" + newTimedCasesFile.getName() + "\"!");
-                try {
-                    oldTimedCasesFile.renameTo(newTimedCasesFile);
+                if (oldTimedCasesFile.renameTo(newTimedCasesFile)) {
                     logger.warn("[BACKWARD COMPATIBILITY] Successfully renamed!");
-                } catch (Exception e) {
-                    logger.warn("[BACKWARD COMPATIBILITY] Failed to rename!", e);
+                } else {
+                    logger.error("[BACKWARD COMPATIBILITY] Failed to rename!");
                 }
             }
             if (oldTimedKeysFile.exists()) {
                 logger.warn("[BACKWARD COMPATIBILITY] Trying to rename file \"" + oldTimedKeysFile.getName() + "\" to \"" + newTimedKeysFile.getName() + "\"!");
-                try {
-                    oldTimedKeysFile.renameTo(newTimedKeysFile);
+                if (oldTimedKeysFile.renameTo(newTimedKeysFile)) {
                     logger.warn("[BACKWARD COMPATIBILITY] Successfully renamed!");
-                } catch (Exception e) {
-                    logger.warn("[BACKWARD COMPATIBILITY] Failed to rename!", e);
+                } else {
+                    logger.error("[BACKWARD COMPATIBILITY] Failed to rename!");
                 }
             }
         }
@@ -348,38 +343,42 @@ public final class GWMCrates extends SpongePlugin {
     }
 
     private void loadSavedSuperObjects() {
-        savedSuperObjectsConfig.getNode("SAVED_SUPER_OBJECTS").getChildrenList().forEach(node -> {
+        for (ConfigurationNode node : savedSuperObjectsConfig.getNode("SAVED_SUPER_OBJECTS").getChildrenList()) {
             ConfigurationNode superObjectTypeNode = node.getNode("SUPER_OBJECT_TYPE");
             ConfigurationNode savedIdNode = node.getNode("SAVED_ID");
             ConfigurationNode idNode = node.getNode("ID");
             String id = idNode.isVirtual() ? "Unknown ID" : idNode.getString();
             if (superObjectTypeNode.isVirtual()) {
-                throw new RuntimeException("SUPER_OBJECT_TYPE node does not exist for Saved Super Object with id \"" + id + "\"!");
+                logger.warn("SUPER_OBJECT_TYPE node does not exist for Saved Super Object with id \"" + id + "\"!");
+                continue;
             }
             String superObjectTypeName = superObjectTypeNode.getString();
             if (!SuperObjectType.SUPER_OBJECT_TYPES.containsKey(superObjectTypeName)) {
-                throw new RuntimeException("Super Object Type \"" + superObjectTypeName + "\" does not found!");
+                logger.warn("Super Object Type \"" + superObjectTypeName + "\" does not found!");
+                continue;
             }
             SuperObjectType superObjectType = SuperObjectType.SUPER_OBJECT_TYPES.get(superObjectTypeName);
             if (savedIdNode.isVirtual()) {
-                throw new RuntimeException("SAVED_ID node does not exist for Saved Super Object \"" + superObjectType + "\" with id \"" + id + "\"!");
+                logger.warn("SAVED_ID node does not exist for Saved Super Object \"" + superObjectType + "\" with id \"" + id + "\"!");
+                continue;
             }
             String savedId = savedIdNode.getString();
             if (savedSuperObjects.keySet().stream().map(Pair::getValue).anyMatch(s -> s.equals(savedId))) {
                 logger.warn("Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\" and ID \"" + id + "\" is not loaded because its SAVED_ID is not unique!");
-                return;
+                continue;
             }
             Pair<SuperObjectType, String> pair = new Pair<>(superObjectType, savedId);
             if (savedSuperObjects.containsKey(pair)) {
-                throw new RuntimeException("Saved Super Objects already contains Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\"!");
+                logger.warn("Saved Super Objects already contains Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\"!");
+                continue;
             }
             try {
                 savedSuperObjects.put(pair, GWMCratesUtils.createSuperObject(node, superObjectType));
                 logger.info("Successfully loaded Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\" and ID \"" + id + "\"!");
             } catch (Exception e) {
-                logger.info("Failed to load Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\" and ID \"" + id + "\"!", e);
+                logger.warn("Failed to load Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\" and ID \"" + id + "\"!", e);
             }
-        });
+        }
         logger.info("All Saved Super Objects loaded!");
     }
 
@@ -471,7 +470,7 @@ public final class GWMCrates extends SpongePlugin {
             logger.info("Economy Service found!");
             return true;
         }
-        logger.warn("Economy Service does not found!");
+        logger.warn("Economy Service not found!");
         logger.info("Please install plugin that provides Economy Service, if you want use economical features.");
         return false;
     }

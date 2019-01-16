@@ -8,12 +8,14 @@ import org.gwmdevelopments.sponge_plugin.crates.caze.cases.BlockCase;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.CommandsDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.EmptyDrop;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.Animation1OpenManager;
 import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
 import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.key.Keys;
@@ -92,17 +94,18 @@ public final class GWMCratesUtils {
 
     public static void asyncImportToMySQL() {
         new Thread(() -> {
+            ConsoleSource console = Sponge.getServer().getConsole();
             try {
                 final long time = importToMySQL();
                 Sponge.getScheduler().createTaskBuilder().execute(() ->
-                        Sponge.getServer().getConsole().sendMessage(GWMCrates.getInstance().getLanguage().
-                                getText("IMPORT_TO_MYSQL_SUCCESSFUL",
+                        console.sendMessage(GWMCrates.getInstance().getLanguage().
+                                getText("IMPORT_TO_MYSQL_SUCCESSFUL", console, null,
                                         new Pair<>("%TIME%", millisToString(time))))).
                         submit(GWMCrates.getInstance());
             } catch (SQLException e) {
                 Sponge.getScheduler().createTaskBuilder().execute(() ->
-                        Sponge.getServer().getConsole().sendMessage(GWMCrates.getInstance().getLanguage().
-                                getText("IMPORT_TO_MYSQL_FAILED")))
+                        console.sendMessage(GWMCrates.getInstance().getLanguage().
+                                getText("IMPORT_TO_MYSQL_FAILED", console, null)))
                         .submit(GWMCrates.getInstance());
                 GWMCrates.getInstance().getLogger().warn("Async import to MySQL failed!", e);
             }
@@ -268,17 +271,18 @@ public final class GWMCratesUtils {
 
     public static void asyncImportFromMySQL() {
         new Thread(() -> {
+            ConsoleSource console = Sponge.getServer().getConsole();
             try {
                 final long time = importFromMySQL();
                 Sponge.getScheduler().createTaskBuilder().execute(() ->
-                        Sponge.getServer().getConsole().sendMessage(GWMCrates.getInstance().getLanguage().
-                                getText("IMPORT_FROM_MYSQL_SUCCESSFUL",
+                        console.sendMessage(GWMCrates.getInstance().getLanguage().
+                                getText("IMPORT_FROM_MYSQL_SUCCESSFUL", console, null,
                                         new Pair<>("%TIME%", millisToString(time))))).
                         submit(GWMCrates.getInstance());
             } catch (SQLException e) {
                 Sponge.getScheduler().createTaskBuilder().execute(() ->
-                        Sponge.getServer().getConsole().sendMessage(GWMCrates.getInstance().getLanguage().
-                                getText("IMPORT_FROM_MYSQL_FAILED")))
+                        console.sendMessage(GWMCrates.getInstance().getLanguage().
+                                getText("IMPORT_FROM_MYSQL_FAILED", console, null)))
                         .submit(GWMCrates.getInstance());
                 GWMCrates.getInstance().getLogger().warn("Async import from MySQL failed!", e);
             }
@@ -357,7 +361,7 @@ public final class GWMCratesUtils {
             ConfigurationNode enchantmentsNode = node.getNode("ENCHANTMENTS");
             ConfigurationNode hideEnchantmentsNode = node.getNode("HIDE_ENCHANTMENTS");
             if (itemTypeNode.isVirtual()) {
-                throw new RuntimeException("ITEM_TYPE node does not exist!");
+                throw new IllegalArgumentException("ITEM_TYPE node does not exist!");
             }
             //Mega-shit-code start
             ConfigurationNode tempNode = SimpleConfigurationNode.root();
@@ -402,7 +406,7 @@ public final class GWMCratesUtils {
             }
             return item;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse item!", e);
+            throw new IllegalArgumentException("Failed to parse item!", e);
         }
     }
 
@@ -410,14 +414,14 @@ public final class GWMCratesUtils {
         ConfigurationNode enchantmentNode = node.getNode("ENCHANTMENT");
         ConfigurationNode levelNode = node.getNode("LEVEL");
         if (enchantmentNode.isVirtual()) {
-            throw new RuntimeException("ENCHANTMENT node does not exist!");
+            throw new IllegalArgumentException("ENCHANTMENT node does not exist!");
         }
         try {
             EnchantmentType type = enchantmentNode.getValue(TypeToken.of(EnchantmentType.class));
             int level = levelNode.getInt(1);
             return Enchantment.of(type, level);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse enchantment!", e);
+            throw new IllegalArgumentException("Failed to parse enchantment!", e);
         }
     }
 
@@ -431,7 +435,7 @@ public final class GWMCratesUtils {
         }
         ConfigurationNode consoleNode = node.getNode("CONSOLE");
         if (commandNode.isVirtual()) {
-            throw new RuntimeException("COMMAND node does not exist!");
+            throw new IllegalArgumentException("COMMAND node does not exist!");
         }
         String command = commandNode.getString();
         breakpoint:
@@ -620,25 +624,25 @@ public final class GWMCratesUtils {
         ConfigurationNode typeNode = node.getNode("TYPE");
         ConfigurationNode idNode = node.getNode("ID");
         if (typeNode.isVirtual()) {
-            throw new RuntimeException("TYPE node does not exist!");
+            throw new IllegalArgumentException("TYPE node does not exist!");
         }
         String type = typeNode.getString();
         String id = idNode.isVirtual() ? "Unknown ID" : idNode.getString().toLowerCase().replace(' ', '_');
         if (type.equals("SAVED")) {
             ConfigurationNode savedIdNode = node.getNode("SAVED_ID");
             if (savedIdNode.isVirtual()) {
-                throw new RuntimeException("SAVED_ID node does not exist for Super Object \"" + superObjectType + "\" with type \"" + type + "\" and ID \"" + id + "\"!");
+                throw new IllegalArgumentException("SAVED_ID node does not exist for Super Object \"" + superObjectType + "\" with type \"" + type + "\" and ID \"" + id + "\"!");
             }
             String savedId = savedIdNode.getString();
             Optional<SuperObject> savedSuperObject = getSavedSuperObject(superObjectType, savedId);
             if (!savedSuperObject.isPresent()) {
-                throw new RuntimeException("Saved Super Object \"" + superObjectType + "\" with ID \"" + savedId + "\" does not found!");
+                throw new IllegalArgumentException("Saved Super Object \"" + superObjectType + "\" with ID \"" + savedId + "\" does not found!");
             }
             return savedSuperObject.get();
         }
         Optional<SuperObjectStorage> optionalSuperObjectStorage = getSuperObjectStorage(superObjectType, type);
         if (!optionalSuperObjectStorage.isPresent()) {
-            throw new RuntimeException("Type \"" + type + "\" for Super Object \"" + superObjectType + "\" does not found!");
+            throw new IllegalArgumentException("Type \"" + type + "\" for Super Object \"" + superObjectType + "\" does not found!");
         }
         SuperObjectStorage superObjectStorage = optionalSuperObjectStorage.get();
         try {
@@ -646,7 +650,7 @@ public final class GWMCratesUtils {
             Constructor<? extends SuperObject> superObjectConstructor = superObjectClass.getConstructor(ConfigurationNode.class);
             return superObjectConstructor.newInstance(node);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Super Object \"" + superObjectType + "\" with type \"" + type + "\" and ID \"" + id + "\"!", e);
+            throw new SSOCreationException("Failed to create Super Object \"" + superObjectType + "\" with type \"" + type + "\" and ID \"" + id + "\"!", e);
         }
     }
 
@@ -694,14 +698,14 @@ public final class GWMCratesUtils {
             return (OrderedInventory) result;
         }
         if (result instanceof EmptyInventory) {
-            throw new RuntimeException("Inventory can not be casted to Ordered Inventory!");
+            throw new IllegalArgumentException("Inventory can not be casted to Ordered Inventory!");
         }
         for (Inventory subInventory : inventory) {
             if (subInventory instanceof OrderedInventory) {
                 return (OrderedInventory) subInventory;
             }
         }
-        throw new RuntimeException("Inventory can not be casted to Ordered Inventory!");
+        throw new IllegalArgumentException("Inventory can not be casted to Ordered Inventory!");
     }
 
     public static Path getManagerRelativePath(File managerFile) {

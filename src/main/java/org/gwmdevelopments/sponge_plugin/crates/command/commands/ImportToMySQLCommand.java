@@ -16,16 +16,16 @@ public class ImportToMySQLCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
         boolean async = args.hasAny("a");
-        src.sendMessage(GWMCrates.getInstance().getLanguage().getText("STARTING_IMPORT_TO_MYSQL"));
+        src.sendMessage(GWMCrates.getInstance().getLanguage().getText("STARTING_IMPORT_TO_MYSQL", src, null));
         if (async) {
             GWMCratesUtils.asyncImportToMySQL();
         } else {
             try {
                 long time = GWMCratesUtils.importToMySQL();
-                src.sendMessage(GWMCrates.getInstance().getLanguage().getText("IMPORT_TO_MYSQL_SUCCESSFUL",
+                src.sendMessage(GWMCrates.getInstance().getLanguage().getText("IMPORT_TO_MYSQL_SUCCESSFUL", src, null,
                         new Pair<>("%TIME%", GWMCratesUtils.millisToString(time))));
             } catch (SQLException e) {
-                src.sendMessage(GWMCrates.getInstance().getLanguage().getText("IMPORT_TO_MYSQL_FAILED"));
+                src.sendMessage(GWMCrates.getInstance().getLanguage().getText("IMPORT_TO_MYSQL_FAILED", src, null));
                 GWMCrates.getInstance().getLogger().warn("Async import to MySQL failed!", e);
             }
         }

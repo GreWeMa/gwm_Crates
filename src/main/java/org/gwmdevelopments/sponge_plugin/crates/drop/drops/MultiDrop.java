@@ -3,6 +3,7 @@ package org.gwmdevelopments.sponge_plugin.crates.drop.drops;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.drop.AbstractDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.spongepowered.api.entity.living.player.Player;
@@ -26,7 +27,7 @@ public class MultiDrop extends AbstractDrop {
             ConfigurationNode dropsNode = node.getNode("DROPS");
             ConfigurationNode giveAllNode = node.getNode("GIVE_ALL");
             if (dropsNode.isVirtual()) {
-                throw new RuntimeException("DROPS node does not exist");
+                throw new IllegalArgumentException("DROPS node does not exist");
             }
             drops = new ArrayList<>();
             for (ConfigurationNode drop_node : dropsNode.getChildrenList()) {
@@ -34,7 +35,7 @@ public class MultiDrop extends AbstractDrop {
             }
             giveAll = giveAllNode.getBoolean(true);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Multi Drop!", e);
+            throw new SSOCreationException("Failed to create Multi Drop!", e);
         }
     }
 

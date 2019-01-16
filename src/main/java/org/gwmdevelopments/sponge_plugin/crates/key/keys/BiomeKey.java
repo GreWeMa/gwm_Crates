@@ -2,6 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.AbstractKey;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.biome.BiomeType;
@@ -21,7 +22,7 @@ public class BiomeKey extends AbstractKey {
             ConfigurationNode whitelistModeNode = node.getNode("WHITELIST_MODE");
             ConfigurationNode biomesNode = node.getNode("BIOMES");
             if (biomesNode.isVirtual()) {
-                throw new RuntimeException("BIOMES node does not exist!");
+                throw new IllegalArgumentException("BIOMES node does not exist!");
             }
             whitelistMode = whitelistModeNode.getBoolean(true);
             biomes = new ArrayList<>();
@@ -29,7 +30,7 @@ public class BiomeKey extends AbstractKey {
                 biomes.add(biomeNode.getValue(TypeToken.of(BiomeType.class)));
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Biome Key!", e);
+            throw new SSOCreationException("Failed to create Biome Key!", e);
         }
     }
 

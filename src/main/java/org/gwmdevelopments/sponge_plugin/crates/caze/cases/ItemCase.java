@@ -2,6 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.caze.cases;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.caze.GiveableCase;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -21,12 +22,12 @@ public class ItemCase extends GiveableCase {
             ConfigurationNode item_node = node.getNode("ITEM");
             ConfigurationNode startPreviewOnLeftClickNode = node.getNode("START_PREVIEW_ON_LEFT_CLICK");
             if (item_node.isVirtual()) {
-                throw new RuntimeException("ITEM node does not exist!");
+                throw new IllegalArgumentException("ITEM node does not exist!");
             }
             item = GWMCratesUtils.parseItem(item_node);
             startPreviewOnLeftClick = startPreviewOnLeftClickNode.getBoolean(false);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Item Case!", e);
+            throw new SSOCreationException("Failed to create Item Case!", e);
         }
     }
 

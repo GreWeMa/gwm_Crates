@@ -34,23 +34,23 @@ public class EntityCaseListener {
                 event.setCancelled(true);
                 if (event instanceof InteractEntityEvent.Secondary.MainHand) {
                     if (!player.hasPermission("gwm_crates.open." + manager.getId())) {
-                        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
+                        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", player, null));
                         return;
                     }
                     long delay = GWMCratesUtils.getCrateOpenDelay(uuid);
                     if (delay > 0L) {
-                        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CRATE_OPEN_DELAY",
+                        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CRATE_OPEN_DELAY", player, null,
                                 new Pair<>("%TIME%", GWMCratesUtils.millisToString(delay))));
                         return;
                     }
                     OpenManager openManager = manager.getOpenManager();
                     if (!openManager.canOpen(player, manager)) {
-                        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CAN_NOT_OPEN_MANAGER"));
+                        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CAN_NOT_OPEN_MANAGER", player, null));
                         return;
                     }
                     Key key = manager.getKey();
                     if (key.get(player) < 1) {
-                        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_KEY"));
+                        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_KEY", player, null));
                         return;
                     }
                     key.withdraw(player, 1, false);
@@ -60,17 +60,17 @@ public class EntityCaseListener {
                 } else if (event instanceof InteractEntityEvent.Primary.MainHand) {
                     Optional<Preview> optionalPreview = manager.getPreview();
                     if (!optionalPreview.isPresent()) {
-                        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("PREVIEW_NOT_AVAILABLE",
+                        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("PREVIEW_NOT_AVAILABLE", player, null,
                                 new Pair<>("%MANAGER%", manager.getName())));
                         return;
                     }
                     Preview preview = optionalPreview.get();
                     if (!player.hasPermission("gwm_crates.preview." + manager.getId())) {
-                        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION"));
+                        player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", player, null));
                         return;
                     }
                     preview.preview(player, manager);
-                    player.sendMessage(GWMCrates.getInstance().getLanguage().getText("PREVIEW_STARTED",
+                    player.sendMessage(GWMCrates.getInstance().getLanguage().getText("PREVIEW_STARTED", player, null,
                             new Pair<>("%MANAGER%", manager.getName())));
                     return;
                 }

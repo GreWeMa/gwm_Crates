@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.entity.living.player.Player;
@@ -19,11 +20,11 @@ public class ItemKey extends GiveableKey {
         try {
             ConfigurationNode itemNode = node.getNode("ITEM");
             if (itemNode.isVirtual()) {
-                throw new RuntimeException("ITEM node does not exist!");
+                throw new IllegalArgumentException("ITEM node does not exist!");
             }
             item = GWMCratesUtils.parseItem(itemNode);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Item Key!", e);
+            throw new SSOCreationException("Failed to create Item Key!", e);
         }
     }
 

@@ -11,7 +11,7 @@ public class HelpCommand implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
-        src.sendMessages(GWMCrates.getInstance().getLanguage().getTextList("HELP_MESSAGE",
+        src.sendMessages(GWMCrates.getInstance().getLanguage().getTextList("HELP_MESSAGE", src, null,
                 new Pair<>("%VERSION%", GWMCrates.VERSION.toString())));
         return CommandResult.success();
     }

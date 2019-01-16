@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.AbstractKey;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -19,17 +20,17 @@ public class WorldTimeKey extends AbstractKey {
             ConfigurationNode whitelistModeNode = node.getNode("WHITELIST_MODE");
             ConfigurationNode timeValuesNode = node.getNode("TIME_VALUES");
             if (timeValuesNode.isVirtual()) {
-                throw new RuntimeException("TIME_VALUES node does not exist!");
+                throw new IllegalArgumentException("TIME_VALUES node does not exist!");
             }
             whitelistMode = whitelistModeNode.getBoolean(true);
             timeValues = new HashMap<>();
             for (Map.Entry<Object, ? extends ConfigurationNode> entry : timeValuesNode.getChildrenMap().entrySet()) {
-                int key = Integer.valueOf(entry.getKey().toString());
+                int key = Integer.parseInt(entry.getKey().toString());
                 int value = entry.getValue().getInt();
                 timeValues.put(key, value);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create World Time Key!", e);
+            throw new SSOCreationException("Failed to create World Time Key!", e);
         }
     }
 
