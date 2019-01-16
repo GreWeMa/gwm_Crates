@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -18,11 +19,11 @@ public class FoodKey extends GiveableKey {
         try {
             ConfigurationNode foodNode = node.getNode("FOOD");
             if (foodNode.isVirtual()) {
-                throw new RuntimeException("FOOD node does not exist!");
+                throw new IllegalArgumentException("FOOD node does not exist!");
             }
             food = foodNode.getInt();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Food Key!", e);
+            throw new SSOCreationException("Failed to create Food Key!", e);
         }
     }
 

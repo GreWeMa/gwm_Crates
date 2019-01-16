@@ -15,7 +15,7 @@ import org.spongepowered.api.text.Text;
 public class WithdrawCaseCommand implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
         String managerId = manager.getId();
         Player player = args.<Player>getOne(Text.of("player")).get();

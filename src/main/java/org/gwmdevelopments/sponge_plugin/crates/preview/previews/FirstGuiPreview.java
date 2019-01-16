@@ -4,6 +4,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.change_mode.DecorativeItemsChangeMode;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.FirstOpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.preview.AbstractPreview;
@@ -68,7 +69,7 @@ public class FirstGuiPreview extends AbstractPreview {
                 decorativeItemsChangeMode = Optional.of((DecorativeItemsChangeMode) GWMCratesUtils.createSuperObject(decorativeItemsChangeModeNode, SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE));
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create First Gui Preview!", e);
+            throw new SSOCreationException("Failed to create First Gui Preview!", e);
         }
     }
 

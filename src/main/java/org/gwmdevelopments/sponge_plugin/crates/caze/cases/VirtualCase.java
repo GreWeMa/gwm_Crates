@@ -3,6 +3,7 @@ package org.gwmdevelopments.sponge_plugin.crates.caze.cases;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.caze.GiveableCase;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
 
@@ -27,15 +28,15 @@ public class VirtualCase extends GiveableCase {
         try {
             ConfigurationNode virtualNameNode = node.getNode("VIRTUAL_NAME");
             if (virtualNameNode.isVirtual()) {
-                throw new RuntimeException("VIRTUAL_NAME node does not exist!");
+                throw new IllegalArgumentException("VIRTUAL_NAME node does not exist!");
             }
             virtualName = virtualNameNode.getString();
             if (virtualName.length() > GWMCrates.getInstance().getMaxVirtualNamesLength()) {
-                throw new RuntimeException("VIRTUAL_NAME length is more than \"MAX_VIRTUAL_NAMES_LENGTH\" (" +
+                throw new IllegalArgumentException("VIRTUAL_NAME length is more than \"MAX_VIRTUAL_NAMES_LENGTH\" (" +
                         GWMCrates.getInstance().getMaxVirtualNamesLength() + ")!");
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Virtual Case!", e);
+            throw new SSOCreationException("Failed to create Virtual Case!", e);
         }
     }
 

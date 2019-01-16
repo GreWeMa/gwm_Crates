@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -18,11 +19,11 @@ public class HealthKey extends GiveableKey {
         try {
             ConfigurationNode healthNode = node.getNode("HEALTH");
             if (healthNode.isVirtual()) {
-                throw new RuntimeException("HEALTH node does not exist!");
+                throw new IllegalArgumentException("HEALTH node does not exist!");
             }
             health = healthNode.getDouble();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Health Key!", e);
+            throw new SSOCreationException("Failed to create Health Key!", e);
         }
     }
 

@@ -2,6 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.key;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.Giveable;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
@@ -28,7 +29,7 @@ public abstract class GiveableKey extends AbstractKey implements Giveable {
                 String sellCurrencyName = sellCurrencyNode.getString();
                 Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
                 if (!optionalEconomyService.isPresent()) {
-                    throw new RuntimeException("Economy Service not found, but parameter \"SELL_CURRENCY\" specified!");
+                    throw new IllegalArgumentException("Economy Service not found, but parameter \"SELL_CURRENCY\" specified!");
                 }
                 EconomyService economyService = optionalEconomyService.get();
                 boolean found = false;
@@ -40,12 +41,12 @@ public abstract class GiveableKey extends AbstractKey implements Giveable {
                     }
                 }
                 if (!found) {
-                    throw new RuntimeException("Currency \"" + sellCurrencyName + "\" not found!");
+                    throw new IllegalArgumentException("Currency \"" + sellCurrencyName + "\" not found!");
                 }
             }
             doNotAdd = doNotAddNode.getBoolean(false);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Giveable Key!", e);
+            throw new SSOCreationException("Failed to create Giveable Key!", e);
         }
     }
 

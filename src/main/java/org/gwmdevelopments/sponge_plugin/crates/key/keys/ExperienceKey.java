@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -18,11 +19,11 @@ public class ExperienceKey extends GiveableKey {
         try {
             ConfigurationNode experienceNode = node.getNode("EXPERIENCE");
             if (experienceNode.isVirtual()) {
-                throw new RuntimeException("EXPERIENCE node does not exist!");
+                throw new IllegalArgumentException("EXPERIENCE node does not exist!");
             }
             experience = experienceNode.getInt();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Experience Key!", e);
+            throw new SSOCreationException("Failed to create Experience Key!", e);
         }
     }
 

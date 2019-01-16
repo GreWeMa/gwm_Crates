@@ -7,6 +7,7 @@ import org.gwmdevelopments.sponge_plugin.crates.change_mode.DecorativeItemsChang
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenedCrateEvent;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.DecorativeDropChangeRunnable;
@@ -144,7 +145,7 @@ public class CasinoOpenManager extends AbstractOpenManager {
                 decorativeItemsChangeMode = Optional.of((DecorativeItemsChangeMode) GWMCratesUtils.createSuperObject(decorativeItemsChangeModeNode, SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE));
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Casino Open Manager!", e);
+            throw new SSOCreationException("Failed to create Casino Open Manager!", e);
         }
     }
 

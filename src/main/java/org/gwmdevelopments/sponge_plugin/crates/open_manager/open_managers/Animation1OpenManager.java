@@ -6,6 +6,7 @@ import de.randombyte.holograms.api.HologramsService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenCrateEvent;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.listener.Animation1Listener;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager;
@@ -74,7 +75,7 @@ public class Animation1OpenManager extends AbstractOpenManager {
                         collect(Collectors.toList()));
             }
         } catch (Exception e) {
-            GWMCrates.getInstance().getLogger().info("Failed to create Animation1 Open Manager!");
+            throw new SSOCreationException("Failed to create Animation1 Open Manager!", e);
         }
     }
 

@@ -3,6 +3,7 @@ package org.gwmdevelopments.sponge_plugin.crates.caze.cases;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.caze.AbstractCase;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Optional;
@@ -19,12 +20,12 @@ public class EntityCase extends AbstractCase {
             ConfigurationNode entityUuidNode = node.getNode("ENTITY_UUID");
             ConfigurationNode startPreviewOnLeftClickNode = node.getNode("START_PREVIEW_ON_LEFT_CLICK");
             if (entityUuidNode.isVirtual()) {
-                throw new RuntimeException("ENTITY_UUID node does not exist!");
+                throw new IllegalArgumentException("ENTITY_UUID node does not exist!");
             }
             entityUuid = entityUuidNode.getValue(TypeToken.of(UUID.class));
             startPreviewOnLeftClick = startPreviewOnLeftClickNode.getBoolean(false);
         } catch (Exception e) {
-            throw new RuntimeException("Exception creating Entity Case!", e);
+            throw new SSOCreationException("Failed to create Entity Case!", e);
         }
     }
 

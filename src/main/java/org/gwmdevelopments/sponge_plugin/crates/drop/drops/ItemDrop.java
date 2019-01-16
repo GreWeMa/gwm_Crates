@@ -2,6 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.drop.drops;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.drop.AbstractDrop;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -20,11 +21,11 @@ public class ItemDrop extends AbstractDrop {
         try {
             ConfigurationNode itemNode = node.getNode("ITEM");
             if (itemNode.isVirtual()) {
-                throw new RuntimeException("ITEM node does not exist!");
+                throw new IllegalArgumentException("ITEM node does not exist!");
             }
             item = GWMCratesUtils.parseItem(itemNode);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Item Drop!", e);
+            throw new SSOCreationException("Failed to create Item Drop!", e);
         }
     }
 

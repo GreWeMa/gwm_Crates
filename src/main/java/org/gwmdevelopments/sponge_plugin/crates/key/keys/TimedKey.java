@@ -2,6 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
@@ -29,19 +30,19 @@ public class TimedKey extends GiveableKey {
             ConfigurationNode virtualNameNode = node.getNode("VIRTUAL_NAME");
             ConfigurationNode delayNode = node.getNode("DELAY");
             if (virtualNameNode.isVirtual()) {
-                throw new RuntimeException("VIRTUAL_NAME node does not exist!");
+                throw new IllegalArgumentException("VIRTUAL_NAME node does not exist!");
             }
             if (delayNode.isVirtual()) {
-                throw new RuntimeException("DELAY node does not exist!");
+                throw new IllegalArgumentException("DELAY node does not exist!");
             }
             virtualName = virtualNameNode.getString();
             if (virtualName.length() > GWMCrates.getInstance().getMaxVirtualNamesLength()) {
-                throw new RuntimeException("VIRTUAL_NAME length is more than \"MAX_VIRTUAL_NAMES_LENGTH\" (" +
+                throw new IllegalArgumentException("VIRTUAL_NAME length is more than \"MAX_VIRTUAL_NAMES_LENGTH\" (" +
                         GWMCrates.getInstance().getMaxVirtualNamesLength() + ")!");
             }
             delay = delayNode.getLong();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Timed Key!", e);
+            throw new SSOCreationException("Failed to create Timed Key!", e);
         }
     }
 

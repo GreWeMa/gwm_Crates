@@ -3,6 +3,7 @@ package org.gwmdevelopments.sponge_plugin.crates.open_manager;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.AbstractSuperObject;
 import org.spongepowered.api.effect.sound.SoundType;
 
@@ -14,13 +15,13 @@ public abstract class AbstractOpenManager extends AbstractSuperObject implements
 
     public AbstractOpenManager(ConfigurationNode node) {
         super(node);
-        ConfigurationNode openSoundNode = node.getNode("OPEN_SOUND");
         try {
+            ConfigurationNode openSoundNode = node.getNode("OPEN_SOUND");
             if (!openSoundNode.isVirtual()) {
                 openSound = Optional.of(openSoundNode.getValue(TypeToken.of(SoundType.class)));
             }
         } catch (Exception e) {
-            GWMCrates.getInstance().getLogger().warn("Failed to create Abstract Open Manager!", e);
+            throw new SSOCreationException("Failed to create Abstract Open Manager!", e);
         }
     }
 

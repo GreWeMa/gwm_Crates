@@ -2,6 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.AbstractKey;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.weather.Weather;
@@ -21,7 +22,7 @@ public class WorldWeatherKey extends AbstractKey {
             ConfigurationNode whitelistModeNode = node.getNode("WHITELIST_MODE");
             ConfigurationNode weathersNode = node.getNode("WEATHERS");
             if (weathersNode.isVirtual()) {
-                throw new RuntimeException("WEATHERS node does not exist!");
+                throw new IllegalArgumentException("WEATHERS node does not exist!");
             }
             whitelistMode = whitelistModeNode.getBoolean(true);
             weathers = new ArrayList<>();
@@ -29,7 +30,7 @@ public class WorldWeatherKey extends AbstractKey {
                 weathers.add(weatherNode.getValue(TypeToken.of(Weather.class)));
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create World Weather Key!", e);
+            throw new SSOCreationException("Failed to create World Weather Key!", e);
         }
     }
 

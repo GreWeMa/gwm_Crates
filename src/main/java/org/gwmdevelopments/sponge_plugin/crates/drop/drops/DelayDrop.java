@@ -4,6 +4,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.AbstractDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.spongepowered.api.Sponge;
@@ -27,15 +28,15 @@ public class DelayDrop extends AbstractDrop {
             ConfigurationNode childDropNode = node.getNode("CHILD_DROP");
             ConfigurationNode delayNode = node.getNode("DELAY");
             if (childDropNode.isVirtual()) {
-                throw new RuntimeException("CHILD_DROP node does not exist!");
+                throw new IllegalArgumentException("CHILD_DROP node does not exist!");
             }
             childDrop = (Drop) GWMCratesUtils.createSuperObject(childDropNode, SuperObjectType.DROP);
             if (delayNode.isVirtual()) {
-                throw new RuntimeException("DELAY node does not exist!");
+                throw new IllegalArgumentException("DELAY node does not exist!");
             }
             delay = delayNode.getLong();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Delay Drop!", e);
+            throw new SSOCreationException("Failed to create Delay Drop!", e);
         }
     }
 

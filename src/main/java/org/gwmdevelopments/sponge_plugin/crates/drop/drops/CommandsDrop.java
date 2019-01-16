@@ -2,6 +2,7 @@ package org.gwmdevelopments.sponge_plugin.crates.drop.drops;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.drop.AbstractDrop;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.source.ConsoleSource;
@@ -24,14 +25,14 @@ public class CommandsDrop extends AbstractDrop {
         try {
             ConfigurationNode commandsNode = node.getNode("COMMANDS");
             if (commandsNode.isVirtual()) {
-                throw new RuntimeException("COMMANDS node does not exist!");
+                throw new IllegalArgumentException("COMMANDS node does not exist!");
             }
             executableCommands = new ArrayList<>();
             for (ConfigurationNode command_node : commandsNode.getChildrenList()) {
                 executableCommands.add(GWMCratesUtils.parseCommand(command_node));
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Commands Drop!", e);
+            throw new SSOCreationException("Failed to create Commands Drop!", e);
         }
     }
 

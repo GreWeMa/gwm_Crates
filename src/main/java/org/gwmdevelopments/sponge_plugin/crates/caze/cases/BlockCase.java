@@ -5,6 +5,7 @@ import de.randombyte.holograms.api.HologramsService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.caze.AbstractCase;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -30,7 +31,7 @@ public class BlockCase extends AbstractCase {
             ConfigurationNode hologramNode = node.getNode("HOLOGRAM");
             ConfigurationNode startPreviewOnLeftClickNode = node.getNode("START_PREVIEW_ON_LEFT_CLICK");
             if (locationNode.isVirtual()) {
-                throw new RuntimeException("LOCATION node does not exist!");
+                throw new IllegalArgumentException("LOCATION node does not exist!");
             }
             location = GWMLibraryUtils.parseLocation(locationNode);
             if (!hologramNode.isVirtual()) {
@@ -43,7 +44,7 @@ public class BlockCase extends AbstractCase {
                     GWMCrates.getInstance().getHologramOffset(), GWMCrates.getInstance().getMultilineHologramsDistance());
             startPreviewOnLeftClick = startPreviewOnLeftClickNode.getBoolean(false);
         } catch (Exception e) {
-            GWMCrates.getInstance().getLogger().warn("Failed to create Block Case!", e);
+            throw new SSOCreationException("Failed to create Block Case!", e);
         }
     }
 

@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.caze;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.AbstractSuperObject;
 
 import java.util.Optional;
@@ -15,7 +16,7 @@ public abstract class AbstractCase extends AbstractSuperObject implements Case {
             ConfigurationNode doNotWithdrawNode = node.getNode("DO_NOT_WITHDRAW");
             doNotWithdraw = doNotWithdrawNode.getBoolean(false);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Abstract Case!", e);
+            throw new SSOCreationException("Failed to create Abstract Case!", e);
         }
     }
 

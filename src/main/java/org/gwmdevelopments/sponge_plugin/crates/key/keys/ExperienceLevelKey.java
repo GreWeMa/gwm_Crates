@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.AbstractKey;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -16,11 +17,11 @@ public class ExperienceLevelKey extends AbstractKey {
         try {
             ConfigurationNode experienceLevelNode = node.getNode("EXPERIENCE_LEVEL");
             if (experienceLevelNode.isVirtual()) {
-                throw new RuntimeException("EXPERIENCE_LEVEL node does not exist!");
+                throw new IllegalArgumentException("EXPERIENCE_LEVEL node does not exist!");
             }
             experienceLevel = experienceLevelNode.getInt();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Experience Level Key!", e);
+            throw new SSOCreationException("Failed to create Experience Level Key!", e);
         }
     }
 

@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.AbstractKey;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -15,11 +16,11 @@ public class PermissionKey extends AbstractKey {
         try {
             ConfigurationNode permissionNode = node.getNode("PERMISSION");
             if (permissionNode.isVirtual()) {
-                throw new RuntimeException("PERMISSION node does not exist!");
+                throw new IllegalArgumentException("PERMISSION node does not exist!");
             }
             permission = permissionNode.getString();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Permission Key!", e);
+            throw new SSOCreationException("Failed to create Permission Key!", e);
         }
     }
 

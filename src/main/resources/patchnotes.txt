@@ -1,3 +1,6 @@
+v. beta-3.3.1
+1. Refactoring
+
 v. beta-3.3
 1. Added PlaceholderAPI support
 
