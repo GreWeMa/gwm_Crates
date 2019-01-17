@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 public class Animation1OpenManager extends AbstractOpenManager {
 
-    public static Map<Player, Information> PLAYERS_OPENING_ANIMATION1 = new HashMap<>();
+    public static final Map<Player, Information> PLAYERS_OPENING_ANIMATION1 = new HashMap<>();
 
     public static final BlockType DEFAULT_FLOOR_BLOCK_TYPE = BlockTypes.NETHER_BRICK;
     public static final BlockType DEFAULT_FENCE_BLOCK_TYPE = BlockTypes.NETHER_BRICK_FENCE;
