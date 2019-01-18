@@ -50,13 +50,14 @@ import org.spongepowered.api.service.sql.SqlService;
 import javax.sql.DataSource;
 import java.io.File;
 import java.nio.file.Files;
+import java.sql.Connection;
 import java.sql.Statement;
 import java.util.*;
 
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.3.1",
+        version = "beta-3.3.2",
         description = "Universal crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -68,7 +69,7 @@ import java.util.*;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 3, 1);
+    public static final Version VERSION = new Version("beta", 3, 3, 2);
 
     private static GWMCrates instance = null;
 
@@ -271,6 +272,9 @@ public final class GWMCrates extends SpongePlugin {
         superObjects.clear();
         savedSuperObjects.clear();
         loadConfigValues();
+        if (connectMySQL()) {
+            createMySQLTables();
+        }
         language = new Language(this);
         register();
         economyService = Optional.empty();
@@ -443,6 +447,7 @@ public final class GWMCrates extends SpongePlugin {
             String password = passwordNode.getString();
             dataSource =
                     Optional.of(sqlService.getDataSource("jdbc:mysql://" + user + ":" + password + "@" + ip + ":" + port + "/" + db));
+            logger.info("Successfully connected to MySQL!");
             return true;
         } catch (Exception e) {
             logger.warn("Failed to connect to MySQL!", e);
@@ -451,23 +456,28 @@ public final class GWMCrates extends SpongePlugin {
     }
 
     private void createMySQLTables() {
-        try (Statement statement = dataSource.get().getConnection().createStatement()) {
-            statement.execute("CREATE TABLE IF NOT EXISTS virtual_cases " +
-                    "(uuid VARCHAR(36), " +
+        try (Connection connection = dataSource.get().getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE IF NOT EXISTS virtual_cases (" +
                     "name VARCHAR(" + maxVirtualNamesLength + "), " +
-                    "value INTEGER);");
-            statement.execute("CREATE TABLE IF NOT EXISTS virtual_keys " +
-                    "(uuid VARCHAR(36), " +
+                    "uuid VARCHAR(36), " +
+                    "value INTEGER NOT NULL DEFAULT 0, " +
+                    "CONSTRAINT virtual_cases_pk PRIMARY KEY (name, uuid));");
+            statement.execute("CREATE TABLE IF NOT EXISTS virtual_keys (" +
                     "name VARCHAR(" + maxVirtualNamesLength + "), " +
-                    "value INTEGER);");
-            statement.execute("CREATE TABLE IF NOT EXISTS timed_cases " +
-                    "(uuid VARCHAR(36), " +
+                    "uuid VARCHAR(36), " +
+                    "value INTEGER NOT NULL DEFAULT 0, " +
+                    "CONSTRAINT virtual_keys_pk PRIMARY KEY (name, uuid));");
+            statement.execute("CREATE TABLE IF NOT EXISTS timed_cases (" +
                     "name VARCHAR(" + maxVirtualNamesLength + "), " +
-                    "delay BIGINT);");
-            statement.execute("CREATE TABLE IF NOT EXISTS timed_keys " +
-                    "(uuid VARCHAR(36), " +
+                    "uuid VARCHAR(36), " +
+                    "delay BIGINT NOT NULL DEFAULT 0, " +
+                    "CONSTRAINT timed_cases_pk PRIMARY KEY (name, uuid));");
+            statement.execute("CREATE TABLE IF NOT EXISTS timed_keys (" +
                     "name VARCHAR(" + maxVirtualNamesLength + "), " +
-                    "delay BIGINT);");
+                    "uuid VARCHAR(36), " +
+                    "delay BIGINT NOT NULL DEFAULT 0, " +
+                    "CONSTRAINT timed_keys_pk PRIMARY KEY (name, uuid));");
         } catch (Exception e) {
             logger.warn("Failed to create MySQL tables!", e);
         }

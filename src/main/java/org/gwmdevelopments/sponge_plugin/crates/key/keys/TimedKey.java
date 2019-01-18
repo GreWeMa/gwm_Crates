@@ -8,16 +8,25 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
 public class TimedKey extends GiveableKey {
+
+    public static final String SELECT_QUERY = "SELECT delay FROM timed_keys " +
+            "WHERE name = ? " +
+            "AND uuid = ?";
+
+    public static final String UPDATE_QUERY = "UPDATE timed_keys " +
+            "SET delay = ? " +
+            "WHERE name = ? " +
+            "AND uuid = ?";
+
+    public static final String INSERT_QUERY = "INSERT INTO timed_keys (name, uuid, delay) " +
+            "VALUES (?, ?, ?)";
 
     private Map<UUID, Long> cache = new WeakHashMap<>();
 
@@ -58,7 +67,11 @@ public class TimedKey extends GiveableKey {
     public void withdraw(Player player, int amount, boolean force) {
         if (!isDoNotWithdraw() || force) {
             if (GWMCrates.getInstance().isUseMySQLForTimedKeys()) {
-                setSQL(player, true);
+                try {
+                    setSQL(player, true);
+                } catch (SQLException e) {
+                    throw new RuntimeException("Failed to set timed key \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + player.getUniqueId() + "\")!", e);
+                }
             } else {
                 setCfg(player, true);
             }
@@ -69,7 +82,11 @@ public class TimedKey extends GiveableKey {
     public void give(Player player, int amount, boolean force) {
         if (!isDoNotAdd() || force) {
             if (GWMCrates.getInstance().isUseMySQLForTimedKeys()) {
-                setSQL(player, false);
+                try {
+                    setSQL(player, false);
+                } catch (SQLException e) {
+                    throw new RuntimeException("Failed to set timed key \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + player.getUniqueId() + "\")!", e);
+                }
             } else {
                 setCfg(player, false);
             }
@@ -86,48 +103,57 @@ public class TimedKey extends GiveableKey {
         }
     }
 
-    private void setSQL(Player player, boolean withdraw) {
+    private void setSQL(Player player, boolean withdraw) throws SQLException {
         UUID uuid = player.getUniqueId();
-        try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
-             Statement statement = connection.createStatement()) {
-            ResultSet set = statement.executeQuery("SELECT delay FROM timed_keys " +
-                    "WHERE uuid = '" + uuid + "' AND " +
-                    "name = '" + virtualName + "';");
-            if (set.next()) {
-                if (withdraw) {
-                    long expire = System.currentTimeMillis() + delay;
-                    cache.put(uuid, expire);
-                    statement.executeQuery("UPDATE timed_keys " +
-                            "SET delay = " + expire + " " +
-                            "WHERE uuid = '" + uuid + "' AND " +
-                            "name = '" + virtualName + "';");
-                } else {
-                    cache.put(uuid, 0L);
-                    statement.executeQuery("UPDATE timed_keys " +
-                            "SET delay = " + 0L + " " +
-                            "WHERE uuid = '" + uuid + "' AND " +
-                            "name = '" + virtualName + "';");
-                }
+        try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection()) {
+            long expire = withdraw ? System.currentTimeMillis() + delay : 0L;
+            if (hasValue(connection, uuid)) {
+                update(connection, uuid, delay);
             } else {
-                if (withdraw) {
-                    long expire = System.currentTimeMillis() + delay;
-                    cache.put(uuid, expire);
-                    statement.executeQuery("INSERT INTO timed_keys (uuid, name, delay) " +
-                            "VALUES ('" + uuid + "', '" + virtualName + "', " + expire + ");");
-                } else {
-                    cache.put(uuid, 0L);
-                    statement.executeQuery("INSERT INTO timed_keys (uuid, name, delay) " +
-                            "VALUES ('" + uuid + "', '" + virtualName + "', " + 0L + ");");
-                }
+                insert(connection, uuid, delay);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to set timed key \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
+            cache.put(uuid, delay);
+        }
+    }
+
+    private boolean hasValue(Connection connection, UUID uuid) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
+            statement.setString(1, virtualName);
+            statement.setString(2, uuid.toString());
+            ResultSet set = statement.executeQuery();
+            return set.next();
+        }
+    }
+
+    private void update(Connection connection, UUID uuid, long delay) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)) {
+            statement.setLong(1, delay);
+            statement.setString(2, virtualName);
+            statement.setString(3, uuid.toString());
+            statement.execute();
+        }
+    }
+
+    private void insert(Connection connection, UUID uuid, long delay) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(INSERT_QUERY)) {
+            statement.setString(1, virtualName);
+            statement.setString(2, uuid.toString());
+            statement.setLong(3, delay);
+            statement.execute();
         }
     }
 
     @Override
     public int get(Player player) {
-        return GWMCrates.getInstance().isUseMySQLForTimedKeys() ? getSQL(player) : getCfg(player);
+        if (GWMCrates.getInstance().isUseMySQLForTimedKeys()) {
+            try {
+                return getSQL(player);
+            } catch (SQLException e) {
+                throw new RuntimeException("Failed to get timed key \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + player.getUniqueId() + "\")!", e);
+            }
+        } else {
+            return getCfg(player);
+        }
     }
 
     private int getCfg(Player player) {
@@ -140,17 +166,17 @@ public class TimedKey extends GiveableKey {
         return System.currentTimeMillis() >= delay ? 1 : 0;
     }
 
-    private int getSQL(Player player) {
+    private int getSQL(Player player) throws SQLException {
         UUID uuid = player.getUniqueId();
         if (cache.containsKey(uuid)) {
             long delay = cache.get(uuid);
             return System.currentTimeMillis() >= delay ? 1 : 0;
         }
         try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
-             Statement statement = connection.createStatement()) {
-            ResultSet set = statement.executeQuery("SELECT delay FROM timed_keys " +
-                    "WHERE uuid = '" + uuid + "' AND " +
-                    "name = '" + virtualName + "';");
+             PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
+            statement.setString(1, virtualName);
+            statement.setString(2, uuid.toString());
+            ResultSet set = statement.executeQuery();
             if (set.next()) {
                 long delay = set.getLong(1);
                 cache.put(uuid, delay);
@@ -159,8 +185,6 @@ public class TimedKey extends GiveableKey {
                 cache.put(uuid, 0L);
                 return 1;
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to get timed key \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
         }
     }
 
