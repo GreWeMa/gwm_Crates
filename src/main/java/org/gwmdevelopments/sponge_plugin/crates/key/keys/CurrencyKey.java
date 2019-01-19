@@ -4,6 +4,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
+import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
@@ -31,7 +32,7 @@ public class CurrencyKey extends GiveableKey {
             }
             amount = new BigDecimal(amountNode.getString());
             String currencyName = currencyNode.getString();
-            Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
+            Optional<EconomyService> optionalEconomyService = GWMLibrary.getInstance().getEconomyService();
             if (!optionalEconomyService.isPresent()) {
                 throw new IllegalStateException("Economy Service not found!");
             }
@@ -63,7 +64,7 @@ public class CurrencyKey extends GiveableKey {
     @Override
     public void withdraw(Player player, int amount, boolean force) {
         if (!isDoNotWithdraw() || force) {
-            Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
+            Optional<EconomyService> optionalEconomyService = GWMLibrary.getInstance().getEconomyService();
             if (!optionalEconomyService.isPresent()) {
                 throw new IllegalStateException("Economy Service not found!");
             }
@@ -84,7 +85,7 @@ public class CurrencyKey extends GiveableKey {
 
     @Override
     public int get(Player player) {
-        Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
+        Optional<EconomyService> optionalEconomyService = GWMLibrary.getInstance().getEconomyService();
         if (!optionalEconomyService.isPresent()) {
             throw new IllegalStateException("Economy Service not found!");
         }
@@ -102,7 +103,7 @@ public class CurrencyKey extends GiveableKey {
     @Override
     public void give(Player player, int amount, boolean force) {
         if (!isDoNotAdd() || force) {
-            Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
+            Optional<EconomyService> optionalEconomyService = GWMLibrary.getInstance().getEconomyService();
             if (!optionalEconomyService.isPresent()) {
                 throw new IllegalStateException("Economy Service not found!");
             }

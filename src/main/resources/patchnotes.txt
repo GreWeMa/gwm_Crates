@@ -1,3 +1,6 @@
+v. beta-3.3.3
+1. Update to GWMLibrary beta-1.5
+
 v. beta-3.3.2
 1. Refactoring
 2. MySQL changes

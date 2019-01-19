@@ -44,7 +44,6 @@ import org.spongepowered.api.event.game.state.*;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.sql.SqlService;
 
 import javax.sql.DataSource;
@@ -57,7 +56,7 @@ import java.util.*;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.3.2",
+        version = "beta-3.3.3",
         description = "Universal crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -69,7 +68,7 @@ import java.util.*;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 3, 2);
+    public static final Version VERSION = new Version("beta", 3, 3, 3);
 
     private static GWMCrates instance = null;
 
@@ -116,7 +115,6 @@ public final class GWMCrates extends SpongePlugin {
     private long crateOpenDelay = 10000;
     private long managersLoadDelay = 20;
 
-    private Optional<EconomyService> economyService = Optional.empty();
     private Optional<DataSource> dataSource = Optional.empty();
 
     private Set<SuperObjectStorage> superObjects =
@@ -222,7 +220,6 @@ public final class GWMCrates extends SpongePlugin {
 
     @Listener
     public void onPostInitialization(GamePostInitializationEvent event) {
-        loadEconomy();
         register();
         logger.info("\"PostInitialization\" completed!");
     }
@@ -277,8 +274,6 @@ public final class GWMCrates extends SpongePlugin {
         }
         language = new Language(this);
         register();
-        economyService = Optional.empty();
-        loadEconomy();
         loadSavedSuperObjects();
         loadManagers();
         if (checkUpdates) {
@@ -483,17 +478,6 @@ public final class GWMCrates extends SpongePlugin {
         }
     }
 
-    private boolean loadEconomy() {
-        economyService = Sponge.getServiceManager().provide(EconomyService.class);
-        if (economyService.isPresent()) {
-            logger.info("Economy Service found!");
-            return true;
-        }
-        logger.warn("Economy Service not found!");
-        logger.info("Please install plugin that provides Economy Service, if you want use economical features.");
-        return false;
-    }
-
     @Override
     public Version getVersion() {
         return VERSION;
@@ -604,10 +588,6 @@ public final class GWMCrates extends SpongePlugin {
 
     public long getManagersLoadDelay() {
         return managersLoadDelay;
-    }
-
-    public Optional<EconomyService> getEconomyService() {
-        return economyService;
     }
 
     public Optional<DataSource> getDataSource() {

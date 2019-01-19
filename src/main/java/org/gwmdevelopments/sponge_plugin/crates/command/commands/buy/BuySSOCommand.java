@@ -3,6 +3,7 @@ package org.gwmdevelopments.sponge_plugin.crates.command.commands.buy;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.util.Giveable;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObject;
+import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -42,7 +43,7 @@ public class BuySSOCommand implements CommandExecutor {
             player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
             return CommandResult.success();
         }
-        Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
+        Optional<EconomyService> optionalEconomyService = GWMLibrary.getInstance().getEconomyService();
         if (!optionalEconomyService.isPresent()) {
             player.sendMessage(GWMCrates.getInstance().getLanguage().getText("ECONOMY_SERVICE_NOT_FOUND", src, null));
             return CommandResult.success();

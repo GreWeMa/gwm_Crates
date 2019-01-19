@@ -6,6 +6,7 @@ import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.AbstractSuperObject;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.economy.Currency;
@@ -41,7 +42,7 @@ public abstract class AbstractDrop extends AbstractSuperObject implements Drop {
             }
             if (!sellCurrencyNode.isVirtual()) {
                 String sellCurrencyName = sellCurrencyNode.getString();
-                Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
+                Optional<EconomyService> optionalEconomyService = GWMLibrary.getInstance().getEconomyService();
                 if (!optionalEconomyService.isPresent()) {
                     throw new IllegalArgumentException("Economy Service not found, but parameter \"SELL_CURRENCY\" specified!");
                 }

@@ -1,9 +1,9 @@
 package org.gwmdevelopments.sponge_plugin.crates.caze;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.Giveable;
+import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
 
@@ -27,7 +27,7 @@ public abstract class GiveableCase extends AbstractCase implements Giveable {
             }
             if (!sellCurrencyNode.isVirtual()) {
                 String sellCurrencyName = sellCurrencyNode.getString();
-                Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
+                Optional<EconomyService> optionalEconomyService = GWMLibrary.getInstance().getEconomyService();
                 if (!optionalEconomyService.isPresent()) {
                     throw new IllegalArgumentException("Economy Service not found, but parameter \"SELL_CURRENCY\" specified!");
                 }

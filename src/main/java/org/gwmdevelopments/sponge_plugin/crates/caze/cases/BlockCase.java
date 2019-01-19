@@ -22,7 +22,7 @@ public class BlockCase extends AbstractCase {
     private Location<World> location;
     private Optional<List<Text>> hologram = Optional.empty();
     private boolean startPreviewOnLeftClick = false;
-    private Optional<List<HologramsService.Hologram>> createdHolograms = Optional.empty();
+    private Optional<List<HologramsService.Hologram>> createdHolograms;
 
     public BlockCase(ConfigurationNode node) {
         super(node);
@@ -33,7 +33,7 @@ public class BlockCase extends AbstractCase {
             if (locationNode.isVirtual()) {
                 throw new IllegalArgumentException("LOCATION node does not exist!");
             }
-            location = GWMLibraryUtils.parseLocation(locationNode);
+            location = GWMLibraryUtils.parseBlockLocation(locationNode);
             if (!hologramNode.isVirtual()) {
                 hologram = Optional.of(hologramNode.getList(TypeToken.of(String.class)).
                         stream().

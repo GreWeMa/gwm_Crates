@@ -6,7 +6,7 @@
 
     <groupId>org.gwmdevelopments.sponge_plugin</groupId>
     <artifactId>crates</artifactId>
-    <version>beta-3.3.2</version>
+    <version>beta-3.3.3</version>
     <name>GWMCrates</name>
     <packaging>jar</packaging>
 
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>org.gwmdevelopments.sponge_plugin</groupId>
             <artifactId>library</artifactId>
-            <version>beta-1.4</version>
+            <version>beta-1.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
