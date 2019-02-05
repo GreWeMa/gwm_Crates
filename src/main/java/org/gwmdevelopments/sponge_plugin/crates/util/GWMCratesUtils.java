@@ -1,8 +1,6 @@
 package org.gwmdevelopments.sponge_plugin.crates.util;
 
-import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.SimpleConfigurationNode;
 import org.apache.commons.lang3.StringUtils;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.caze.cases.BlockCase;
@@ -19,18 +17,13 @@ import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
 import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.ConsoleSource;
-import org.spongepowered.api.data.DataContainer;
-import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.enchantment.Enchantment;
-import org.spongepowered.api.item.enchantment.EnchantmentType;
 import org.spongepowered.api.item.inventory.*;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
@@ -38,8 +31,6 @@ import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -49,7 +40,6 @@ import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.sql.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public final class GWMCratesUtils {
 
@@ -353,82 +343,6 @@ public final class GWMCratesUtils {
 
     public static void updateCrateOpenDelay(UUID uuid) {
         GWMCrates.getInstance().getCrateOpenDelays().put(uuid, System.currentTimeMillis() + GWMCrates.getInstance().getCrateOpenDelay());
-    }
-
-    public static ItemStack parseItem(ConfigurationNode node) {
-        try {
-            ConfigurationNode itemTypeNode = node.getNode("ITEM_TYPE");
-            ConfigurationNode quantityNode = node.getNode("QUANTITY");
-            ConfigurationNode subIdNode = node.getNode("SUB_ID");
-            ConfigurationNode nbtNode = node.getNode("NBT");
-            ConfigurationNode durabilityNode = node.getNode("DURABILITY");
-            ConfigurationNode displayNameNode = node.getNode("DISPLAY_NAME");
-            ConfigurationNode loreNode = node.getNode("LORE");
-            ConfigurationNode enchantmentsNode = node.getNode("ENCHANTMENTS");
-            ConfigurationNode hideEnchantmentsNode = node.getNode("HIDE_ENCHANTMENTS");
-            if (itemTypeNode.isVirtual()) {
-                throw new IllegalArgumentException("ITEM_TYPE node does not exist!");
-            }
-            //Mega-shit-code start
-            ConfigurationNode tempNode = SimpleConfigurationNode.root();
-            tempNode.getNode("ItemType").setValue(itemTypeNode.getString());
-            tempNode.getNode("UnsafeDamage").setValue(subIdNode.getInt(0));
-            tempNode.getNode("Count").setValue(quantityNode.getInt(1));
-            ItemStack item = tempNode.getValue(TypeToken.of(ItemStack.class));
-            //Mega-shit-code end; Another not good code start
-            if (!nbtNode.isVirtual()) {
-                LinkedHashMap nbtMap = (LinkedHashMap) nbtNode.getValue();
-                if (item.toContainer().get(DataQuery.of("UnsafeData")).isPresent()) {
-                    Map unsafeDataMap = item.toContainer().getMap(DataQuery.of("UnsafeData")).get();
-                    nbtMap.putAll(unsafeDataMap);
-                }
-                DataContainer container = item.toContainer().set(DataQuery.of("UnsafeData"), nbtMap);
-                item = ItemStack.builder().fromContainer(container).build();
-            }
-            //Another not good code end
-            if (!durabilityNode.isVirtual()) {
-                int durability = durabilityNode.getInt();
-                item.offer(Keys.ITEM_DURABILITY, durability);
-            }
-            if (!displayNameNode.isVirtual()) {
-                Text displayName = TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString());
-                item.offer(Keys.DISPLAY_NAME, displayName);
-            }
-            if (!loreNode.isVirtual()) {
-                List<Text> lore = loreNode.getList(TypeToken.of(String.class)).stream().
-                        map(TextSerializers.FORMATTING_CODE::deserialize).
-                        collect(Collectors.toList());
-                item.offer(Keys.ITEM_LORE, lore);
-            }
-            if (!enchantmentsNode.isVirtual()) {
-                List<Enchantment> itemEnchantments = new ArrayList<>();
-                for (ConfigurationNode enchantment_node : enchantmentsNode.getChildrenList()) {
-                    itemEnchantments.add(parseEnchantment(enchantment_node));
-                }
-                item.offer(Keys.ITEM_ENCHANTMENTS, itemEnchantments);
-            }
-            if (!hideEnchantmentsNode.isVirtual()) {
-                item.offer(Keys.HIDE_ENCHANTMENTS, hideEnchantmentsNode.getBoolean());
-            }
-            return item;
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to parse item!", e);
-        }
-    }
-
-    public static Enchantment parseEnchantment(ConfigurationNode node) {
-        ConfigurationNode enchantmentNode = node.getNode("ENCHANTMENT");
-        ConfigurationNode levelNode = node.getNode("LEVEL");
-        if (enchantmentNode.isVirtual()) {
-            throw new IllegalArgumentException("ENCHANTMENT node does not exist!");
-        }
-        try {
-            EnchantmentType type = enchantmentNode.getValue(TypeToken.of(EnchantmentType.class));
-            int level = levelNode.getInt(1);
-            return Enchantment.of(type, level);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to parse enchantment!", e);
-        }
     }
 
     public static CommandsDrop.ExecutableCommand parseCommand(ConfigurationNode node) {

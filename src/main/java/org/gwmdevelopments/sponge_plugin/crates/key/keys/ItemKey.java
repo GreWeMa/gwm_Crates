@@ -4,6 +4,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.economy.Currency;
@@ -22,7 +23,7 @@ public class ItemKey extends GiveableKey {
             if (itemNode.isVirtual()) {
                 throw new IllegalArgumentException("ITEM node does not exist!");
             }
-            item = GWMCratesUtils.parseItem(itemNode);
+            item = GWMLibraryUtils.parseItem(itemNode);
         } catch (Exception e) {
             throw new SSOCreationException("Failed to create Item Key!", e);
         }

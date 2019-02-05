@@ -8,6 +8,8 @@ import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
+import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.living.player.Player;
@@ -22,7 +24,6 @@ import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +63,7 @@ public class SecondOpenManager extends AbstractOpenManager {
                 displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
             }
             if (!hiddenItemNode.isVirtual()) {
-                hiddenItem = GWMCratesUtils.parseItem(hiddenItemNode);
+                hiddenItem = GWMLibraryUtils.parseItem(hiddenItemNode);
             }
             increaseHiddenItemQuantity = increaseHiddenItemQuantityNode.getBoolean(true);
             rows = rowsNode.getInt(6);

@@ -5,8 +5,8 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.AbstractSuperObject;
-import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
+import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.economy.Currency;
@@ -65,7 +65,7 @@ public abstract class AbstractDrop extends AbstractSuperObject implements Drop {
                 level = 1;
             }
             if (!dropItemNode.isVirtual()) {
-                dropItem = Optional.of(GWMCratesUtils.parseItem(dropItemNode));
+                dropItem = Optional.of(GWMLibraryUtils.parseItem(dropItemNode));
             }
             if (!fakeLevelNode.isVirtual()) {
                 fakeLevel = Optional.of(fakeLevelNode.getInt(1));

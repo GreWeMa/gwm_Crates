@@ -11,6 +11,7 @@ import org.gwmdevelopments.sponge_plugin.crates.preview.AbstractPreview;
 import org.gwmdevelopments.sponge_plugin.crates.util.DecorativeDropChangeRunnable;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
+import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -61,7 +62,7 @@ public class FirstGuiPreview extends AbstractPreview {
             decorativeItems = new ArrayList<>();
             if (!decorativeItemsNode.isVirtual()) {
                 for (ConfigurationNode decorativeItemNode : decorativeItemsNode.getChildrenList()) {
-                    decorativeItems.add(GWMCratesUtils.parseItem(decorativeItemNode));
+                    decorativeItems.add(GWMLibraryUtils.parseItem(decorativeItemNode));
                 }
             }
             scrollDelay = scrollDelayNode.getInt(10);

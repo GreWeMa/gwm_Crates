@@ -13,6 +13,7 @@ import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager
 import org.gwmdevelopments.sponge_plugin.crates.util.DecorativeDropChangeRunnable;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
+import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
@@ -88,7 +89,7 @@ public class FirstOpenManager extends AbstractOpenManager {
             decorativeItems = new ArrayList<>();
             if (!decorativeItemsNode.isVirtual()) {
                 for (ConfigurationNode decorativeItemNode : decorativeItemsNode.getChildrenList()) {
-                    decorativeItems.add(GWMCratesUtils.parseItem(decorativeItemNode));
+                    decorativeItems.add(GWMLibraryUtils.parseItem(decorativeItemNode));
                 }
             }
             if (!scrollDelaysNode.isVirtual()) {
