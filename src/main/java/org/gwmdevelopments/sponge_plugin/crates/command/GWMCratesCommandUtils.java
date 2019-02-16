@@ -121,6 +121,48 @@ public class GWMCratesCommandUtils {
                 child(giveDropCommand, "drop").
                 child(giveSSOCommand, "savedsuperobject", "sso").
                 build();
+        CommandSpec giveEveryoneCaseCommand = CommandSpec.builder().
+                description(Text.of("Give the case to the player")).
+                executor(new GiveCaseCommand()).
+                arguments(
+                        new ManagerCommandElement(Text.of("manager")),
+                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
+                        GenericArguments.optional(GenericArguments.bool(Text.of("force")))
+                ).
+                build();
+        CommandSpec giveEveryoneKeyCommand = CommandSpec.builder().
+                description(Text.of("Give the key to the player")).
+                executor(new GiveKeyCommand()).
+                arguments(
+                        new ManagerCommandElement(Text.of("manager")),
+                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
+                        GenericArguments.optional(GenericArguments.bool(Text.of("force")))
+                ).
+                build();
+        CommandSpec giveEveryoneDropCommand = CommandSpec.builder().
+                description(Text.of("Give the drop to the player")).
+                executor(new GiveDropCommand()).
+                arguments(
+                        new ManagerCommandElement(Text.of("manager")),
+                        GenericArguments.string(Text.of("drop")),
+                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1)
+                ).
+                build();
+        CommandSpec giveEveryoneSSOCommand = CommandSpec.builder().
+                description(Text.of("Give the SSO to the player")).
+                executor(new GiveSSOCommand()).
+                arguments(
+                        new SuperObjectCommandElement(Text.of("sso"), Optional.empty(), true),
+                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
+                        GenericArguments.optional(GenericArguments.bool(Text.of("force")))
+                ).
+                build();
+        CommandSpec giveEveryoneCommand = CommandSpec.builder().
+                child(giveEveryoneCaseCommand, "case").
+                child(giveEveryoneKeyCommand, "key").
+                child(giveEveryoneDropCommand, "drop").
+                child(giveEveryoneSSOCommand, "savedsuperobject", "sso").
+                build();
         CommandSpec withdrawCaseCommand = CommandSpec.builder().
                 description(Text.of("Withdraw the case from the player")).
                 executor(new WithdrawCaseCommand()).
@@ -215,6 +257,7 @@ public class GWMCratesCommandUtils {
                 child(forceCommand, "force").
                 child(previewCommand, "preview").
                 child(giveCommand, "give").
+                child(giveEveryoneCommand, "giveeveryone").
                 child(withdrawCommand, "withdraw").
                 child(checkCommand, "check").
                 child(buyCommand, "buy").
