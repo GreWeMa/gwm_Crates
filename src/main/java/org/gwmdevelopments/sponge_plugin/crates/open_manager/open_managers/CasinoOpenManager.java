@@ -145,7 +145,7 @@ public class CasinoOpenManager extends AbstractOpenManager {
             if (!winSoundNode.isVirtual()) {
                 winSound = Optional.of(winSoundNode.getValue(TypeToken.of(SoundType.class)));
             }
-            if (!consolationSound.isPresent()) {
+            if (!consolationSoundNode.isVirtual()) {
                 consolationSound = Optional.of(consolationSoundNode.getValue(TypeToken.of(SoundType.class)));
             }
             if (!loseSoundNode.isVirtual()) {
@@ -300,7 +300,7 @@ public class CasinoOpenManager extends AbstractOpenManager {
                                 drop1 : drop2.equals(drop0) ?
                                 drop2 : null;
                         if (tempDrop != null) { //Player didn't win, give him a consolation drop (if it exist)
-                            Optional<String> optionalId = drop0.getId();
+                            Optional<String> optionalId = tempDrop.getId();
                             if (optionalId.isPresent()) {
                                 String id = optionalId.get();
                                 consolationDrops.getOrDefault(id, defaultConsolationDrop.orElseGet(() -> loseDrop)).give(player, 1);
