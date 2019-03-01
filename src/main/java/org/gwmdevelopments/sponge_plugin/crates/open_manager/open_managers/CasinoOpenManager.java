@@ -88,8 +88,11 @@ public class CasinoOpenManager extends AbstractOpenManager {
     private Optional<SoundType> secondRowSound = Optional.empty();
     private Optional<SoundType> thirdRowSound = Optional.empty();
     private Optional<SoundType> winSound = Optional.empty();
+    private Optional<SoundType> consolationSound = Optional.empty();
     private Optional<SoundType> loseSound = Optional.empty();
     private Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode = Optional.empty();
+    private Optional<Drop> defaultConsolationDrop = Optional.empty();
+    private Map<String, Drop> consolationDrops;
 
     public CasinoOpenManager(ConfigurationNode node) {
         super(node);
@@ -106,7 +109,10 @@ public class CasinoOpenManager extends AbstractOpenManager {
             ConfigurationNode secondRowSoundNode = node.getNode("SECOND_ROW_SOUND");
             ConfigurationNode thirdRowSoundNode = node.getNode("THIRD_ROW_SOUND");
             ConfigurationNode winSoundNode = node.getNode("WIN_SOUND");
+            ConfigurationNode consolationSoundNode = node.getNode("CONSOLATION_SOUND");
             ConfigurationNode loseSoundNode = node.getNode("LOSE_SOUND");
+            ConfigurationNode defaultConsolationDropNode = node.getNode("DEFAULT_CONSOLATION_DROP");
+            ConfigurationNode consolationDropsNode = node.getNode("CONSOLATION_DROPS");
             ConfigurationNode decorativeItemsChangeModeNode = node.getNode("DECORATIVE_ITEMS_CHANGE_MODE");
             if (!displayNameNode.isVirtual()) {
                 displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
@@ -139,8 +145,20 @@ public class CasinoOpenManager extends AbstractOpenManager {
             if (!winSoundNode.isVirtual()) {
                 winSound = Optional.of(winSoundNode.getValue(TypeToken.of(SoundType.class)));
             }
+            if (!consolationSoundNode.isVirtual()) {
+                consolationSound = Optional.of(consolationSoundNode.getValue(TypeToken.of(SoundType.class)));
+            }
             if (!loseSoundNode.isVirtual()) {
                 loseSound = Optional.of(loseSoundNode.getValue(TypeToken.of(SoundType.class)));
+            }
+            if (!defaultConsolationDropNode.isVirtual()) {
+                defaultConsolationDrop = Optional.of((Drop) GWMCratesUtils.createSuperObject(defaultConsolationDropNode, SuperObjectType.DROP));
+            }
+            consolationDrops = new HashMap<>();
+            if (!consolationDropsNode.isVirtual()) {
+                for (Map.Entry<Object, ? extends ConfigurationNode> entry : consolationDropsNode.getChildrenMap().entrySet()) {
+                    consolationDrops.put(entry.getKey().toString(), (Drop) GWMCratesUtils.createSuperObject(entry.getValue(), SuperObjectType.DROP));
+                }
             }
             if (!decorativeItemsChangeModeNode.isVirtual()) {
                 decorativeItemsChangeMode = Optional.of((DecorativeItemsChangeMode) GWMCratesUtils.createSuperObject(decorativeItemsChangeModeNode, SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE));
@@ -269,14 +287,33 @@ public class CasinoOpenManager extends AbstractOpenManager {
         Sponge.getScheduler().createTaskBuilder().
                 delayTicks(waitTime).
                 execute(() -> {
-                    Drop drop = dropList.get(0).get(dropList.get(0).size() - 3);
-                    if (drop.equals(dropList.get(1).get(dropList.get(1).size() - 3)) &&
-                            drop.equals(dropList.get(2).get(dropList.get(2).size() - 3))) {
-                        drop.give(player, 1);
+                    Drop drop0 = dropList.get(0).get(dropList.get(0).size() - 3);
+                    Drop drop1 = dropList.get(1).get(dropList.get(1).size() - 3);
+                    Drop drop2 = dropList.get(2).get(dropList.get(2).size() - 3);
+                    if (drop0.equals(drop1) &&
+                            drop0.equals(drop2)) { //Play won
+                        drop0.give(player, 1);
                         winSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
                     } else {
-                        loseDrop.give(player, 1);
-                        loseSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
+                        Drop tempDrop = drop0.equals(drop1) ?
+                                drop0 : drop1.equals(drop2) ?
+                                drop1 : drop2.equals(drop0) ?
+                                drop2 : null;
+                        if (tempDrop != null) { //Player didn't win, give him a consolation drop (if it exist)
+                            Optional<String> optionalId = tempDrop.getId();
+                            if (optionalId.isPresent()) {
+                                String id = optionalId.get();
+                                consolationDrops.getOrDefault(id, defaultConsolationDrop.orElseGet(() -> loseDrop)).give(player, 1);
+                            } else if (defaultConsolationDrop.isPresent()) {
+                                defaultConsolationDrop.get().give(player, 1);
+                            } else {
+                                loseDrop.give(player, 1);
+                            }
+                            consolationSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
+                        } else { //Player didn't win, give him the lose drop
+                            loseDrop.give(player, 1);
+                            loseSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
+                        }
                     }
                     if (clearDecorativeItems) {
                         for (Integer decorative_item_index : DECORATIVE_ITEMS_INDICES) {
@@ -296,7 +333,7 @@ public class CasinoOpenManager extends AbstractOpenManager {
                         });
                     }
                     SHOWN_GUI.add(container);
-                    PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, drop);
+                    PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, drop0);
                     Sponge.getEventManager().post(openedEvent);
                 }).submit(GWMCrates.getInstance());
         waitTime += closeDelay;
@@ -312,8 +349,7 @@ public class CasinoOpenManager extends AbstractOpenManager {
                 }).submit(GWMCrates.getInstance());
     }
 
-    private void scheduleScroll(List<Integer> list, OrderedInventory ordered, int waitTime,
-                                Drop newDrop) {
+    private void scheduleScroll(List<Integer> list, OrderedInventory ordered, int waitTime, Drop newDrop) {
         Sponge.getScheduler().createTaskBuilder().
                 delayTicks(waitTime).
                 execute(() -> {
