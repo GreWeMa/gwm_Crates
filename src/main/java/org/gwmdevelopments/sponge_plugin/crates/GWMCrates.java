@@ -56,7 +56,7 @@ import java.util.*;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.3.5",
+        version = "beta-3.3.6",
         description = "Universal crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -68,7 +68,7 @@ import java.util.*;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 3, 5);
+    public static final Version VERSION = new Version("beta", 3, 3, 6);
 
     private static GWMCrates instance = null;
 
