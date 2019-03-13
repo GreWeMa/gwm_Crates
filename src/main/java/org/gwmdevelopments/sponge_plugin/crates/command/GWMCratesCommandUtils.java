@@ -6,10 +6,7 @@ import org.gwmdevelopments.sponge_plugin.crates.command.commands.buy.BuyCaseComm
 import org.gwmdevelopments.sponge_plugin.crates.command.commands.buy.BuyDropCommand;
 import org.gwmdevelopments.sponge_plugin.crates.command.commands.buy.BuyKeyCommand;
 import org.gwmdevelopments.sponge_plugin.crates.command.commands.buy.BuySSOCommand;
-import org.gwmdevelopments.sponge_plugin.crates.command.commands.give.GiveCaseCommand;
-import org.gwmdevelopments.sponge_plugin.crates.command.commands.give.GiveDropCommand;
-import org.gwmdevelopments.sponge_plugin.crates.command.commands.give.GiveKeyCommand;
-import org.gwmdevelopments.sponge_plugin.crates.command.commands.give.GiveSSOCommand;
+import org.gwmdevelopments.sponge_plugin.crates.command.commands.give.*;
 import org.gwmdevelopments.sponge_plugin.crates.command.commands.withdraw.WithdrawCaseCommand;
 import org.gwmdevelopments.sponge_plugin.crates.command.commands.withdraw.WithdrawKeyCommand;
 import org.spongepowered.api.Sponge;
@@ -121,6 +118,48 @@ public class GWMCratesCommandUtils {
                 child(giveDropCommand, "drop").
                 child(giveSSOCommand, "savedsuperobject", "sso").
                 build();
+        CommandSpec giveEveryoneCaseCommand = CommandSpec.builder().
+                description(Text.of("Give the case to all online players")).
+                executor(new GiveEveryoneCaseCommand()).
+                arguments(
+                        new ManagerCommandElement(Text.of("manager")),
+                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
+                        GenericArguments.optional(GenericArguments.bool(Text.of("force")))
+                ).
+                build();
+        CommandSpec giveEveryoneKeyCommand = CommandSpec.builder().
+                description(Text.of("Give the key to all online players")).
+                executor(new GiveEveryoneKeyCommand()).
+                arguments(
+                        new ManagerCommandElement(Text.of("manager")),
+                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
+                        GenericArguments.optional(GenericArguments.bool(Text.of("force")))
+                ).
+                build();
+        CommandSpec giveEveryoneDropCommand = CommandSpec.builder().
+                description(Text.of("Give the drop to all online players")).
+                executor(new GiveEveryoneDropCommand()).
+                arguments(
+                        new ManagerCommandElement(Text.of("manager")),
+                        GenericArguments.string(Text.of("drop")),
+                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1)
+                ).
+                build();
+        CommandSpec giveEveryoneSSOCommand = CommandSpec.builder().
+                description(Text.of("Give the SSO to all online players")).
+                executor(new GiveEveryoneSSOCommand()).
+                arguments(
+                        new SuperObjectCommandElement(Text.of("sso"), Optional.empty(), true),
+                        GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
+                        GenericArguments.optional(GenericArguments.bool(Text.of("force")))
+                ).
+                build();
+        CommandSpec giveEveryoneCommand = CommandSpec.builder().
+                child(giveEveryoneCaseCommand, "case").
+                child(giveEveryoneKeyCommand, "key").
+                child(giveEveryoneDropCommand, "drop").
+                child(giveEveryoneSSOCommand, "savedsuperobject", "sso").
+                build();
         CommandSpec withdrawCaseCommand = CommandSpec.builder().
                 description(Text.of("Withdraw the case from the player")).
                 executor(new WithdrawCaseCommand()).
@@ -215,6 +254,7 @@ public class GWMCratesCommandUtils {
                 child(forceCommand, "force").
                 child(previewCommand, "preview").
                 child(giveCommand, "give").
+                child(giveEveryoneCommand, "giveeveryone").
                 child(withdrawCommand, "withdraw").
                 child(checkCommand, "check").
                 child(buyCommand, "buy").
