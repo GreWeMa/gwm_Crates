@@ -4,7 +4,6 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.exception.ManagerCreationException;
-import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
@@ -17,18 +16,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class Manager {
+public final class Manager {
 
-    private String id;
-    private String name;
-    private Case caze;
-    private Key key;
-    private OpenManager openManager;
-    private List<Drop> drops;
-    private Optional<Preview> preview = Optional.empty();
-    private boolean sendOpenMessage;
-    private Optional<String> customOpenMessage = Optional.empty();
-    private Optional<Text> customInfo = Optional.empty();
+    private final String id;
+    private final String name;
+    private final Case caze;
+    private final Key key;
+    private final OpenManager openManager;
+    private final List<Drop> drops;
+    private final Optional<Preview> preview;
+    private final boolean sendOpenMessage;
+    private final Optional<String> customOpenMessage;
+    private final Optional<Text> customInfo;
 
     public Manager(ConfigurationNode node) {
         try {
@@ -71,13 +70,19 @@ public class Manager {
             openManager = (OpenManager) GWMCratesUtils.createSuperObject(openManagerNode, SuperObjectType.OPEN_MANAGER);
             if (!previewNode.isVirtual()) {
                 preview = Optional.of((Preview) GWMCratesUtils.createSuperObject(previewNode, SuperObjectType.PREVIEW));
+            } else {
+                preview = Optional.empty();
             }
             sendOpenMessage = sendOpenMessageNode.getBoolean(true);
             if (!customOpenMessageNode.isVirtual()) {
                 customOpenMessage = Optional.of(customOpenMessageNode.getString());
+            } else {
+                customOpenMessage = Optional.empty();
             }
             if (!customInfoNode.isVirtual()) {
                 customInfo = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(customInfoNode.getString()));
+            } else {
+                customInfo = Optional.empty();
             }
         } catch (Exception e) {
             throw new ManagerCreationException("Failed to create Manager!", e);
@@ -120,63 +125,31 @@ public class Manager {
         return caze;
     }
 
-    public void setCase(Case caze) {
-        this.caze = caze;
-    }
-
     public Key getKey() {
         return key;
-    }
-
-    public void setKey(Key key) {
-        this.key = key;
     }
 
     public List<Drop> getDrops() {
         return drops;
     }
 
-    public void setDrops(List<Drop> drops) {
-        this.drops = drops;
-    }
-
     public OpenManager getOpenManager() {
         return openManager;
-    }
-
-    public void setOpenManager(OpenManager open_manager) {
-        this.openManager = open_manager;
     }
 
     public Optional<Preview> getPreview() {
         return preview;
     }
 
-    public void setPreview(Optional<Preview> preview) {
-        this.preview = preview;
-    }
-
     public boolean isSendOpenMessage() {
         return sendOpenMessage;
-    }
-
-    public void setSendOpenMessage(boolean send_open_message) {
-        this.sendOpenMessage = send_open_message;
     }
 
     public Optional<String> getCustomOpenMessage() {
         return customOpenMessage;
     }
 
-    public void setCustomOpenMessage(Optional<String> custom_open_message) {
-        this.customOpenMessage = custom_open_message;
-    }
-
     public Optional<Text> getCustomInfo() {
         return customInfo;
-    }
-
-    public void setCustomInfo(Optional<Text> custom_info) {
-        this.customInfo = custom_info;
     }
 }
