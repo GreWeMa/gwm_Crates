@@ -3,7 +3,6 @@ package org.gwmdevelopments.sponge_plugin.crates.preview.previews;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.preview.AbstractPreview;
 import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
@@ -11,11 +10,13 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Optional;
 
-public class PermissionPreview extends AbstractPreview {
+public final class PermissionPreview extends Preview {
 
-    private String permission;
-    private Preview preview1;
-    private Preview preview2;
+    public static final String TYPE = "PREVIEW";
+
+    private final String permission;
+    private final Preview preview1;
+    private final Preview preview2;
 
     public PermissionPreview(ConfigurationNode node) {
         super(node);
@@ -36,16 +37,21 @@ public class PermissionPreview extends AbstractPreview {
             preview1 = (Preview) GWMCratesUtils.createSuperObject(preview1Node, SuperObjectType.PREVIEW);
             preview2 = (Preview) GWMCratesUtils.createSuperObject(preview2Node, SuperObjectType.PREVIEW);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Permission Preview!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public PermissionPreview(Optional<String> id,
                              String permission, Preview preview1, Preview preview2) {
-        super("PERMISSION", id);
+        super(id);
         this.permission = permission;
         this.preview1 = preview1;
         this.preview2 = preview2;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -61,23 +67,11 @@ public class PermissionPreview extends AbstractPreview {
         return permission;
     }
 
-    public void setPermission(String permission) {
-        this.permission = permission;
-    }
-
     public Preview getPreview1() {
         return preview1;
     }
 
-    public void setPreview1(Preview preview1) {
-        this.preview1 = preview1;
-    }
-
     public Preview getPreview2() {
         return preview2;
-    }
-
-    public void setPreview2(Preview preview2) {
-        this.preview2 = preview2;
     }
 }

@@ -1,7 +1,6 @@
 package org.gwmdevelopments.sponge_plugin.crates.drop.drops;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.drop.AbstractDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
@@ -11,15 +10,14 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.economy.Currency;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-public class MultiDrop extends AbstractDrop {
+public final class MultiDrop extends Drop {
 
-    private List<Drop> drops;
-    private boolean giveAll;
+    public static final String TYPE = "MULTI";
+
+    private final List<Drop> drops;
+    private final boolean giveAll;
 
     public MultiDrop(ConfigurationNode node) {
         super(node);
@@ -29,23 +27,30 @@ public class MultiDrop extends AbstractDrop {
             if (dropsNode.isVirtual()) {
                 throw new IllegalArgumentException("DROPS node does not exist");
             }
-            drops = new ArrayList<>();
+            List<Drop> tempDrops = new ArrayList<>();
             for (ConfigurationNode drop_node : dropsNode.getChildrenList()) {
-                drops.add((Drop) GWMCratesUtils.createSuperObject(drop_node, SuperObjectType.DROP));
+                tempDrops.add((Drop) GWMCratesUtils.createSuperObject(drop_node, SuperObjectType.DROP));
             }
+            drops = Collections.unmodifiableList(tempDrops);
             giveAll = giveAllNode.getBoolean(true);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Multi Drop!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public MultiDrop(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
                      int level, Optional<ItemStack> dropItem, Optional<Integer> fakeLevel,
                      Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels,
+                     Optional<String> customName,
                      List<Drop> drops, boolean giveAll) {
-        super("MULTI", id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels);
+        super(id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels, customName);
         this.drops = drops;
         this.giveAll = giveAll;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -63,15 +68,7 @@ public class MultiDrop extends AbstractDrop {
         return drops;
     }
 
-    public void setDrops(List<Drop> drops) {
-        this.drops = drops;
-    }
-
     public boolean isGiveAll() {
         return giveAll;
-    }
-
-    public void setGiveAll(boolean giveAll) {
-        this.giveAll = giveAll;
     }
 }

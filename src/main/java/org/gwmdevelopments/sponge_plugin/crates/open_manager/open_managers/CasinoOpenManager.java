@@ -9,7 +9,7 @@ import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenedCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager;
+import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.DecorativeDropChangeRunnable;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
@@ -31,7 +31,9 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.*;
 
-public class CasinoOpenManager extends AbstractOpenManager {
+public final class CasinoOpenManager extends OpenManager {
+
+    public static final String TYPE = "CASINO";
 
     public static final Map<Container, Pair<CasinoOpenManager, Manager>> CASINO_GUI_CONTAINERS = new HashMap<>();
     public static final Set<Container> SHOWN_GUI = new HashSet<>();
@@ -76,23 +78,23 @@ public class CasinoOpenManager extends AbstractOpenManager {
         DECORATIVE_ITEMS_INDICES = Collections.unmodifiableList(decorativeItemsIndices);
     }
 
-    private Optional<Text> displayName = Optional.empty();
-    private List<ItemStack> decorativeItems;
-    private List<Integer> scrollDelays = DEFAULT_SCROLL_DELAYS;
-    private boolean clearDecorativeItems;
-    private boolean clearOtherDrops;
-    private int closeDelay;
-    private boolean forbidClose;
-    private Drop loseDrop = GWMCratesUtils.EMPTY_DROP;
-    private Optional<SoundType> firstRowSound = Optional.empty();
-    private Optional<SoundType> secondRowSound = Optional.empty();
-    private Optional<SoundType> thirdRowSound = Optional.empty();
-    private Optional<SoundType> winSound = Optional.empty();
-    private Optional<SoundType> consolationSound = Optional.empty();
-    private Optional<SoundType> loseSound = Optional.empty();
-    private Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode = Optional.empty();
-    private Optional<Drop> defaultConsolationDrop = Optional.empty();
-    private Map<String, Drop> consolationDrops;
+    private final Optional<Text> displayName;
+    private final List<ItemStack> decorativeItems;
+    private final List<Integer> scrollDelays;
+    private final boolean clearDecorativeItems;
+    private final boolean clearOtherDrops;
+    private final int closeDelay;
+    private final boolean forbidClose;
+    private final Drop loseDrop;
+    private final Optional<SoundType> firstRowSound;
+    private final Optional<SoundType> secondRowSound;
+    private final Optional<SoundType> thirdRowSound;
+    private final Optional<SoundType> winSound;
+    private final Optional<SoundType> consolationSound;
+    private final Optional<SoundType> loseSound;
+    private final Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode;
+    private final Optional<Drop> defaultConsolationDrop;
+    private final Map<String, Drop> consolationDrops;
 
     public CasinoOpenManager(ConfigurationNode node) {
         super(node);
@@ -116,15 +118,20 @@ public class CasinoOpenManager extends AbstractOpenManager {
             ConfigurationNode decorativeItemsChangeModeNode = node.getNode("DECORATIVE_ITEMS_CHANGE_MODE");
             if (!displayNameNode.isVirtual()) {
                 displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
+            } else {
+                displayName = Optional.empty();
             }
-            decorativeItems = new ArrayList<>();
+            List<ItemStack> tempDecorativeItems = new ArrayList<>();
             if (!decorativeItemsNode.isVirtual()) {
                 for (ConfigurationNode decorativeItemNode : decorativeItemsNode.getChildrenList()) {
-                    decorativeItems.add(GWMLibraryUtils.parseItem(decorativeItemNode));
+                    tempDecorativeItems.add(GWMLibraryUtils.parseItem(decorativeItemNode));
                 }
             }
+            decorativeItems = Collections.unmodifiableList(tempDecorativeItems);
             if (!scrollDelaysNode.isVirtual()) {
-                scrollDelays = scrollDelaysNode.getList(TypeToken.of(Integer.class));
+                scrollDelays = Collections.unmodifiableList(scrollDelaysNode.getList(TypeToken.of(Integer.class)));
+            } else {
+                scrollDelays = DEFAULT_SCROLL_DELAYS;
             }
             clearDecorativeItems = clearDecorativeItemsNode.getBoolean(false);
             clearOtherDrops = clearOtherDropsNode.getBoolean(true);
@@ -132,49 +139,70 @@ public class CasinoOpenManager extends AbstractOpenManager {
             forbidClose = forbidCloseNode.getBoolean(true);
             if (!loseDropNode.isVirtual()) {
                 loseDrop = (Drop) GWMCratesUtils.createSuperObject(loseDropNode, SuperObjectType.DROP);
+            } else {
+                loseDrop = GWMCratesUtils.EMPTY_DROP;
             }
             if (!firstRowSoundNode.isVirtual()) {
                 firstRowSound = Optional.of(firstRowSoundNode.getValue(TypeToken.of(SoundType.class)));
+            } else {
+                firstRowSound = Optional.empty();
             }
             if (!secondRowSoundNode.isVirtual()) {
                 secondRowSound = Optional.of(secondRowSoundNode.getValue(TypeToken.of(SoundType.class)));
+            } else {
+                secondRowSound = Optional.empty();
             }
             if (!thirdRowSoundNode.isVirtual()) {
                 thirdRowSound = Optional.of(thirdRowSoundNode.getValue(TypeToken.of(SoundType.class)));
+            } else {
+                thirdRowSound = Optional.empty();
             }
             if (!winSoundNode.isVirtual()) {
                 winSound = Optional.of(winSoundNode.getValue(TypeToken.of(SoundType.class)));
+            } else {
+                winSound = Optional.empty();
             }
             if (!consolationSoundNode.isVirtual()) {
                 consolationSound = Optional.of(consolationSoundNode.getValue(TypeToken.of(SoundType.class)));
+            } else {
+                consolationSound = Optional.empty();
             }
             if (!loseSoundNode.isVirtual()) {
                 loseSound = Optional.of(loseSoundNode.getValue(TypeToken.of(SoundType.class)));
-            }
-            if (!defaultConsolationDropNode.isVirtual()) {
-                defaultConsolationDrop = Optional.of((Drop) GWMCratesUtils.createSuperObject(defaultConsolationDropNode, SuperObjectType.DROP));
-            }
-            consolationDrops = new HashMap<>();
-            if (!consolationDropsNode.isVirtual()) {
-                for (Map.Entry<Object, ? extends ConfigurationNode> entry : consolationDropsNode.getChildrenMap().entrySet()) {
-                    consolationDrops.put(entry.getKey().toString(), (Drop) GWMCratesUtils.createSuperObject(entry.getValue(), SuperObjectType.DROP));
-                }
+            } else {
+                loseSound = Optional.empty();
             }
             if (!decorativeItemsChangeModeNode.isVirtual()) {
                 decorativeItemsChangeMode = Optional.of((DecorativeItemsChangeMode) GWMCratesUtils.createSuperObject(decorativeItemsChangeModeNode, SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE));
+            } else {
+                decorativeItemsChangeMode = Optional.empty();
             }
+            if (!defaultConsolationDropNode.isVirtual()) {
+                defaultConsolationDrop = Optional.of((Drop) GWMCratesUtils.createSuperObject(defaultConsolationDropNode, SuperObjectType.DROP));
+            } else {
+                defaultConsolationDrop = Optional.empty();
+            }
+            Map<String, Drop> tempConsolationDrops = new HashMap<>();
+            if (!consolationDropsNode.isVirtual()) {
+                for (Map.Entry<Object, ? extends ConfigurationNode> entry : consolationDropsNode.getChildrenMap().entrySet()) {
+                    tempConsolationDrops.put(entry.getKey().toString(), (Drop) GWMCratesUtils.createSuperObject(entry.getValue(), SuperObjectType.DROP));
+                }
+            }
+            consolationDrops = Collections.unmodifiableMap(tempConsolationDrops);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Casino Open Manager!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
-    public CasinoOpenManager(String type, Optional<String> id, Optional<SoundType> openSound,
-                             Optional<Text> displayName, List<ItemStack> decorativeItems,
-                             List<Integer> scrollDelays, boolean clearDecorativeItems,
-                             boolean clearOtherDrops, int closeDelay, boolean forbidClose,
-                             Drop loseDrop, Optional<SoundType> firstRowSound,
-                             Optional<SoundType> secondRowSound, Optional<SoundType> thirdRowSound) {
-        super(type, id, openSound);
+    public CasinoOpenManager(Optional<String> id, Optional<SoundType> openSound,
+                             Optional<Text> displayName, List<ItemStack> decorativeItems, List<Integer> scrollDelays,
+                             boolean clearDecorativeItems, boolean clearOtherDrops, int closeDelay, boolean forbidClose,
+                             Drop loseDrop, Optional<SoundType> firstRowSound, Optional<SoundType> secondRowSound,
+                             Optional<SoundType> thirdRowSound, Optional<SoundType> winSound,
+                             Optional<SoundType> consolationSound, Optional<SoundType> loseSound,
+                             Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode,
+                             Optional<Drop> defaultConsolationDrop, Map<String, Drop> consolationDrops) {
+        super(id, openSound);
         this.displayName = displayName;
         this.decorativeItems = decorativeItems;
         this.scrollDelays = scrollDelays;
@@ -186,6 +214,17 @@ public class CasinoOpenManager extends AbstractOpenManager {
         this.firstRowSound = firstRowSound;
         this.secondRowSound = secondRowSound;
         this.thirdRowSound = thirdRowSound;
+        this.winSound = winSound;
+        this.consolationSound = consolationSound;
+        this.loseSound = loseSound;
+        this.decorativeItemsChangeMode = decorativeItemsChangeMode;
+        this.defaultConsolationDrop = defaultConsolationDrop;
+        this.consolationDrops = consolationDrops;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -300,7 +339,7 @@ public class CasinoOpenManager extends AbstractOpenManager {
                                 drop1 : drop2.equals(drop0) ?
                                 drop2 : null;
                         if (tempDrop != null) { //Player didn't win, give him a consolation drop (if it exist)
-                            Optional<String> optionalId = tempDrop.getId();
+                            Optional<String> optionalId = tempDrop.id();
                             if (optionalId.isPresent()) {
                                 String id = optionalId.get();
                                 consolationDrops.getOrDefault(id, defaultConsolationDrop.orElseGet(() -> loseDrop)).give(player, 1);
@@ -368,111 +407,67 @@ public class CasinoOpenManager extends AbstractOpenManager {
         return displayName;
     }
 
-    public void setDisplayName(Optional<Text> displayName) {
-        this.displayName = displayName;
-    }
-
     public List<ItemStack> getDecorativeItems() {
         return decorativeItems;
-    }
-
-    public void setDecorativeItems(List<ItemStack> decorativeItems) {
-        this.decorativeItems = decorativeItems;
     }
 
     public List<Integer> getScrollDelays() {
         return scrollDelays;
     }
 
-    public void setScrollDelays(List<Integer> scrollDelays) {
-        this.scrollDelays = scrollDelays;
-    }
-
     public boolean isClearDecorativeItems() {
         return clearDecorativeItems;
-    }
-
-    public void setClearDecorativeItems(boolean clearDecorativeItems) {
-        this.clearDecorativeItems = clearDecorativeItems;
     }
 
     public boolean isClearOtherDrops() {
         return clearOtherDrops;
     }
 
-    public void setClearOtherDrops(boolean clearOtherDrops) {
-        this.clearOtherDrops = clearOtherDrops;
-    }
-
     public int getCloseDelay() {
         return closeDelay;
-    }
-
-    public void setCloseDelay(int closeDelay) {
-        this.closeDelay = closeDelay;
     }
 
     public boolean isForbidClose() {
         return forbidClose;
     }
 
-    public void setForbidClose(boolean forbidClose) {
-        this.forbidClose = forbidClose;
-    }
-
     public Drop getLoseDrop() {
         return loseDrop;
-    }
-
-    public void setLoseDrop(Drop loseDrop) {
-        this.loseDrop = loseDrop;
     }
 
     public Optional<SoundType> getFirstRowSound() {
         return firstRowSound;
     }
 
-    public void setFirstRowSound(Optional<SoundType> firstRowSound) {
-        this.firstRowSound = firstRowSound;
-    }
-
     public Optional<SoundType> getSecondRowSound() {
         return secondRowSound;
-    }
-
-    public void setSecondRowSound(Optional<SoundType> secondRowSound) {
-        this.secondRowSound = secondRowSound;
     }
 
     public Optional<SoundType> getThirdRowSound() {
         return thirdRowSound;
     }
 
-    public void setThirdRowSound(Optional<SoundType> thirdRowSound) {
-        this.thirdRowSound = thirdRowSound;
-    }
-
     public Optional<SoundType> getWinSound() {
         return winSound;
     }
 
-    public void setWinSound(Optional<SoundType> winSound) {
-        this.winSound = winSound;
+    public Optional<SoundType> getConsolationSound() {
+        return consolationSound;
     }
 
     public Optional<SoundType> getLoseSound() {
         return loseSound;
     }
 
-    public void setLoseSound(Optional<SoundType> loseSound) {
-        this.loseSound = loseSound;
-    }
-
     public Optional<DecorativeItemsChangeMode> getDecorativeItemsChangeMode() {
         return decorativeItemsChangeMode;
     }
 
-    public void setDecorativeItemsChangeMode(Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode) {
-        this.decorativeItemsChangeMode = decorativeItemsChangeMode;
+    public Optional<Drop> getDefaultConsolationDrop() {
+        return defaultConsolationDrop;
+    }
+
+    public Map<String, Drop> getConsolationDrops() {
+        return consolationDrops;
     }
 }

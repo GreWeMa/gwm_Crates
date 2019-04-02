@@ -1,7 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.drop.drops;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.drop.AbstractDrop;
+import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.Sponge;
@@ -11,14 +11,13 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.economy.Currency;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-public class CommandsDrop extends AbstractDrop {
+public final class CommandsDrop extends Drop {
 
-    private List<ExecutableCommand> executableCommands;
+    public static final String TYPE = "COMMANDS";
+
+    private final List<ExecutableCommand> executableCommands;
 
     public CommandsDrop(ConfigurationNode node) {
         super(node);
@@ -27,21 +26,28 @@ public class CommandsDrop extends AbstractDrop {
             if (commandsNode.isVirtual()) {
                 throw new IllegalArgumentException("COMMANDS node does not exist!");
             }
-            executableCommands = new ArrayList<>();
-            for (ConfigurationNode command_node : commandsNode.getChildrenList()) {
-                executableCommands.add(GWMCratesUtils.parseCommand(command_node));
+            List<ExecutableCommand> tempExecutableCommands = new ArrayList<>();
+            for (ConfigurationNode commandNode : commandsNode.getChildrenList()) {
+                tempExecutableCommands.add(GWMCratesUtils.parseCommand(commandNode));
             }
+            executableCommands = Collections.unmodifiableList(tempExecutableCommands);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Commands Drop!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public CommandsDrop(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
                         int level, Optional<ItemStack> dropItem, Optional<Integer> fakeLevel,
                         Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels,
+                        Optional<String> customName,
                         List<ExecutableCommand> executableCommands) {
-        super("COMMANDS", id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels);
+        super(id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels, customName);
         this.executableCommands = executableCommands;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -58,8 +64,8 @@ public class CommandsDrop extends AbstractDrop {
 
     public static class ExecutableCommand {
 
-        private String command;
-        private boolean console;
+        private final String command;
+        private final boolean console;
 
         public ExecutableCommand(String command, boolean console) {
             this.command = command;
@@ -70,24 +76,12 @@ public class CommandsDrop extends AbstractDrop {
             return command;
         }
 
-        public void setCommand(String command) {
-            this.command = command;
-        }
-
         public boolean isConsole() {
             return console;
-        }
-
-        public void setConsole(boolean console) {
-            this.console = console;
         }
     }
 
     public List<ExecutableCommand> getExecutableCommands() {
         return executableCommands;
-    }
-
-    public void setExecutableCommands(List<ExecutableCommand> executableCommands) {
-        this.executableCommands = executableCommands;
     }
 }

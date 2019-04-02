@@ -17,10 +17,10 @@ public class GiveSSOCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
         SuperObject sso = args.<SuperObject>getOne(Text.of("sso")).get();
-        String ssoId = sso.getId().get();
+        String ssoId = sso.id().get();
         Player player = args.<Player>getOne(Text.of("player")).get();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
-        boolean force = args.<Boolean>getOne(Text.of("force")).orElse(true);
+        boolean force = args.<Boolean>getOne(Text.of("force")).orElse(false);
         boolean self = src.equals(player);
         if (self) {
             if (!player.hasPermission("gwm_crates.command.give.sso." + ssoId)) {

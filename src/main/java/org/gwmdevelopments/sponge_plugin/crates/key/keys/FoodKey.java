@@ -10,9 +10,11 @@ import org.spongepowered.api.service.economy.Currency;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-public class FoodKey extends GiveableKey {
+public final class FoodKey extends GiveableKey {
 
-    private int food;
+    public static final String TYPE = "FOOD";
+
+    private final int food;
 
     public FoodKey(ConfigurationNode node) {
         super(node);
@@ -23,15 +25,20 @@ public class FoodKey extends GiveableKey {
             }
             food = foodNode.getInt();
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Food Key!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
-    public FoodKey(String type, Optional<String> id, boolean doNotWithdraw,
+    public FoodKey(Optional<String> id, boolean doNotWithdraw,
                    Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                    int food) {
-        super(type, id, doNotWithdraw, price, sellCurrency, doNotAdd);
+        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.food = food;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -58,6 +65,10 @@ public class FoodKey extends GiveableKey {
 
     @Override
     public int get(Player player) {
-        return player.get(Keys.FOOD_LEVEL).orElse(0) >= food ? 1 : 0;
+        return player.get(Keys.FOOD_LEVEL).orElse(0) / food;
+    }
+
+    public int getFood() {
+        return food;
     }
 }

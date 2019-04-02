@@ -40,6 +40,7 @@ import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.sql.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public final class GWMCratesUtils {
 
@@ -48,7 +49,9 @@ public final class GWMCratesUtils {
 
     public static final ItemStack EMPTY_ITEM = ItemStack.of(ItemTypes.NONE, 0);
     public static final Drop EMPTY_DROP = new EmptyDrop(Optional.empty(), 1,
-            Optional.empty(), Optional.empty(), Collections.EMPTY_MAP, Collections.EMPTY_MAP);
+            Optional.empty(), Optional.empty(), Collections.EMPTY_MAP, Collections.EMPTY_MAP, Optional.empty());
+
+    public static final Pattern ID_PATTERN = Pattern.compile("[a-z]([-_]?[a-z0-9])*");
 
     public static Optional<Currency> getCurrencyById(EconomyService economyService, String id) {
         for (Currency currency : economyService.getCurrencies()) {
@@ -570,7 +573,7 @@ public final class GWMCratesUtils {
             Constructor<? extends SuperObject> superObjectConstructor = superObjectClass.getConstructor(ConfigurationNode.class);
             return superObjectConstructor.newInstance(node);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Super Object \"" + superObjectType + "\" with type \"" + type + "\" and ID \"" + id + "\"!", e);
+            throw new SSOCreationException(superObjectType, type, e);
         }
     }
 
@@ -585,7 +588,7 @@ public final class GWMCratesUtils {
 
     public static Optional<SuperObject> getSavedSuperObject(String savedSuperObjectId) {
         for (SuperObject superObject : GWMCrates.getInstance().getSavedSuperObjects().values()) {
-            if (superObject.getId().isPresent() && superObject.getId().get().equals(savedSuperObjectId)) {
+            if (superObject.id().isPresent() && superObject.id().get().equals(savedSuperObjectId)) {
                 return Optional.of(superObject);
             }
         }

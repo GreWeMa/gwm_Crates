@@ -14,7 +14,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-public class VirtualCase extends GiveableCase {
+public final class VirtualCase extends GiveableCase {
+
+    public static final String TYPE = "VIRTUAL";
 
     public static final String SELECT_QUERY = "SELECT value FROM virtual_cases " +
             "WHERE name = ? " +
@@ -28,9 +30,9 @@ public class VirtualCase extends GiveableCase {
     public static final String INSERT_QUERY = "INSERT INTO virtual_cases (name, uuid, value)" +
             "VALUES (?, ?, ?)";
 
-    private Map<UUID, Integer> cache = new WeakHashMap<>();
+    private final Map<UUID, Integer> cache = new WeakHashMap<>();
 
-    private String virtualName;
+    private final String virtualName;
 
     public VirtualCase(ConfigurationNode node) {
         super(node);
@@ -45,15 +47,20 @@ public class VirtualCase extends GiveableCase {
                         GWMCrates.getInstance().getMaxVirtualNamesLength() + ")!");
             }
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Virtual Case!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public VirtualCase(Optional<String> id, boolean doNotWithdraw,
                        Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                        String virtualName) {
-        super("VIRTUAL", id, doNotWithdraw, price, sellCurrency, doNotAdd);
+        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.virtualName = virtualName;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -171,9 +178,5 @@ public class VirtualCase extends GiveableCase {
 
     public String getVirtualName() {
         return virtualName;
-    }
-
-    public void setVirtualName(String virtualName) {
-        this.virtualName = virtualName;
     }
 }

@@ -12,6 +12,7 @@ import org.spongepowered.api.text.Text;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SuperObjectCommandElement extends CommandElement {
 
@@ -41,23 +42,14 @@ public class SuperObjectCommandElement extends CommandElement {
         Optional<String> optionalArg = args.nextIfPresent();
         if (optionalArg.isPresent()) {
             String arg = optionalArg.get().toLowerCase();
-            List<String> suggestions = new ArrayList<>();
-            for (Map.Entry<Pair<SuperObjectType, String>, SuperObject> entry : GWMCrates.getInstance().getSavedSuperObjects().entrySet()) {
-                Pair<SuperObjectType, String> pair = entry.getKey();
-                SuperObjectType superObjectType = pair.getKey();
-                String savedId = pair.getValue();
-                SuperObject superObject = entry.getValue();
-                if (savedId.toLowerCase().startsWith(arg)) {
-                    if (type.isPresent() && !type.get().equals(superObjectType)) {
-                        continue;
-                    }
-                    if (onlyGiveable && !(superObject instanceof Giveable)) {
-                        continue;
-                    }
-                    suggestions.add(savedId);
-                }
-            }
-            return suggestions;
+            return GWMCrates.getInstance().getSavedSuperObjects().entrySet().stream().
+                    filter(entry ->
+                            source.hasPermission("gwm_crates.command.tab_completion.sso." + entry.getValue().id().get().toLowerCase()) &&
+                            entry.getKey().getValue().toLowerCase().startsWith(arg) &&
+                            !type.isPresent() || type.get().equals(entry.getKey().getKey()) &&
+                            !onlyGiveable || entry.getValue() instanceof Giveable).
+                    map(entry -> entry.getKey().getValue().toLowerCase()).
+                    collect(Collectors.toList());
         } else {
             return Collections.emptyList();
         }

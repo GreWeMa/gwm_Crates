@@ -6,7 +6,7 @@ import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager;
+import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
@@ -29,22 +29,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class SecondOpenManager extends AbstractOpenManager {
+public final class SecondOpenManager extends OpenManager {
+
+    public static final String TYPE = "SECOND";
 
     public static final Map<Container, Pair<SecondOpenManager, Manager>> SECOND_GUI_INVENTORIES = new HashMap<>();
 
     public static final ItemStack DEFAULT_HIDDEN_ITEM = ItemStack.of(ItemTypes.CHEST, 1);
 
-    private Optional<Text> displayName = Optional.empty();
-    private ItemStack hiddenItem = DEFAULT_HIDDEN_ITEM;
-    private boolean increaseHiddenItemQuantity;
-    private int rows;
-    private boolean showOtherDrops;
-    private int showOtherDropsDelay;
-    private int closeDelay;
-    private boolean forbidClose;
-    private boolean giveRandomOnClose;
-    private Optional<SoundType> clickSound = Optional.empty();
+    private final Optional<Text> displayName;
+    private final ItemStack hiddenItem;
+    private final boolean increaseHiddenItemQuantity;
+    private final int rows;
+    private final boolean showOtherDrops;
+    private final int showOtherDropsDelay;
+    private final int closeDelay;
+    private final boolean forbidClose;
+    private final boolean giveRandomOnClose;
+    private final Optional<SoundType> clickSound;
 
     public SecondOpenManager(ConfigurationNode node) {
         super(node);
@@ -61,30 +63,34 @@ public class SecondOpenManager extends AbstractOpenManager {
             ConfigurationNode clickSoundNode = node.getNode("CLICK_SOUND");
             if (!displayNameNode.isVirtual()) {
                 displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
+            } else {
+                displayName = Optional.empty();
             }
             if (!hiddenItemNode.isVirtual()) {
                 hiddenItem = GWMLibraryUtils.parseItem(hiddenItemNode);
+            } else {
+                hiddenItem = DEFAULT_HIDDEN_ITEM;
             }
             increaseHiddenItemQuantity = increaseHiddenItemQuantityNode.getBoolean(true);
             rows = rowsNode.getInt(6);
             if (rows < 1 || rows > 6) {
-                GWMCrates.getInstance().getLogger().info("ROWS value is more than 6 or less than 1! Force set it to 3!");
-                rows = 6;
+                throw new RuntimeException("ROWS is greater than 6 or less than 1!");
             }
             showOtherDrops = showOtherDropsNode.getBoolean(true);
             showOtherDropsDelay = showOtherDropsDelayNode.getInt(20);
             closeDelay = closeDelayNode.getInt(60);
             if (closeDelay <= showOtherDropsDelay) {
-                GWMCrates.getInstance().getLogger().info("SHOW OTHER DROPS DELAY is more or equal to CLOSE DELAY! Force set it to 0!");
-                showOtherDropsDelay = 0;
+                throw new RuntimeException("SHOW_OTHER_DROPS_DELAY is greater than or equal to CLOSE DELAY!");
             }
             forbidClose = forbidCloseNode.getBoolean(true);
             giveRandomOnClose = giveRandomOnCloseNode.getBoolean(true);
             if (!clickSoundNode.isVirtual()) {
                 clickSound = Optional.of(clickSoundNode.getValue(TypeToken.of(SoundType.class)));
+            } else {
+                clickSound = Optional.empty();
             }
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Second Open Manager!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
@@ -93,7 +99,7 @@ public class SecondOpenManager extends AbstractOpenManager {
                              int rows, boolean showOtherDrops, int showOtherDropsDelay, int closeDelay,
                              boolean forbidClose, boolean giveRandomOnClose,
                              Optional<SoundType> clickSound) {
-        super("SECOND", id, openSound);
+        super(id, openSound);
         this.displayName = displayName;
         this.hiddenItem = hiddenItem;
         this.increaseHiddenItemQuantity = increaseHiddenItemQuantity;
@@ -104,6 +110,11 @@ public class SecondOpenManager extends AbstractOpenManager {
         this.forbidClose = forbidClose;
         this.giveRandomOnClose = giveRandomOnClose;
         this.clickSound = clickSound;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -136,79 +147,39 @@ public class SecondOpenManager extends AbstractOpenManager {
         return displayName;
     }
 
-    public void setDisplayName(Optional<Text> displayName) {
-        this.displayName = displayName;
-    }
-
     public ItemStack getHiddenItem() {
         return hiddenItem;
-    }
-
-    public void setHiddenItem(ItemStack hiddenItem) {
-        this.hiddenItem = hiddenItem;
     }
 
     public boolean isIncreaseHiddenItemQuantity() {
         return increaseHiddenItemQuantity;
     }
 
-    public void setIncreaseHiddenItemQuantity(boolean increaseHiddenItemQuantity) {
-        this.increaseHiddenItemQuantity = increaseHiddenItemQuantity;
-    }
-
     public int getRows() {
         return rows;
-    }
-
-    public void setRows(int rows) {
-        this.rows = rows;
     }
 
     public boolean isShowOtherDrops() {
         return showOtherDrops;
     }
 
-    public void setShowOtherDrops(boolean showOtherDrops) {
-        this.showOtherDrops = showOtherDrops;
-    }
-
     public int getShowOtherDropsDelay() {
         return showOtherDropsDelay;
-    }
-
-    public void setShowOtherDropsDelay(int showOtherDropsDelay) {
-        this.showOtherDropsDelay = showOtherDropsDelay;
     }
 
     public int getCloseDelay() {
         return closeDelay;
     }
 
-    public void setCloseDelay(int closeDelay) {
-        this.closeDelay = closeDelay;
-    }
-
     public boolean isForbidClose() {
         return forbidClose;
-    }
-
-    public void setForbidClose(boolean forbidClose) {
-        this.forbidClose = forbidClose;
     }
 
     public boolean isGiveRandomOnClose() {
         return giveRandomOnClose;
     }
 
-    public void setGiveRandomOnClose(boolean giveRandomOnClose) {
-        this.giveRandomOnClose = giveRandomOnClose;
-    }
-
     public Optional<SoundType> getClickSound() {
         return clickSound;
-    }
-
-    public void setClickSound(Optional<SoundType> clickSound) {
-        this.clickSound = clickSound;
     }
 }

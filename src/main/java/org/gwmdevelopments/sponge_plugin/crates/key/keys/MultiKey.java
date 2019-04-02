@@ -12,13 +12,16 @@ import org.spongepowered.api.service.economy.Currency;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class MultiKey extends GiveableKey {
+public final class MultiKey extends GiveableKey {
 
-    private List<Key> keys;
-    private boolean allKeysNeeded;
+    public static final String TYPE = "MULTI";
+
+    private final List<Key> keys;
+    private final boolean allKeysNeeded;
 
     public MultiKey(ConfigurationNode node) {
         super(node);
@@ -28,22 +31,28 @@ public class MultiKey extends GiveableKey {
             if (keysNode.isVirtual()) {
                 throw new IllegalArgumentException("KEYS node does not exist");
             }
-            keys = new ArrayList<>();
+            List<Key> tempKeys = new ArrayList<>();
             for (ConfigurationNode keyNode : keysNode.getChildrenList()) {
-                keys.add((Key) GWMCratesUtils.createSuperObject(keyNode, SuperObjectType.KEY));
+                tempKeys.add((Key) GWMCratesUtils.createSuperObject(keyNode, SuperObjectType.KEY));
             }
+            keys = Collections.unmodifiableList(tempKeys);
             allKeysNeeded = allKeysNeededNode.getBoolean(true);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Multi Key!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public MultiKey(Optional<String> id, boolean doNotWithdraw,
                     Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                     List<Key> keys, boolean allKeysNeeded) {
-        super("MULTI", id, doNotWithdraw, price, sellCurrency, doNotAdd);
+        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.keys = keys;
         this.allKeysNeeded = allKeysNeeded;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -116,15 +125,7 @@ public class MultiKey extends GiveableKey {
         return keys;
     }
 
-    public void setKeys(List<Key> keys) {
-        this.keys = keys;
-    }
-
     public boolean isAllKeysNeeded() {
         return allKeysNeeded;
-    }
-
-    public void setAllKeysNeeded(boolean allKeysNeeded) {
-        this.allKeysNeeded = allKeysNeeded;
     }
 }

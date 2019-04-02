@@ -10,8 +10,11 @@ import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -24,8 +27,17 @@ public class ItemCaseListener {
 
     @Listener(order = Order.LATE)
     public void openItemCase(InteractItemEvent.Secondary.MainHand event, @First Player player) {
+        openItemCase(event, player, event.getItemStack().createStack());
+    }
+
+    @Listener(order = Order.LATE)
+    public void openItemCase(InteractBlockEvent.Secondary.MainHand event, @First Player player) {
+        event.getContext().get(EventContextKeys.USED_ITEM).
+                ifPresent(item -> openItemCase(event, player, item.createStack()));
+    }
+
+    private void openItemCase(Cancellable event, Player player, ItemStack item) {
         UUID uuid = player.getUniqueId();
-        ItemStack item = event.getItemStack().createStack();
         for (Manager manager : GWMCrates.getInstance().getCreatedManagers()) {
             Case caze = manager.getCase();
             if (!(caze instanceof ItemCase)) {
@@ -66,8 +78,17 @@ public class ItemCaseListener {
 
 
     @Listener(order = Order.LATE)
-    public void startItemCasePreview(InteractItemEvent.Primary.MainHand event, @First Player player) {
-        ItemStack item = event.getItemStack().createStack();
+    public void previewItemCase(InteractItemEvent.Primary.MainHand event, @First Player player) {
+        previewItemCase(event, player, event.getItemStack().createStack());
+    }
+
+    @Listener
+    public void previewItemCase(InteractBlockEvent.Primary.MainHand event, @First Player player) {
+        event.getContext().get(EventContextKeys.USED_ITEM).
+                ifPresent(item -> previewItemCase(event, player, item.createStack()));
+    }
+
+    private void previewItemCase(Cancellable event, Player player, ItemStack item) {
         for (Manager manager : GWMCrates.getInstance().getCreatedManagers()) {
             Case caze = manager.getCase();
             if (!(caze instanceof ItemCase)) {

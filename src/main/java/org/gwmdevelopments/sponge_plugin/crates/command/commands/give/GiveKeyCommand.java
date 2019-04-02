@@ -20,7 +20,7 @@ public class GiveKeyCommand implements CommandExecutor {
         String managerId = manager.getId();
         Player player = args.<Player>getOne(Text.of("player")).get();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
-        boolean force = args.<Boolean>getOne(Text.of("force")).orElse(true);
+        boolean force = args.<Boolean>getOne(Text.of("force")).orElse(false);
         boolean self = src.equals(player);
         if (self) {
             if (!player.hasPermission("gwm_crates.command.give.manager." + managerId + ".key")) {

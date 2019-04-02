@@ -3,6 +3,7 @@ package org.gwmdevelopments.sponge_plugin.crates.manager;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
+import org.gwmdevelopments.sponge_plugin.crates.exception.IdFormatException;
 import org.gwmdevelopments.sponge_plugin.crates.exception.ManagerCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
@@ -60,6 +61,9 @@ public final class Manager {
                 throw new IllegalArgumentException("DROPS node does not exist!");
             }
             id = idNode.getString();
+            if (!GWMCratesUtils.ID_PATTERN.matcher(id).matches()) {
+                throw new IdFormatException(id);
+            }
             name = nameNode.getString();
             caze = (Case) GWMCratesUtils.createSuperObject(caseNode, SuperObjectType.CASE);
             key = (Key) GWMCratesUtils.createSuperObject(keyNode, SuperObjectType.KEY);
@@ -85,7 +89,7 @@ public final class Manager {
                 customInfo = Optional.empty();
             }
         } catch (Exception e) {
-            throw new ManagerCreationException("Failed to create Manager!", e);
+            throw new ManagerCreationException(e);
         }
     }
 
@@ -106,7 +110,7 @@ public final class Manager {
 
     public Optional<Drop> getDropById(String id) {
         for (Drop drop : drops) {
-            if (drop.getId().isPresent() && drop.getId().get().equals(id)) {
+            if (drop.id().isPresent() && drop.id().get().equals(id)) {
                 return Optional.of(drop);
             }
         }

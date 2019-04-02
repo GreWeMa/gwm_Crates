@@ -1,5 +1,15 @@
+v. beta-3.4
+1. Code refactoring.
+2. Add permission for manager tab completion.
+3. Add permission for sso tab completion.
+4. "ITEM" Drop now drops on the floor if a player does not have enough space in his inventory.
+5. Fix bug with 'placeable' "ITEM" Drops. They can not be placed anymore.
+6. 'force' parameter in commands `giveeveryone` and `giveeveryone` not defaults to 'false'.
+7. Fix mistake in previous version changelog ¯\_(ツ)_/¯.
+8. Add 'CUSTOM_NAME' parameter to Drop.
+
 v. beta-3.3.6
-1. Add 'giveall' command.
+1. Add 'giveeveryone' command.
 
 v. beta-3.3.5
 1. Add new features to 'CASINO' Open Manager

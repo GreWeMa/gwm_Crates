@@ -16,9 +16,9 @@ public class GiveEveryoneSSOCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
         SuperObject sso = args.<SuperObject>getOne(Text.of("sso")).get();
-        String ssoId = sso.getId().get();
+        String ssoId = sso.id().get();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
-        boolean force = args.<Boolean>getOne(Text.of("force")).orElse(true);
+        boolean force = args.<Boolean>getOne(Text.of("force")).orElse(false);
         if (!src.hasPermission("gwm_crates.command.give_everyone.sso." + ssoId)) {
             src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
             return CommandResult.success();

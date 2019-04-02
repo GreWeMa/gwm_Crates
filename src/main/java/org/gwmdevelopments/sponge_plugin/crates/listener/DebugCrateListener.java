@@ -57,7 +57,7 @@ public class DebugCrateListener {
             String playerUuid = player.getUniqueId().toString();
             String managerName = manager.getName();
             String managerId = manager.getId();
-            String dropName = drop == null ? "null" : drop.getId().orElse("Unknown ID");
+            String dropName = drop == null ? "null" : drop.id().orElse("Unknown ID");
             Location<World> location = player.getLocation();
             String playerLocation = location.getExtent().getName() + ' ' +
                     location.getBlockX() + ' ' +

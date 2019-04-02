@@ -31,7 +31,7 @@ public class BuySSOCommand implements CommandExecutor {
         Player player = (Player) src;
         UUID uuid = player.getUniqueId();
         SuperObject sso = args.<SuperObject>getOne(Text.of("sso")).get();
-        String ssoId = sso.getId().get();
+        String ssoId = sso.id().get();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
         if (!(sso instanceof Giveable)) {
             src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SSO_IS_NOT_GIVEABLE", src, null,

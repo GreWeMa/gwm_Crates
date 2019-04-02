@@ -2,17 +2,20 @@ package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
-import org.gwmdevelopments.sponge_plugin.crates.key.AbstractKey;
+import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.spongepowered.api.entity.living.player.Player;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class WorldTimeKey extends AbstractKey {
+public final class WorldTimeKey extends Key {
 
-    private boolean whitelistMode;
-    private Map<Integer, Integer> timeValues;
+    public static final String TYPE = "WORLD-TIME";
+
+    private final boolean whitelistMode;
+    private final Map<Integer, Integer> timeValues;
 
     public WorldTimeKey(ConfigurationNode node) {
         super(node);
@@ -23,22 +26,28 @@ public class WorldTimeKey extends AbstractKey {
                 throw new IllegalArgumentException("TIME_VALUES node does not exist!");
             }
             whitelistMode = whitelistModeNode.getBoolean(true);
-            timeValues = new HashMap<>();
+            Map<Integer, Integer> tempTimeValues = new HashMap<>();
             for (Map.Entry<Object, ? extends ConfigurationNode> entry : timeValuesNode.getChildrenMap().entrySet()) {
                 int key = Integer.parseInt(entry.getKey().toString());
                 int value = entry.getValue().getInt();
-                timeValues.put(key, value);
+                tempTimeValues.put(key, value);
             }
+            timeValues = Collections.unmodifiableMap(tempTimeValues);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create World Time Key!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
-    public WorldTimeKey(String type, Optional<String> id, boolean doNotWithdraw,
+    public WorldTimeKey(Optional<String> id, boolean doNotWithdraw,
                         boolean whitelistMode, Map<Integer, Integer> timeValues) {
-        super(type, id, doNotWithdraw);
+        super(id, doNotWithdraw);
         this.whitelistMode = whitelistMode;
         this.timeValues = timeValues;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -63,5 +72,13 @@ public class WorldTimeKey extends AbstractKey {
             }
             return 1;
         }
+    }
+
+    public boolean isWhitelistMode() {
+        return whitelistMode;
+    }
+
+    public Map<Integer, Integer> getTimeValues() {
+        return timeValues;
     }
 }

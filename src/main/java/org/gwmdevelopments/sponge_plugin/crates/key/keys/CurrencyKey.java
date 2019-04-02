@@ -4,6 +4,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
+import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
@@ -14,10 +15,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
 
-public class CurrencyKey extends GiveableKey {
+public final class CurrencyKey extends GiveableKey {
 
-    private BigDecimal amount;
-    private Currency currency;
+    public static final String TYPE = "CURRENCY";
+
+    private final BigDecimal amount;
+    private final Optional<Currency> currency;
 
     public CurrencyKey(ConfigurationNode node) {
         super(node);
@@ -27,38 +30,37 @@ public class CurrencyKey extends GiveableKey {
             if (amountNode.isVirtual()) {
                 throw new IllegalArgumentException("AMOUNT node does not exist!");
             }
-            if (currencyNode.isVirtual()) {
-                throw new IllegalArgumentException("CURRENCY node does not exist!");
-            }
             amount = new BigDecimal(amountNode.getString());
-            String currencyName = currencyNode.getString();
-            Optional<EconomyService> optionalEconomyService = GWMLibrary.getInstance().getEconomyService();
-            if (!optionalEconomyService.isPresent()) {
-                throw new IllegalStateException("Economy Service not found!");
-            }
-            EconomyService economyService = optionalEconomyService.get();
-            boolean found = false;
-            for (Currency currency : economyService.getCurrencies()) {
-                if (currency.getId().equals(currencyName)) {
-                    this.currency = currency;
-                    found = true;
-                    break;
+            if (!currencyNode.isVirtual()) {
+                String currencyId = currencyNode.getString();
+                Optional<EconomyService> optionalEconomyService = GWMLibrary.getInstance().getEconomyService();
+                if (!optionalEconomyService.isPresent()) {
+                    throw new IllegalArgumentException("Economy Service not found!");
                 }
+                currency = GWMCratesUtils.getCurrencyById(optionalEconomyService.get(), currencyId);
+                if (!currency.isPresent()) {
+                    throw new IllegalArgumentException("Currency \"" + currencyId + "\" not found!");
+                }
+            } else {
+                currency = Optional.empty();
             }
-            if (!found) {
-                throw new IllegalArgumentException("Currency \"" + currencyName + "\" not found!");
-            }
+
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Currency Key!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
-    public CurrencyKey(String type, Optional<String> id, boolean doNotWithdraw,
+    public CurrencyKey(Optional<String> id, boolean doNotWithdraw,
                        Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
-                       Currency currency, BigDecimal amount) {
-        super(type, id, doNotWithdraw, price, sellCurrency, doNotAdd);
-        this.currency = currency;
+                       BigDecimal amount, Optional<Currency> currency) {
+        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.amount = amount;
+        this.currency = currency;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -69,17 +71,18 @@ public class CurrencyKey extends GiveableKey {
                 throw new IllegalStateException("Economy Service not found!");
             }
             EconomyService economyService = optionalEconomyService.get();
+            Currency realCurrency = currency.orElse(economyService.getDefaultCurrency());
             Optional<UniqueAccount> optionalAccount = economyService.getOrCreateAccount(player.getUniqueId());
             if (!optionalAccount.isPresent()) {
                 return;
             }
             UniqueAccount account = optionalAccount.get();
-            BigDecimal balance = account.getBalance(currency);
+            BigDecimal balance = account.getBalance(realCurrency);
             BigDecimal value = balance.subtract(this.amount.multiply(new BigDecimal(Integer.toString(amount))));
             if (value.compareTo(BigDecimal.ZERO) < 0) {
                 value = BigDecimal.ZERO;
             }
-            account.setBalance(currency,  value, GWMCrates.getInstance().getCause());
+            account.setBalance(realCurrency,  value, GWMCrates.getInstance().getCause());
         }
     }
 
@@ -90,12 +93,13 @@ public class CurrencyKey extends GiveableKey {
             throw new IllegalStateException("Economy Service not found!");
         }
         EconomyService economyService = optionalEconomyService.get();
+        Currency realCurrency = currency.orElse(economyService.getDefaultCurrency());
         Optional<UniqueAccount> optionalAccount = economyService.getOrCreateAccount(player.getUniqueId());
         if (!optionalAccount.isPresent()) {
             return 0;
         }
         UniqueAccount account = optionalAccount.get();
-        BigDecimal balance = account.getBalance(currency);
+        BigDecimal balance = account.getBalance(realCurrency);
         int value = balance.divide(amount, RoundingMode.FLOOR).intValue();
         return value > 0 ? value : 0;
     }
@@ -108,14 +112,23 @@ public class CurrencyKey extends GiveableKey {
                 throw new IllegalStateException("Economy Service not found!");
             }
             EconomyService economyService = optionalEconomyService.get();
+            Currency realCurrency = currency.orElse(economyService.getDefaultCurrency());
             Optional<UniqueAccount> optionalAccount = economyService.getOrCreateAccount(player.getUniqueId());
             if (!optionalAccount.isPresent()) {
                 return;
             }
             UniqueAccount account = optionalAccount.get();
-            BigDecimal balance = account.getBalance(currency);
+            BigDecimal balance = account.getBalance(realCurrency);
             BigDecimal value = balance.add(this.amount.multiply(new BigDecimal(Integer.toString(amount))));
-            account.setBalance(currency, value, GWMCrates.getInstance().getCause());
+            account.setBalance(realCurrency, value, GWMCrates.getInstance().getCause());
         }
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public Optional<Currency> getCurrency() {
+        return currency;
     }
 }

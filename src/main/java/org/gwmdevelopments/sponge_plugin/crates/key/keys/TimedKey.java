@@ -14,7 +14,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-public class TimedKey extends GiveableKey {
+public final class TimedKey extends GiveableKey {
+
+    public static final String TYPE = "TIMED";
 
     public static final String SELECT_QUERY = "SELECT delay FROM timed_keys " +
             "WHERE name = ? " +
@@ -28,10 +30,10 @@ public class TimedKey extends GiveableKey {
     public static final String INSERT_QUERY = "INSERT INTO timed_keys (name, uuid, delay) " +
             "VALUES (?, ?, ?)";
 
-    private Map<UUID, Long> cache = new WeakHashMap<>();
+    private final Map<UUID, Long> cache = new WeakHashMap<>();
 
-    private String virtualName;
-    private long delay;
+    private final String virtualName;
+    private final long delay;
 
     public TimedKey(ConfigurationNode node) {
         super(node);
@@ -51,16 +53,21 @@ public class TimedKey extends GiveableKey {
             }
             delay = delayNode.getLong();
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Timed Key!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public TimedKey(Optional<String> id, boolean doNotWithdraw,
                     Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                     String virtualName, long delay) {
-        super("TIMED", id, doNotWithdraw, price, sellCurrency, doNotAdd);
+        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.virtualName = virtualName;
         this.delay = delay;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -192,15 +199,7 @@ public class TimedKey extends GiveableKey {
         return virtualName;
     }
 
-    public void setVirtualName(String virtualName) {
-        this.virtualName = virtualName;
-    }
-
     public long getDelay() {
         return delay;
-    }
-
-    public void setDelay(long delay) {
-        this.delay = delay;
     }
 }

@@ -5,7 +5,7 @@ import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.preview.AbstractPreview;
+import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.entity.living.player.Player;
@@ -25,11 +25,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
-public class SecondGuiPreview extends AbstractPreview {
+public final class SecondGuiPreview extends Preview {
+
+    public static final String TYPE = "SECOND";
 
     public static final Map<Container, Pair<SecondGuiPreview, Manager>> SECOND_GUI_CONTAINERS = new HashMap<>();
 
-    private Optional<Text> displayName = Optional.empty();
+    private final Optional<Text> displayName;
 
     public SecondGuiPreview(ConfigurationNode node) {
         super(node);
@@ -37,15 +39,22 @@ public class SecondGuiPreview extends AbstractPreview {
             ConfigurationNode displayNameNode = node.getNode("DISPLAY_NAME");
             if (!displayNameNode.isVirtual()) {
                 displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
+            } else {
+                displayName = Optional.empty();
             }
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Second Gui Preview!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public SecondGuiPreview(Optional<String> id, Optional<Text> displayName) {
-        super("SECOND", id);
+        super(id);
         this.displayName = displayName;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -75,9 +84,5 @@ public class SecondGuiPreview extends AbstractPreview {
 
     public Optional<Text> getDisplayName() {
         return displayName;
-    }
-
-    public void setDisplayName(Optional<Text> displayName) {
-        this.displayName = displayName;
     }
 }

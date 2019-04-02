@@ -12,9 +12,11 @@ import org.spongepowered.api.service.economy.Currency;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-public class ItemKey extends GiveableKey {
+public final class ItemKey extends GiveableKey {
 
-    private ItemStack item;
+    public static final String TYPE = "ITEM";
+
+    private final ItemStack item;
 
     public ItemKey(ConfigurationNode node) {
         super(node);
@@ -25,15 +27,20 @@ public class ItemKey extends GiveableKey {
             }
             item = GWMLibraryUtils.parseItem(itemNode);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Item Key!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public ItemKey(Optional<String> id, boolean doNotWithdraw,
                    Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                    ItemStack item) {
-        super("ITEM", id, doNotWithdraw, price, sellCurrency, doNotAdd);
+        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.item = item;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -56,10 +63,6 @@ public class ItemKey extends GiveableKey {
     }
 
     public ItemStack getItem() {
-        return item;
-    }
-
-    public void setItem(ItemStack item) {
-        this.item = item;
+        return item.copy();
     }
 }

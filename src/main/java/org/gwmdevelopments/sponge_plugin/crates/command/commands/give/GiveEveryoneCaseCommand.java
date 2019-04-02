@@ -19,7 +19,7 @@ public class GiveEveryoneCaseCommand implements CommandExecutor {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
         String managerId = manager.getId();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
-        boolean force = args.<Boolean>getOne(Text.of("force")).orElse(true);
+        boolean force = args.<Boolean>getOne(Text.of("force")).orElse(false);
         if (!src.hasPermission("gwm_crates.command.give_everyone.manager." + managerId + ".case")) {
             src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
             return CommandResult.success();
