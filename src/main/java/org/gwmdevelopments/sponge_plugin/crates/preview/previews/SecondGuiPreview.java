@@ -67,10 +67,10 @@ public final class SecondGuiPreview extends Preview {
                 builder.property(InventoryTitle.PROPERTY_NAME, new InventoryTitle(title)));
         Inventory inventory = builder.build(GWMCrates.getInstance());
         OrderedInventory ordered = GWMCratesUtils.castToOrdered(inventory);
-        Iterator<Drop> drop_iterator = manager.getDrops().iterator();
+        Iterator<Drop> dropIterator = manager.getDrops().stream().filter(Drop::isShowInPreview).iterator();
         int size = 9 * dimension.getRows();
-        for (int i = 0; i < size && drop_iterator.hasNext();) {
-            Drop next = drop_iterator.next();
+        for (int i = 0; i < size && dropIterator.hasNext();) {
+            Drop next = dropIterator.next();
             Optional<ItemStack> optionalDropItem = next.getDropItem();
             if (!optionalDropItem.isPresent()) {
                 continue;

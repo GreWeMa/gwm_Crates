@@ -41,9 +41,9 @@ public final class MultiDrop extends Drop {
     public MultiDrop(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
                      int level, Optional<ItemStack> dropItem, Optional<Integer> fakeLevel,
                      Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels,
-                     Optional<String> customName,
+                     Optional<String> customName, boolean showInPreview,
                      List<Drop> drops, boolean giveAll) {
-        super(id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels, customName);
+        super(id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels, customName, showInPreview);
         this.drops = drops;
         this.giveAll = giveAll;
     }

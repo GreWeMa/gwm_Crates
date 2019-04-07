@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public final class ExperienceLevelKey extends GiveableKey {
 
-    public static final String TYPE = "EXPERIENCE_LEVEL";
+    public static final String TYPE = "EXPERIENCE-LEVEL";
 
     private final int experienceLevel;
 

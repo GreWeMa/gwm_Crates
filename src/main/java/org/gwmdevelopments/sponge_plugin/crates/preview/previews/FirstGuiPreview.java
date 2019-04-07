@@ -26,6 +26,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class FirstGuiPreview extends Preview {
 
@@ -113,26 +114,28 @@ public final class FirstGuiPreview extends Preview {
                         set(decorativeItems.get(index));
             }
         }
-        List<Drop> drops = manager.getDrops();
-        int index = 0;
-        for (int i = 10; i < 17; i++) {
-            if (index == drops.size()) {
-                index = 0;
+        List<Drop> drops = manager.getDrops().stream().filter(Drop::isShowInPreview).collect(Collectors.toList());
+        if (!drops.isEmpty()) {
+            int index = 0;
+            for (int i = 10; i < 17; i++) {
+                if (index == drops.size()) {
+                    index = 0;
+                }
+                ordered.getSlot(new SlotIndex(i)).get().set(drops.get(index).getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
+                index++;
             }
-            ordered.getSlot(new SlotIndex(i)).get().set(drops.get(index).getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
-            index++;
+            Container container = player.openInventory(inventory).get();
+            FIRST_GUI_CONTAINERS.put(container, new Pair<>(this, manager));
+            if (!decorativeItems.isEmpty()) {
+                decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
+                        createTaskBuilder().delayTicks(mode.getChangeDelay()).
+                        execute(new DecorativeDropChangeRunnable(player, container, ordered, new ArrayList<>(decorativeItems), mode, FirstOpenManager.DECORATIVE_ITEMS_INDICES)).
+                        submit(GWMCrates.getInstance()));
+            }
+            Sponge.getScheduler().createTaskBuilder().delayTicks(scrollDelay).
+                    execute(new DropChangeRunnable(container, drops, index)).
+                    submit(GWMCrates.getInstance());
         }
-        Container container = player.openInventory(inventory).get();
-        FIRST_GUI_CONTAINERS.put(container, new Pair<>(this, manager));
-        if (!decorativeItems.isEmpty()) {
-            decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
-                    createTaskBuilder().delayTicks(mode.getChangeDelay()).
-                    execute(new DecorativeDropChangeRunnable(player, container, ordered, new ArrayList<>(decorativeItems), mode, FirstOpenManager.DECORATIVE_ITEMS_INDICES)).
-                    submit(GWMCrates.getInstance()));
-        }
-        Sponge.getScheduler().createTaskBuilder().delayTicks(scrollDelay).
-                execute(new DropChangeRunnable(container, drops, index)).
-                submit(GWMCrates.getInstance());
     }
 
     public class DropChangeRunnable implements Runnable {

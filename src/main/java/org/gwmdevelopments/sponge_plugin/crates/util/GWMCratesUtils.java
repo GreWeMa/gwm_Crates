@@ -49,7 +49,7 @@ public final class GWMCratesUtils {
 
     public static final ItemStack EMPTY_ITEM = ItemStack.of(ItemTypes.NONE, 0);
     public static final Drop EMPTY_DROP = new EmptyDrop(Optional.empty(), 1,
-            Optional.empty(), Optional.empty(), Collections.EMPTY_MAP, Collections.EMPTY_MAP, Optional.empty());
+            Optional.empty(), Optional.empty(), Collections.EMPTY_MAP, Collections.EMPTY_MAP, Optional.empty(), true);
 
     public static final Pattern ID_PATTERN = Pattern.compile("[a-z]([-_]?[a-z0-9])*");
 

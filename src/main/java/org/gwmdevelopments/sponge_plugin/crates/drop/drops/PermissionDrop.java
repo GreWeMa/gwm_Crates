@@ -47,9 +47,9 @@ public final class PermissionDrop extends Drop {
     public PermissionDrop(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
                           int level, Optional<ItemStack> dropItem, Optional<Integer> fakeLevel,
                           Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels,
-                          Optional<String> customName,
+                          Optional<String> customName, boolean showInPreview,
                           String permission, Drop drop1, Drop drop2) {
-        super(id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels, customName);
+        super(id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels, customName, showInPreview);
         this.permission = permission;
         this.drop1 = drop1;
         this.drop2 = drop2;

@@ -35,9 +35,9 @@ public final class ItemDrop extends Drop {
     public ItemDrop(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
                     int level, Optional<ItemStack> dropItem, Optional<Integer> fakeLevel,
                     Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels,
-                    Optional<String> customName,
+                    Optional<String> customName, boolean showInPreview,
                     ItemStack item) {
-        super(id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels, customName);
+        super(id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels, customName, showInPreview);
         this.item = item;
     }
 

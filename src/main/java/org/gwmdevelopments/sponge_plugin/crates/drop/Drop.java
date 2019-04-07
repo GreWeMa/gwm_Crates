@@ -29,6 +29,7 @@ public abstract class Drop extends SuperObject implements Giveable {
     private final Map<String, Integer> permissionLevels;
     private final Map<String, Integer> permissionFakeLevels;
     private final Optional<String> customName;
+    private final boolean showInPreview;
 
     public Drop(ConfigurationNode node) {
         super(node);
@@ -41,6 +42,7 @@ public abstract class Drop extends SuperObject implements Giveable {
             ConfigurationNode permissionLevelsNode = node.getNode("PERMISSION_LEVELS");
             ConfigurationNode permissionFakeLevelsNode = node.getNode("PERMISSION_FAKE_LEVELS");
             ConfigurationNode customNameNode = node.getNode("CUSTOM_NAME");
+            ConfigurationNode showInPreviewNode = node.getNode("SHOW_IN_PREVIEW");
             if (!priceNode.isVirtual()) {
                 price = Optional.of(new BigDecimal(priceNode.getString()));
             } else {
@@ -88,6 +90,7 @@ public abstract class Drop extends SuperObject implements Giveable {
             } else {
                 customName = Optional.empty();
             }
+            showInPreview = showInPreviewNode.getBoolean(true);
         } catch (Exception e) {
             throw new SSOCreationException(ssoType(), type(), e);
         }
@@ -96,7 +99,7 @@ public abstract class Drop extends SuperObject implements Giveable {
     public Drop(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
                 int level, Optional<ItemStack> dropItem, Optional<Integer> fakeLevel,
                 Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels,
-                Optional<String> customName) {
+                Optional<String> customName, boolean showInPreview) {
         super(id);
         this.price = price;
         this.sellCurrency = sellCurrency;
@@ -106,6 +109,7 @@ public abstract class Drop extends SuperObject implements Giveable {
         this.permissionLevels = permissionLevels;
         this.permissionFakeLevels = permissionFakeLevels;
         this.customName = customName;
+        this.showInPreview = showInPreview;
     }
 
     @Override
@@ -150,5 +154,9 @@ public abstract class Drop extends SuperObject implements Giveable {
 
     public Optional<String> getCustomName() {
         return customName;
+    }
+
+    public boolean isShowInPreview() {
+        return showInPreview;
     }
 }

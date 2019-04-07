@@ -19,8 +19,8 @@ public final class EmptyDrop extends Drop {
     public EmptyDrop(Optional<String> id,
                      int level, Optional<ItemStack> dropItem, Optional<Integer> fakeLevel,
                      Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels,
-                     Optional<String> customName) {
-        super(id, Optional.empty(), Optional.empty(), level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels, customName);
+                     Optional<String> customName, boolean showInPreview) {
+        super(id, Optional.empty(), Optional.empty(), level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels, customName, showInPreview);
     }
 
     @Override

@@ -45,8 +45,8 @@ public final class DelayDrop extends Drop {
                      int level, Optional<ItemStack> dropItem, Optional<Integer> fakeLevel,
                      Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels,
                      Optional<String> customName,
-                     Drop childDrop, int delay) {
-        super(id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels, customName);
+                     Drop childDrop, int delay, boolean showInPreview) {
+        super(id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels, customName, showInPreview);
         this.childDrop = childDrop;
         this.delay = delay;
     }

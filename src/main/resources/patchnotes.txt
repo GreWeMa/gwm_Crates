@@ -1,3 +1,7 @@
+v. beta-3.4.1
+1. Add 'SHOW_IN_PREVIEW' parameter to Drop.
+2. Code refactoring.
+
 v. beta-3.4
 1. Code refactoring.
 2. Add permission for manager tab completion.
