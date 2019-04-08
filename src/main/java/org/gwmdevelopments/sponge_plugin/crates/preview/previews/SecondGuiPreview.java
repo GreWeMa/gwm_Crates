@@ -20,10 +20,7 @@ import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public final class SecondGuiPreview extends Preview {
 
@@ -47,8 +44,9 @@ public final class SecondGuiPreview extends Preview {
         }
     }
 
-    public SecondGuiPreview(Optional<String> id, Optional<Text> displayName) {
-        super(id);
+    public SecondGuiPreview(Optional<String> id, Optional<List<Drop>> customDrops,
+                            Optional<Text> displayName) {
+        super(id, customDrops);
         this.displayName = displayName;
     }
 
@@ -67,7 +65,10 @@ public final class SecondGuiPreview extends Preview {
                 builder.property(InventoryTitle.PROPERTY_NAME, new InventoryTitle(title)));
         Inventory inventory = builder.build(GWMCrates.getInstance());
         OrderedInventory ordered = GWMCratesUtils.castToOrdered(inventory);
-        Iterator<Drop> dropIterator = manager.getDrops().stream().filter(Drop::isShowInPreview).iterator();
+        Iterator<Drop> dropIterator = getCustomDrops().orElse(manager.getDrops()).
+                stream().
+                filter(Drop::isShowInPreview).
+                iterator();
         int size = 9 * dimension.getRows();
         for (int i = 0; i < size && dropIterator.hasNext();) {
             Drop next = dropIterator.next();

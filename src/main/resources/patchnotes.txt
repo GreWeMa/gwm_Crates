@@ -1,3 +1,6 @@
+v. beta-3.4.2
+1. Add 'CUSTOM_DROPS' parameter to Preview.
+
 v. beta-3.4.1
 1. Add 'SHOW_IN_PREVIEW' parameter to Drop.
 2. Code refactoring.

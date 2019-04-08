@@ -82,9 +82,10 @@ public final class FirstGuiPreview extends Preview {
         }
     }
 
-    public FirstGuiPreview(Optional<String> id, Optional<Text> displayName, List<ItemStack> decorativeItems,
+    public FirstGuiPreview(Optional<String> id, Optional<List<Drop>> customDrops,
+                           Optional<Text> displayName, List<ItemStack> decorativeItems,
                            int scrollDelay, Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode) {
-        super(id);
+        super(id, customDrops);
         this.displayName = displayName;
         this.decorativeItems = decorativeItems;
         this.scrollDelay = scrollDelay;
@@ -114,7 +115,10 @@ public final class FirstGuiPreview extends Preview {
                         set(decorativeItems.get(index));
             }
         }
-        List<Drop> drops = manager.getDrops().stream().filter(Drop::isShowInPreview).collect(Collectors.toList());
+        List<Drop> drops = getCustomDrops().orElse(manager.getDrops()).
+                stream().
+                filter(Drop::isShowInPreview).
+                collect(Collectors.toList());
         if (!drops.isEmpty()) {
             int index = 0;
             for (int i = 10; i < 17; i++) {

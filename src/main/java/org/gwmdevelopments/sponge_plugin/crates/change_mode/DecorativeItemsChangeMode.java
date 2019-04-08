@@ -35,7 +35,7 @@ public abstract class DecorativeItemsChangeMode extends SuperObject {
     }
 
     @Override
-    public SuperObjectType ssoType() {
+    public final SuperObjectType ssoType() {
         return SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE;
     }
 

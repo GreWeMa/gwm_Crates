@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.preview.previews;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
@@ -8,6 +9,7 @@ import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.spongepowered.api.entity.living.player.Player;
 
+import java.util.List;
 import java.util.Optional;
 
 public final class PermissionPreview extends Preview {
@@ -41,9 +43,9 @@ public final class PermissionPreview extends Preview {
         }
     }
 
-    public PermissionPreview(Optional<String> id,
+    public PermissionPreview(Optional<String> id, Optional<List<Drop>> customDrops,
                              String permission, Preview preview1, Preview preview2) {
-        super(id);
+        super(id, customDrops);
         this.permission = permission;
         this.preview1 = preview1;
         this.preview2 = preview2;
