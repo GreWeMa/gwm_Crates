@@ -10,6 +10,7 @@ import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -61,6 +62,15 @@ public final class BlockCase extends Case {
         this.hologram = hologram;
         this.startPreviewOnLeftClick = startPreviewOnLeftClick;
         this.createdHolograms = createdHolograms;
+    }
+
+    @Override
+    public void shutdown() {
+        createdHolograms.ifPresent(holograms -> holograms.forEach(hologram -> {
+            hologram.getLocation().getExtent().
+                    loadChunk(hologram.getLocation().getChunkPosition(), true);
+            hologram.remove();
+        }));
     }
 
     @Override

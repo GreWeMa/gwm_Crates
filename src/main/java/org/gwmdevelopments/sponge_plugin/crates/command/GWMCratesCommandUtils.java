@@ -241,6 +241,19 @@ public class GWMCratesCommandUtils {
                 arguments(
                         GenericArguments.onlyOne(new ManagerCommandElement(Text.of("manager")))).
                 build();
+        CommandSpec loadCommand = CommandSpec.builder().
+                permission("gwm_crates.command.load").
+                description(Text.of("Load manager from file")).
+                executor(new LoadCommand()).
+                arguments(
+                        GenericArguments.remainingJoinedStrings(Text.of("path"))).
+                build();
+        CommandSpec unloadCommand = CommandSpec.builder().
+                description(Text.of("Unload a manager")).
+                executor(new UnloadCommand()).
+                arguments(
+                        new ManagerCommandElement(Text.of("manager"))).
+                build();
         CommandSpec spec = CommandSpec.builder().
                 permission("gwm_crates.command").
                 description(Text.of("Main plugin command.")).
@@ -260,6 +273,8 @@ public class GWMCratesCommandUtils {
                 child(buyCommand, "buy").
                 child(listCommand, "list").
                 child(infoCommand, "info").
+                child(loadCommand, "load").
+                child(unloadCommand, "unload").
                 build();
         Sponge.getCommandManager().register(GWMCrates.getInstance(), spec,
                 "gwmcrates", "gwmcrate", "crates", "crate");

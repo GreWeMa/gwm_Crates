@@ -1,3 +1,9 @@
+v. beta-3.5
+1. Code refactoring
+2. Add 'load' command
+3. Add 'unload' command
+4. Reworked removal of holograms (most likely it won't fix *that* bug ...)
+
 v. beta-3.4.2
 1. Add 'CUSTOM_DROPS' parameter to Preview.
 

@@ -9,6 +9,7 @@ import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import org.gwmdevelopments.sponge_plugin.crates.util.SuperObject;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -106,6 +107,14 @@ public final class Manager {
         this.sendOpenMessage = sendOpenMessage;
         this.customOpenMessage = customOpenMessage;
         this.customInfo = customInfo;
+    }
+
+    public void shutdown() {
+        openManager.shutdown();
+        preview.ifPresent(SuperObject::shutdown);
+        drops.forEach(SuperObject::shutdown);
+        caze.shutdown();
+        key.shutdown();
     }
 
     public Optional<Drop> getDropById(String id) {

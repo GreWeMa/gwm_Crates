@@ -1,9 +1,11 @@
 package org.gwmdevelopments.sponge_plugin.crates.util;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
-import org.gwmdevelopments.sponge_plugin.crates.caze.cases.BlockCase;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.CommandsDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.EmptyDrop;
@@ -12,8 +14,6 @@ import org.gwmdevelopments.sponge_plugin.crates.gui.GWMCratesGUI;
 import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.ConfigurationDialog;
 import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.SavedSuperObjectConfigurationDialog;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.Animation1OpenManager;
-import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
 import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
@@ -53,6 +53,29 @@ public final class GWMCratesUtils {
 
     public static final Pattern ID_PATTERN = Pattern.compile("[a-z]([-_]?[a-z0-9])*");
 
+    public static void loadManager(File file, boolean force) {
+        try {
+            ConfigurationLoader<CommentedConfigurationNode> managerConfigurationLoader =
+                    HoconConfigurationLoader.builder().setFile(file).build();
+            ConfigurationNode managerNode = managerConfigurationLoader.load();
+            if (force || managerNode.getNode("LOAD").getBoolean(true)) {
+                Manager manager = new Manager(managerNode);
+                for (Manager createdManager : GWMCrates.getInstance().getCreatedManagers()) {
+                    if (manager.getId().equals(createdManager.getId())) {
+                        GWMCrates.getInstance().getLogger().warn("Manager from file \"" + GWMCratesUtils.getManagerRelativePath(file) + "\" is not loaded because its ID is not unique!");
+                        return;
+                    }
+                }
+                GWMCrates.getInstance().getCreatedManagers().add(manager);
+                GWMCrates.getInstance().getLogger().info("Manager \"" + manager.getId() + "\" (\"" + manager.getName() + "\") from file \"" + GWMCratesUtils.getManagerRelativePath(file) + "\" successfully loaded!");
+            } else {
+                GWMCrates.getInstance().getLogger().info("Skipping manager from file \"" + GWMCratesUtils.getManagerRelativePath(file) + "\"!");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static Optional<Currency> getCurrencyById(EconomyService economyService, String id) {
         for (Currency currency : economyService.getCurrencies()) {
             if (currency.getId().equals(id)) {
@@ -60,35 +83,6 @@ public final class GWMCratesUtils {
             }
         }
         return Optional.empty();
-    }
-
-    public static void deleteHolograms() {
-        if (!GWMLibrary.getInstance().getHologramsService().isPresent()) {
-            return;
-        }
-        GWMCrates.getInstance().getCreatedManagers().stream().
-                filter(manager -> manager.getCase() instanceof BlockCase).
-                map(manager -> (BlockCase) manager.getCase()).
-                forEach(caze -> caze.getCreatedHolograms().ifPresent(holograms -> holograms.forEach(hologram -> {
-                    try {
-                        Location<World> location = caze.getLocation();
-                        location.getExtent().loadChunk(location.getChunkPosition(), true);
-                        hologram.remove();
-                    } catch (Exception e) {
-                        GWMCrates.getInstance().getLogger().warn("Failed to remove hologram!", e);
-                    }
-                })));
-        Animation1OpenManager.PLAYERS_OPENING_ANIMATION1.values().forEach(information -> {
-            information.getLocations().keySet().forEach(location ->
-                    location.getExtent().loadChunk(location.getChunkPosition(), true));
-            information.getHolograms().forEach(hologram -> {
-                try {
-                    hologram.remove();
-                } catch (Exception e) {
-                    GWMCrates.getInstance().getLogger().warn("Failed to remove hologram (ANIMATION1)!", e);
-                }
-            });
-        });
     }
 
     public static void asyncImportToMySQL() {

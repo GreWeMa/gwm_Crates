@@ -24,6 +24,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.BlockChangeFlags;
+import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -197,6 +198,18 @@ public final class Animation1OpenManager extends OpenManager {
         return !PLAYERS_OPENING_ANIMATION1.containsKey(player) &&
                 !Animation1Listener.OPENED_PLAYERS.containsKey(player) &&
                 !containsNearPlayers(player);
+    }
+
+    @Override
+    public void shutdown() {
+        PLAYERS_OPENING_ANIMATION1.values().stream().
+                filter(info -> info.getOpenManager() == this).
+                flatMap(info -> info.getHolograms().stream()).
+                forEach(hologram -> {
+                    hologram.getLocation().getExtent().
+                            loadChunk(hologram.getLocation().getChunkPosition(), true);
+                    hologram.remove();
+                });
     }
 
     private boolean containsNearPlayers(Player player) {

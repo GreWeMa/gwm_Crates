@@ -30,6 +30,9 @@ public abstract class SuperObject {
         this.id = id;
     }
 
+    public void shutdown() {
+    }
+
     public abstract SuperObjectType ssoType();
 
     public abstract String type();

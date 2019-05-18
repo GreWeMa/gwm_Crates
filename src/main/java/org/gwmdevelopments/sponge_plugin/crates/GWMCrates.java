@@ -3,9 +3,6 @@ package org.gwmdevelopments.sponge_plugin.crates;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
 import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.gwmdevelopments.sponge_plugin.crates.caze.cases.*;
 import org.gwmdevelopments.sponge_plugin.crates.change_mode.change_modes.OrderedChangeMode;
 import org.gwmdevelopments.sponge_plugin.crates.change_mode.change_modes.RandomChangeMode;
@@ -52,11 +49,12 @@ import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.4.2",
+        version = "beta-3.5",
         description = "Universal crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -68,7 +66,7 @@ import java.util.*;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 4, 2);
+    public static final Version VERSION = new Version("beta", 3, 5);
 
     private static GWMCrates instance = null;
 
@@ -236,7 +234,11 @@ public final class GWMCrates extends SpongePlugin {
 
     @Listener
     public void onStopping(GameStoppingServerEvent event) {
-        GWMCratesUtils.deleteHolograms();
+        Iterator<Manager> managerIterator = createdManagers.iterator();
+        while (managerIterator.hasNext()) {
+            managerIterator.next().shutdown();
+            managerIterator.remove();
+        }
         save();
         logger.info("\"Stopping\" completed!");
     }
@@ -256,8 +258,11 @@ public final class GWMCrates extends SpongePlugin {
     }
 
     public void reload() {
-        GWMCratesUtils.deleteHolograms();
-        createdManagers.clear();
+        Iterator<Manager> managerIterator = createdManagers.iterator();
+        while (managerIterator.hasNext()) {
+            managerIterator.next().shutdown();
+            managerIterator.remove();
+        }
         cause = Cause.of(EventContext.empty(), container);
         config.reload();
         languageConfig.reload();
@@ -392,32 +397,26 @@ public final class GWMCrates extends SpongePlugin {
 
     private void loadManagers() {
         try {
+            AtomicInteger loaded = new AtomicInteger();
+            AtomicInteger failed = new AtomicInteger();
             Files.walk(managersDirectory.toPath()).forEach(path -> {
                 File managerFile = path.toFile();
                 if (!managerFile.isDirectory()) {
                     try {
-                        ConfigurationLoader<CommentedConfigurationNode> managerConfigurationLoader =
-                                HoconConfigurationLoader.builder().setFile(managerFile).build();
-                        ConfigurationNode managerNode = managerConfigurationLoader.load();
-                        if (managerNode.getNode("LOAD").getBoolean(true)) {
-                            Manager manager = new Manager(managerNode);
-                            for (Manager createdManager : createdManagers) {
-                                if (manager.getId().equals(createdManager.getId())) {
-                                    logger.warn("Manager from file \"" + GWMCratesUtils.getManagerRelativePath(managerFile) + "\" is not loaded because its ID is not unique!");
-                                    return;
-                                }
-                            }
-                            createdManagers.add(manager);
-                            logger.info("Manager \"" + manager.getId() + "\" (\"" + manager.getName() + "\") from file \"" + GWMCratesUtils.getManagerRelativePath(managerFile) + "\" successfully loaded!");
-                        } else {
-                            logger.info("Skipping manager from file \"" + GWMCratesUtils.getManagerRelativePath(managerFile) + "\"!");
-                        }
+                        GWMCratesUtils.loadManager(managerFile, false);
+                        loaded.incrementAndGet();
                     } catch (Exception e) {
                         logger.warn("Failed to load manager from file \"" + GWMCratesUtils.getManagerRelativePath(managerFile) + "\"!", e);
+                        failed.incrementAndGet();
                     }
                 }
             });
-            logger.info("All managers loaded!");
+            String message = "Successfully loaded " + loaded.get() + " managers. Failed to load " + failed.get() + " managers.";
+            if (loaded.get() > 0 && failed.get() == 0) {
+                logger.info(message);
+            } else {
+                logger.warn(message);
+            }
         } catch (Exception e) {
             logger.warn("Failed to load managers!", e);
         }
