@@ -1,3 +1,8 @@
+v. beta-3.6
+1. Reworked holograms.
+2. Reworked 'BLOCK' Case.
+2.1. Now 'BLOCK' Case can have multiple locations.
+
 v. beta-3.5
 1. Code refactoring
 2. Add 'load' command

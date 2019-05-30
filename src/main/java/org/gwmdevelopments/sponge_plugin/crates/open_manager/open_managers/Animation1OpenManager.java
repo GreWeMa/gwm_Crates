@@ -13,6 +13,7 @@ import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
+import org.gwmdevelopments.sponge_plugin.library.utils.HologramSettings;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
@@ -20,16 +21,12 @@ import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.BlockChangeFlags;
-import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public final class Animation1OpenManager extends OpenManager {
 
@@ -45,7 +42,7 @@ public final class Animation1OpenManager extends OpenManager {
     private final BlockType fenceBlockType;
     private final BlockType crateBlockType;
     private final OpenManager openManager;
-    private final Optional<List<Text>> hologram;
+    private final Optional<HologramSettings> hologram;
     private final long closeDelay;
 
     public Animation1OpenManager(ConfigurationNode node) {
@@ -78,10 +75,9 @@ public final class Animation1OpenManager extends OpenManager {
                 openManager = new NoGuiOpenManager(Optional.empty(), Optional.empty());
             }
             if (!hologramNode.isVirtual()) {
-                hologram = Optional.of(Collections.unmodifiableList(hologramNode.getList(TypeToken.of(String.class)).
-                        stream().
-                        map(TextSerializers.FORMATTING_CODE::deserialize).
-                        collect(Collectors.toList())));
+                hologram = Optional.of(GWMLibraryUtils.parseHologramSettings(hologramNode,
+                        GWMCrates.getInstance().getHologramOffset(),
+                        GWMCrates.getInstance().getMultilineHologramsDistance()));
             } else {
                 hologram = Optional.empty();
             }
@@ -93,7 +89,7 @@ public final class Animation1OpenManager extends OpenManager {
 
     public Animation1OpenManager(Optional<String> id, Optional<SoundType> openSound, BlockType floorBlockType,
                                  BlockType fenceBlockType, BlockType crateBlockType, OpenManager openManager,
-                                 Optional<List<Text>> hologram, int closeDelay) {
+                                 Optional<HologramSettings> hologram, int closeDelay) {
         super(id, openSound);
         this.floorBlockType = floorBlockType;
         this.fenceBlockType = fenceBlockType;
@@ -168,21 +164,12 @@ public final class Animation1OpenManager extends OpenManager {
                         add(Keys.DIRECTION, Direction.SOUTH).
                         build(),
                 BlockChangeFlags.NONE);
-        GWMLibraryUtils.tryCreateHolograms(location1, hologram,
-                GWMCrates.getInstance().getHologramOffset(),
-                GWMCrates.getInstance().getMultilineHologramsDistance()).ifPresent(holograms::addAll);
-        GWMLibraryUtils.tryCreateHolograms(location2, hologram,
-                GWMCrates.getInstance().getHologramOffset(),
-                GWMCrates.getInstance().getMultilineHologramsDistance()).
-                ifPresent(holograms::addAll);
-        GWMLibraryUtils.tryCreateHolograms(location3, hologram,
-                GWMCrates.getInstance().getHologramOffset(),
-                GWMCrates.getInstance().getMultilineHologramsDistance()).
-                ifPresent(holograms::addAll);
-        GWMLibraryUtils.tryCreateHolograms(location4, hologram,
-                GWMCrates.getInstance().getHologramOffset(),
-                GWMCrates.getInstance().getMultilineHologramsDistance()).
-                ifPresent(holograms::addAll);
+        hologram.ifPresent(hg -> {
+            GWMLibraryUtils.createHologram(location1, hg).ifPresent(holograms::addAll);
+            GWMLibraryUtils.createHologram(location2, hg).ifPresent(holograms::addAll);
+            GWMLibraryUtils.createHologram(location3, hg).ifPresent(holograms::addAll);
+            GWMLibraryUtils.createHologram(location4, hg).ifPresent(holograms::addAll);
+        });
         getOpenSound().ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
         PLAYERS_OPENING_ANIMATION1.put(player, new Information(this, manager,
                 new HashMap<Location<World>, Boolean>(){{
@@ -242,7 +229,7 @@ public final class Animation1OpenManager extends OpenManager {
         return openManager;
     }
 
-    public Optional<List<Text>> getHologram() {
+    public Optional<HologramSettings> getHologram() {
         return hologram;
     }
 
