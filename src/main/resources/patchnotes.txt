@@ -1,3 +1,6 @@
+v. beta-3.6.1
+1. Update Chinese translation (by SGYRE).
+
 v. beta-3.6
 1. Reworked holograms.
 2. Reworked 'BLOCK' Case.
