@@ -357,9 +357,14 @@ public final class GWMCratesUtils {
         String command = commandNode.getString();
         breakpoint:
         { //Backward compatibility
-            if (!command.contains("")) {
-                break breakpoint;
-            }
+            //What the hell is this? How much did I drink?
+            //This is always false, so I think it's safe to remove this code.
+            //But maybe one day I will remember what it was here for, so I'll just comment it out for now.
+            //Never, just NEVER write code while you're drunk... It's a really bad idea...
+            //
+            //if (!command.contains("")) {
+            //    break breakpoint;
+            //}
             String[] splited = command.split(" ");
             if (splited.length < 5) {
                 break breakpoint;
