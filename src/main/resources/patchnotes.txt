@@ -1,3 +1,7 @@
+v. beta-3.7
+1. Add 'BOUNDARIES' Key.
+2. Add 'RADIUS' Key.
+
 v. beta-3.6.2
 1. Update examples.
 

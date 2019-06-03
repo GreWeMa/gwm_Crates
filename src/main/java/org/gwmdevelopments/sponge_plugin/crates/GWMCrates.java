@@ -54,7 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.6.2",
+        version = "beta-3.7",
         description = "Universal crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -66,7 +66,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 6, 2);
+    public static final Version VERSION = new Version("beta", 3, 7);
 
     private static GWMCrates instance = null;
 
@@ -309,6 +309,8 @@ public final class GWMCrates extends SpongePlugin {
         registrationEvent.register(SuperObjectType.KEY, BiomeKey.TYPE, BiomeKey.class, Optional.empty());
         registrationEvent.register(SuperObjectType.KEY, WorldTimeKey.TYPE, WorldTimeKey.class, Optional.empty());
         registrationEvent.register(SuperObjectType.KEY, WorldWeatherKey.TYPE, WorldWeatherKey.class, Optional.empty());
+        registrationEvent.register(SuperObjectType.KEY, BoundariesKey.TYPE, BoundariesKey.class, Optional.empty());
+        registrationEvent.register(SuperObjectType.KEY, RadiusKey.TYPE, RadiusKey.class, Optional.empty());
         registrationEvent.register(SuperObjectType.KEY, EmptyKey.TYPE, EmptyKey.class, Optional.of(EmptyKeyConfigurationDialog.class));
         registrationEvent.register(SuperObjectType.OPEN_MANAGER, NoGuiOpenManager.TYPE, NoGuiOpenManager.class, Optional.of(NoGuiOpenManagerConfigurationDialog.class));
         registrationEvent.register(SuperObjectType.OPEN_MANAGER, FirstOpenManager.TYPE, FirstOpenManager.class, Optional.of(FirstOpenManagerConfigurationDialog.class));
