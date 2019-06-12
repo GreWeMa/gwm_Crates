@@ -19,12 +19,12 @@ public class CheckCommand implements CommandExecutor {
         Player player = args.<Player>getOne(Text.of("player")).get();
         boolean self = src.equals(player);
         if (self) {
-            if (!player.hasPermission("gwm_crates.command.check.manager." + managerId)) {
+            if (!player.hasPermission("gwm_crates.command.check." + managerId)) {
                 player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
                 return CommandResult.success();
             }
         } else {
-            if (!src.hasPermission("gwm_crates.command.check_others.manager." + managerId)) {
+            if (!src.hasPermission("gwm_crates.command.check_others." + managerId)) {
                 src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
                 return CommandResult.success();
             }
