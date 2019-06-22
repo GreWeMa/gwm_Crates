@@ -9,6 +9,7 @@ import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.CommandsDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.EmptyDrop;
+import org.gwmdevelopments.sponge_plugin.crates.drop.drops.MultiDrop;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.gui.GWMCratesGUI;
 import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.ConfigurationDialog;
@@ -453,7 +454,11 @@ public final class GWMCratesUtils {
         while (!sortedDrops.containsKey(level = GWMLibraryUtils.getRandomIntLevel())) {
         }
         List<Drop> actualDrops = sortedDrops.get(level);
-        return actualDrops.get(new Random().nextInt(actualDrops.size()));
+        Drop drop = actualDrops.get(new Random().nextInt(actualDrops.size()));
+        if (drop instanceof MultiDrop && ((MultiDrop) drop).isPrefetch() && !((MultiDrop) drop).isGiveAll()) {
+            return chooseDropByLevel(((MultiDrop) drop).getDrops(), player, fake);
+        }
+        return drop;
     }
 
     public static void addItemStack(Player player, ItemStack item, int amount) {

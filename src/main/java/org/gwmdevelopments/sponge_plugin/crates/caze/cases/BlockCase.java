@@ -47,6 +47,8 @@ public final class BlockCase extends Case {
             }
             locations = Collections.unmodifiableList(tempLocations);
             if (!hologramNode.isVirtual()) {
+                //Backwards compatibility
+                GWMCrates.getInstance().getLogger().warn("[BACKWARD COMPATIBILITY] Auto creation of hologram is now considered legacy and should be done manually by user!");
                 hologram = Optional.of(GWMLibraryUtils.parseHologramSettings(hologramNode,
                         GWMCrates.getInstance().getHologramOffset(),
                         GWMCrates.getInstance().getMultilineHologramsDistance()));
@@ -80,9 +82,11 @@ public final class BlockCase extends Case {
     @Override
     public void shutdown() {
         createdHolograms.ifPresent(holograms -> holograms.forEach(hologram -> {
-            hologram.getLocation().getExtent().
-                    loadChunk(hologram.getLocation().getChunkPosition(), true);
-            hologram.remove();
+            try {
+                hologram.remove();
+            } catch (Exception e) {
+                GWMCrates.getInstance().getLogger().warn("Failed to remove hologram!", e);
+            }
         }));
     }
 

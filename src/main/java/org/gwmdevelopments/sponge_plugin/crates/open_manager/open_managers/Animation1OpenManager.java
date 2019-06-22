@@ -192,11 +192,7 @@ public final class Animation1OpenManager extends OpenManager {
         PLAYERS_OPENING_ANIMATION1.values().stream().
                 filter(info -> info.getOpenManager() == this).
                 flatMap(info -> info.getHolograms().stream()).
-                forEach(hologram -> {
-                    hologram.getLocation().getExtent().
-                            loadChunk(hologram.getLocation().getChunkPosition(), true);
-                    hologram.remove();
-                });
+                forEach(HologramsService.Hologram::remove);
     }
 
     private boolean containsNearPlayers(Player player) {

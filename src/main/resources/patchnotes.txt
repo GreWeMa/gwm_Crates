@@ -1,3 +1,8 @@
+v. beta-3.8
+1. Add 'PREFETCH' parameter for 'MULTI' Drop.
+2. Simplified code for removal of holograms. NOTE: it's not possible to remove hologram if it's located in an unloaded chunk.
+Make holograms legacy in 'BLOCK' Case, users should place holograms themselves.
+
 v. beta-3.7.1
 1. Change permission for '/gwmcrates check' command
 

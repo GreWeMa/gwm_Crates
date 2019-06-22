@@ -18,12 +18,14 @@ public final class MultiDrop extends Drop {
 
     private final List<Drop> drops;
     private final boolean giveAll;
+    private final boolean prefetch;
 
     public MultiDrop(ConfigurationNode node) {
         super(node);
         try {
             ConfigurationNode dropsNode = node.getNode("DROPS");
             ConfigurationNode giveAllNode = node.getNode("GIVE_ALL");
+            ConfigurationNode prefetchNode = node.getNode("PREFETCH");
             if (dropsNode.isVirtual()) {
                 throw new IllegalArgumentException("DROPS node does not exist");
             }
@@ -33,6 +35,7 @@ public final class MultiDrop extends Drop {
             }
             drops = Collections.unmodifiableList(tempDrops);
             giveAll = giveAllNode.getBoolean(true);
+            prefetch = prefetchNode.getBoolean(false);
         } catch (Exception e) {
             throw new SSOCreationException(ssoType(), type(), e);
         }
@@ -42,10 +45,11 @@ public final class MultiDrop extends Drop {
                      int level, Optional<ItemStack> dropItem, Optional<Integer> fakeLevel,
                      Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels,
                      Optional<String> customName, boolean showInPreview,
-                     List<Drop> drops, boolean giveAll) {
+                     List<Drop> drops, boolean giveAll, boolean prefetch) {
         super(id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels, customName, showInPreview);
         this.drops = drops;
         this.giveAll = giveAll;
+        this.prefetch = prefetch;
     }
 
     @Override
@@ -70,5 +74,9 @@ public final class MultiDrop extends Drop {
 
     public boolean isGiveAll() {
         return giveAll;
+    }
+
+    public boolean isPrefetch() {
+        return prefetch;
     }
 }
