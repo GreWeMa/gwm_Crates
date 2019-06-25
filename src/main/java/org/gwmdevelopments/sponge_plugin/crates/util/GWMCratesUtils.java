@@ -5,6 +5,7 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.nullness.Opt;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.CommandsDrop;
@@ -18,6 +19,7 @@ import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
@@ -734,5 +736,19 @@ public final class GWMCratesUtils {
 
     public static Path getManagerRelativePath(File managerFile) {
         return GWMCrates.getInstance().getManagersDirectory().toPath().relativize(managerFile.toPath());
+    }
+
+    public static void sendCaseMissingMessage(CommandSource source, Manager manager) {
+        if (manager.isSendCaseMissingMessage()) {
+            source.sendMessage(manager.getCustomCaseMissingMessage().
+                    orElse(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_CASE", source, null)));
+        }
+    }
+
+    public static void sendKeyMissingMessage(CommandSource source, Manager manager) {
+        if (manager.isSendKeyMissingMessage()) {
+            source.sendMessage(manager.getCustomKeyMissingMessage().
+                    orElse(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_KEY", source, null)));
+        }
     }
 }

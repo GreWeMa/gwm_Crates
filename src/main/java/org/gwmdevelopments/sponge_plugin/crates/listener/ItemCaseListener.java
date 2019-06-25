@@ -65,7 +65,7 @@ public class ItemCaseListener {
             }
             Key key = manager.getKey();
             if (key.get(player) < 1) {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_KEY", player, null));
+                GWMCratesUtils.sendKeyMissingMessage(player, manager);
                 return;
             }
             caze.withdraw(player, 1, false);

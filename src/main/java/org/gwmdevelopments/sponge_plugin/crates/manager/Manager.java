@@ -30,6 +30,10 @@ public final class Manager {
     private final boolean sendOpenMessage;
     private final Optional<String> customOpenMessage;
     private final Optional<Text> customInfo;
+    private final boolean sendCaseMissingMessage;
+    private final boolean sendKeyMissingMessage;
+    private final Optional<Text> customCaseMissingMessage;
+    private final Optional<Text> customKeyMissingMessage;
 
     public Manager(ConfigurationNode node) {
         try {
@@ -43,6 +47,10 @@ public final class Manager {
             ConfigurationNode sendOpenMessageNode = node.getNode("SEND_OPEN_MESSAGE");
             ConfigurationNode customOpenMessageNode = node.getNode("CUSTOM_OPEN_MESSAGE");
             ConfigurationNode customInfoNode = node.getNode("CUSTOM_INFO");
+            ConfigurationNode sendCaseMissingMessageNode = node.getNode("SEND_CASE_MISSING_MESSAGE");
+            ConfigurationNode sendKeyMissingMessageNode = node.getNode("SEND_KEY_MISSING_MESSAGE");
+            ConfigurationNode customCaseMissingMessageNode = node.getNode("CUSTOM_CASE_MISSING_MESSAGE");
+            ConfigurationNode customKeyMissingMessageNode = node.getNode("CUSTOM_KEY_MISSING_MESSAGE");
             if (idNode.isVirtual()) {
                 throw new IllegalArgumentException("ID node does not exist!");
             }
@@ -89,6 +97,20 @@ public final class Manager {
             } else {
                 customInfo = Optional.empty();
             }
+            sendCaseMissingMessage = sendCaseMissingMessageNode.getBoolean(true);
+            sendKeyMissingMessage = sendKeyMissingMessageNode.getBoolean(true);
+            if (!customCaseMissingMessageNode.isVirtual()) {
+                customCaseMissingMessage = Optional.of(TextSerializers.FORMATTING_CODE.
+                        deserialize(customCaseMissingMessageNode.getString()));
+            } else {
+                customCaseMissingMessage = Optional.empty();
+            }
+            if (!customKeyMissingMessageNode.isVirtual()) {
+                customKeyMissingMessage = Optional.of(TextSerializers.FORMATTING_CODE.
+                        deserialize(customKeyMissingMessageNode.getString()));
+            } else {
+                customKeyMissingMessage = Optional.empty();
+            }
         } catch (Exception e) {
             throw new ManagerCreationException(e);
         }
@@ -96,7 +118,8 @@ public final class Manager {
 
     public Manager(String id, String name, Case caze, Key key, OpenManager openManager, List<Drop> drops,
                    Optional<Preview> preview, boolean sendOpenMessage, Optional<String> customOpenMessage,
-                   Optional<Text> customInfo) {
+                   Optional<Text> customInfo, boolean sendCaseMissingMessage, boolean sendKeyMissingMessage,
+                   Optional<Text> customCaseMissingMessage, Optional<Text> customKeyMissingMessage) {
         this.id = id;
         this.name = name;
         this.caze = caze;
@@ -107,6 +130,10 @@ public final class Manager {
         this.sendOpenMessage = sendOpenMessage;
         this.customOpenMessage = customOpenMessage;
         this.customInfo = customInfo;
+        this.sendCaseMissingMessage = sendCaseMissingMessage;
+        this.sendKeyMissingMessage = sendKeyMissingMessage;
+        this.customCaseMissingMessage = customCaseMissingMessage;
+        this.customKeyMissingMessage = customKeyMissingMessage;
     }
 
     public void shutdown() {
@@ -142,12 +169,12 @@ public final class Manager {
         return key;
     }
 
-    public List<Drop> getDrops() {
-        return drops;
-    }
-
     public OpenManager getOpenManager() {
         return openManager;
+    }
+
+    public List<Drop> getDrops() {
+        return drops;
     }
 
     public Optional<Preview> getPreview() {
@@ -164,5 +191,21 @@ public final class Manager {
 
     public Optional<Text> getCustomInfo() {
         return customInfo;
+    }
+
+    public boolean isSendCaseMissingMessage() {
+        return sendCaseMissingMessage;
+    }
+
+    public boolean isSendKeyMissingMessage() {
+        return sendKeyMissingMessage;
+    }
+
+    public Optional<Text> getCustomCaseMissingMessage() {
+        return customCaseMissingMessage;
+    }
+
+    public Optional<Text> getCustomKeyMissingMessage() {
+        return customKeyMissingMessage;
     }
 }

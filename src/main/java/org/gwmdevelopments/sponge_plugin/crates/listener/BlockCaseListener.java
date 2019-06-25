@@ -58,7 +58,7 @@ public class BlockCaseListener {
             }
             Key key = manager.getKey();
             if (key.get(player) < 1) {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_KEY", player, null));
+                GWMCratesUtils.sendKeyMissingMessage(player, manager);
                 return;
             }
             key.withdraw(player, 1, false);
