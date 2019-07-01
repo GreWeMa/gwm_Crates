@@ -10,6 +10,7 @@ public abstract class SuperObjectType {
         this.name = name;
     }
 
+    public static final SuperObjectType RANDOM_MANAGER = new SuperObjectType("RANDOM_MANAGER"){};
     public static final SuperObjectType CASE = new SuperObjectType("CASE"){};
     public static final SuperObjectType KEY = new SuperObjectType("KEY"){};
     public static final SuperObjectType DROP = new SuperObjectType("DROP"){};

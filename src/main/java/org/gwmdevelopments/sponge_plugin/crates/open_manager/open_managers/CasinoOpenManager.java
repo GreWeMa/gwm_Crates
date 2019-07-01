@@ -258,7 +258,7 @@ public final class CasinoOpenManager extends OpenManager {
         ROW_INDICES.forEach(list ->
                 list.forEach(i ->
                         ordered.getSlot(new SlotIndex(i)).get().
-                                set(GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, true).
+                                set(manager.getRandomManager().choose(manager.getDrops(), player, true).
                                         getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM))));
         Container container = player.openInventory(inventory).get();
         getOpenSound().ifPresent(open_sound -> player.playSound(open_sound, player.getLocation().getPosition(), 1.));
@@ -274,12 +274,12 @@ public final class CasinoOpenManager extends OpenManager {
             int scrollDelay = scrollDelays.get(i);
             for (int j = 0; j < scrollDelay; j++) {
                 scheduleScroll(ROW_INDICES.get(1), ordered, waitTime + j,
-                        GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, true));
+                        manager.getRandomManager().choose(manager.getDrops(), player, true));
                 scheduleScroll(ROW_INDICES.get(2), ordered, waitTime + j,
-                        GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, true));
+                        manager.getRandomManager().choose(manager.getDrops(), player, true));
             }
             waitTime += scrollDelay;
-            Drop newDrop = GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, i != scrollDelays.size() - 4);
+            Drop newDrop = manager.getRandomManager().choose(manager.getDrops(), player, i != scrollDelays.size() - 4);
             scheduleScroll(ROW_INDICES.get(0), ordered, waitTime, newDrop);
             dropList.get(0).add(newDrop);
         }
@@ -294,10 +294,10 @@ public final class CasinoOpenManager extends OpenManager {
             int scrollDelay = scrollDelays.get(i);
             for (int j = 0; j < scrollDelay; j++) {
                 scheduleScroll(ROW_INDICES.get(2), ordered, waitTime + j,
-                        GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, true));
+                        manager.getRandomManager().choose(manager.getDrops(), player, true));
             }
             waitTime += scrollDelay;
-            Drop newDrop = GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, i != scrollDelays.size() - 4);
+            Drop newDrop = manager.getRandomManager().choose(manager.getDrops(), player, i != scrollDelays.size() - 4);
             scheduleScroll(ROW_INDICES.get(1), ordered, waitTime, newDrop);
             dropList.get(1).add(newDrop);
         }
@@ -311,7 +311,7 @@ public final class CasinoOpenManager extends OpenManager {
         for (int i = 0; i < scrollDelays.size() - 1; i++) {
             int scrollDelay = scrollDelays.get(i);
             waitTime += scrollDelay;
-            Drop newDrop = GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, i != scrollDelays.size() - 4);
+            Drop newDrop = manager.getRandomManager().choose(manager.getDrops(), player, i != scrollDelays.size() - 4);
             scheduleScroll(ROW_INDICES.get(2), ordered, waitTime, newDrop);
             dropList.get(2).add(newDrop);
         }

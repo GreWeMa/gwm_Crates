@@ -1,7 +1,6 @@
 package org.gwmdevelopments.sponge_plugin.crates;
 
 import com.flowpowered.math.vector.Vector3d;
-import com.google.inject.Inject;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.caze.cases.*;
 import org.gwmdevelopments.sponge_plugin.crates.change_mode.change_modes.OrderedChangeMode;
@@ -25,6 +24,9 @@ import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.*;
 import org.gwmdevelopments.sponge_plugin.crates.preview.previews.FirstGuiPreview;
 import org.gwmdevelopments.sponge_plugin.crates.preview.previews.PermissionPreview;
 import org.gwmdevelopments.sponge_plugin.crates.preview.previews.SecondGuiPreview;
+import org.gwmdevelopments.sponge_plugin.crates.random_manager.RandomManager;
+import org.gwmdevelopments.sponge_plugin.crates.random_manager.random_managers.LevelRandomManager;
+import org.gwmdevelopments.sponge_plugin.crates.random_manager.random_managers.WeightRandomManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObject;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectStorage;
@@ -43,6 +45,7 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.sql.SqlService;
 
+import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.io.File;
 import java.nio.file.Files;
@@ -54,7 +57,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.9",
+        version = "beta-3.10",
         description = "Universal crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -66,7 +69,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 9);
+    public static final Version VERSION = new Version("beta", 3, 10);
 
     private static GWMCrates instance = null;
 
@@ -112,6 +115,7 @@ public final class GWMCrates extends SpongePlugin {
     private boolean useMySQLForTimedKeys = false;
     private long crateOpenDelay = 10000;
     private long managersLoadDelay = 20;
+    private RandomManager defaultRandomManager;
 
     private Optional<DataSource> dataSource = Optional.empty();
 
@@ -289,6 +293,8 @@ public final class GWMCrates extends SpongePlugin {
 
     private void register() {
         GWMCratesRegistrationEvent registrationEvent = new GWMCratesRegistrationEvent();
+        registrationEvent.register(SuperObjectType.RANDOM_MANAGER, LevelRandomManager.TYPE, LevelRandomManager.class, Optional.empty());
+        registrationEvent.register(SuperObjectType.RANDOM_MANAGER, WeightRandomManager.TYPE, WeightRandomManager.class, Optional.empty());
         registrationEvent.register(SuperObjectType.CASE, ItemCase.TYPE, ItemCase.class, Optional.of(ItemCaseConfigurationDialog.class));
         registrationEvent.register(SuperObjectType.CASE, BlockCase.TYPE, BlockCase.class, Optional.of(BlockCaseConfigurationDialog.class));
         registrationEvent.register(SuperObjectType.CASE, EntityCase.TYPE, EntityCase.class, Optional.of(EntityCaseConfigurationDialog.class));
@@ -352,6 +358,12 @@ public final class GWMCrates extends SpongePlugin {
             useMySQLForTimedKeys = config.getNode("USE_MYSQL_FOR_TIMED_KEYS").getBoolean(false);
             crateOpenDelay = config.getNode("CRATE_OPEN_DELAY").getLong(10000);
             managersLoadDelay = config.getNode("MANAGERS_LOAD_DELAY").getLong(20);
+            ConfigurationNode defaultRandomManagerNode = config.getNode("DEFAULT_RANDOM_MANAGER");
+            if (defaultRandomManagerNode.isVirtual()) {
+                defaultRandomManager = new LevelRandomManager(defaultRandomManagerNode);
+            } else {
+                defaultRandomManager = (RandomManager) GWMCratesUtils.createSuperObject(defaultRandomManagerNode, SuperObjectType.RANDOM_MANAGER);
+            }
         } catch (Exception e) {
             logger.warn("Failed to load config values!", e);
         }
@@ -589,6 +601,10 @@ public final class GWMCrates extends SpongePlugin {
 
     public long getManagersLoadDelay() {
         return managersLoadDelay;
+    }
+
+    public RandomManager getDefaultRandomManager() {
+        return defaultRandomManager;
     }
 
     public Optional<DataSource> getDataSource() {

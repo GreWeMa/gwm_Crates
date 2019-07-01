@@ -175,7 +175,7 @@ public final class FirstOpenManager extends OpenManager {
         }
         for (int i = 10; i < 17; i++) {
             ordered.getSlot(new SlotIndex(i)).get().
-                    set(GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, true).
+                    set(manager.getRandomManager().choose(manager.getDrops(), player, true).
                             getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
         }
         Container container = player.openInventory(inventory).get();
@@ -198,7 +198,7 @@ public final class FirstOpenManager extends OpenManager {
                             ordered.getSlot(new SlotIndex(j)).get().set(ordered.getSlot(new SlotIndex(j + 1)).get().peek().
                                     orElse(GWMCratesUtils.EMPTY_ITEM));
                         }
-                        Drop newDrop = GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, finalI != scrollDelays.size() - 5);
+                        Drop newDrop = manager.getRandomManager().choose(manager.getDrops(), player, finalI != scrollDelays.size() - 5);
                         dropList.add(newDrop);
                         ordered.getSlot(new SlotIndex(16)).get().set(newDrop.getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
                         scrollSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));

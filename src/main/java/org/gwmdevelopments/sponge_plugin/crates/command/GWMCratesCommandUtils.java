@@ -254,6 +254,16 @@ public class GWMCratesCommandUtils {
                 arguments(
                         new ManagerCommandElement(Text.of("manager"))).
                 build();
+        CommandSpec probabilityTestCommand = CommandSpec.builder().
+                description(Text.of("Test a probability of each drop in a manager")).
+                executor(new ProbabilityTestCommand()).
+                arguments(
+                        new ManagerCommandElement(Text.of("manager")),
+                        GenericArguments.playerOrSource(Text.of("player")),
+                        GenericArguments.integer(Text.of("amount")),
+                        GenericArguments.optional(GenericArguments.bool(Text.of("fake")))
+                ).
+                build();
         CommandSpec spec = CommandSpec.builder().
                 permission("gwm_crates.command").
                 description(Text.of("Main plugin command.")).
@@ -275,6 +285,7 @@ public class GWMCratesCommandUtils {
                 child(infoCommand, "info").
                 child(loadCommand, "load").
                 child(unloadCommand, "unload").
+                child(probabilityTestCommand, "probabilitytest", "probtest", "ptest").
                 build();
         Sponge.getCommandManager().register(GWMCrates.getInstance(), spec,
                 "gwmcrates", "gwmcrate", "crates", "crate");

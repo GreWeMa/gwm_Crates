@@ -1,6 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.manager;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.exception.IdFormatException;
@@ -8,6 +9,8 @@ import org.gwmdevelopments.sponge_plugin.crates.exception.ManagerCreationExcepti
 import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
+import org.gwmdevelopments.sponge_plugin.crates.random_manager.RandomManager;
+import org.gwmdevelopments.sponge_plugin.crates.random_manager.random_managers.LevelRandomManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObject;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
@@ -22,6 +25,7 @@ public final class Manager {
 
     private final String id;
     private final String name;
+    private final RandomManager randomManager;
     private final Case caze;
     private final Key key;
     private final OpenManager openManager;
@@ -39,6 +43,7 @@ public final class Manager {
         try {
             ConfigurationNode idNode = node.getNode("ID");
             ConfigurationNode nameNode = node.getNode("NAME");
+            ConfigurationNode randomManagerNode = node.getNode("RANDOM_MANAGER");
             ConfigurationNode caseNode = node.getNode("CASE");
             ConfigurationNode keyNode = node.getNode("KEY");
             ConfigurationNode openManagerNode = node.getNode("OPEN_MANAGER");
@@ -74,6 +79,11 @@ public final class Manager {
                 throw new IdFormatException(id);
             }
             name = nameNode.getString();
+            if (randomManagerNode.isVirtual()) {
+                randomManager = GWMCrates.getInstance().getDefaultRandomManager();
+            } else {
+                randomManager = (RandomManager) GWMCratesUtils.createSuperObject(randomManagerNode, SuperObjectType.RANDOM_MANAGER);
+            }
             caze = (Case) GWMCratesUtils.createSuperObject(caseNode, SuperObjectType.CASE);
             key = (Key) GWMCratesUtils.createSuperObject(keyNode, SuperObjectType.KEY);
             drops = new ArrayList<>();
@@ -116,12 +126,14 @@ public final class Manager {
         }
     }
 
-    public Manager(String id, String name, Case caze, Key key, OpenManager openManager, List<Drop> drops,
+    public Manager(String id, String name, RandomManager randomManager,
+                   Case caze, Key key, OpenManager openManager, List<Drop> drops,
                    Optional<Preview> preview, boolean sendOpenMessage, Optional<String> customOpenMessage,
                    Optional<Text> customInfo, boolean sendCaseMissingMessage, boolean sendKeyMissingMessage,
                    Optional<Text> customCaseMissingMessage, Optional<Text> customKeyMissingMessage) {
         this.id = id;
         this.name = name;
+        this.randomManager = randomManager;
         this.caze = caze;
         this.key = key;
         this.openManager = openManager;
@@ -159,6 +171,10 @@ public final class Manager {
 
     public String getName() {
         return name;
+    }
+
+    public RandomManager getRandomManager() {
+        return randomManager;
     }
 
     public Case getCase() {

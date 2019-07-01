@@ -53,7 +53,7 @@ public class SecondOpenManagerListener {
                 Slot slot = transaction.getSlot();
                 if (GWMCratesUtils.isFirstInventory(container, slot)) {
                     SHOWN_GUI.add(container);
-                    Drop drop = GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, false);
+                    Drop drop = manager.getRandomManager().choose(manager.getDrops(), player, false);
                     ItemStack dropItem = drop.getDropItem().orElse(ItemStack.of(ItemTypes.NONE, 1));
                     Sponge.getScheduler().createTaskBuilder().delayTicks(1).execute(() -> slot.set(dropItem)).
                             submit(GWMCrates.getInstance());
@@ -62,7 +62,7 @@ public class SecondOpenManagerListener {
                             for (Slot next : ordered.<Slot>slots()) {
                                 if (!Objects.equals(next.getProperty(SlotIndex.class, "slotindex").get().getValue(),
                                         slot.getProperty(SlotIndex.class, "slotindex").get().getValue())) {
-                                    next.set(GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, true).getDropItem().
+                                    next.set(manager.getRandomManager().choose(manager.getDrops(), player, true).getDropItem().
                                             orElse(ItemStack.of(ItemTypes.NONE, 1)));
                                 }
                             }
@@ -101,7 +101,7 @@ public class SecondOpenManagerListener {
             if (open_manager.isForbidClose()) {
                 event.setCancelled(true);
             } else if (open_manager.isGiveRandomOnClose()) {
-                Drop drop = GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, false);
+                Drop drop = manager.getRandomManager().choose(manager.getDrops(), player, false);
                 drop.give(player, 1);
                 PlayerOpenedCrateEvent opened_event = new PlayerOpenedCrateEvent(player, manager, drop);
                 Sponge.getEventManager().post(opened_event);

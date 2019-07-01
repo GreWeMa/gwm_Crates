@@ -1,3 +1,19 @@
+v. beta-3.10
+1. Rework chance system.
+1.1 Add new Super Object 'RANDOM_MANAGER'
+1.1.1 Add new 'RANDOM_MANAGER' type 'LEVEL' (default)
+1.1.2 Add new 'RANDOM_MANAGER' type 'WEIGHT'
+1,2 Add 'RANDOM_MANAGER' parameter to all Managers.
+1.3 Add 'RANDOM_MANAGER' parameter to 'MULTI' Drop.
+1.4 Add 'DEFAULT_RANDOM_MANAGER' parameter to 'config.conf'
+1.5 Add new parameters to all Drops for new weight chance system.
+1.5.1 Add 'WEIGHT' parameter to all Drops.
+1.5.2 Add 'FAKE_WEIGHT' parameter to all Drops.
+1.5.3 Add 'PERMISSION_WEIGHTS' parameter to all Drops.
+1.5.4 Add 'PERMISSION_FAKE_WEIGHTS' parameter to all Drops.
+2. Add '/gwmcrates probabilitytest' command.
+3. 'BLOCK' Case now throws an exception if no locations are configured.
+
 v. beta-3.9
 1. Add 'SEND_CASE_MISSING_MESSAGE' parameter to Manager.
 2. Add 'SEND_KEY_MISSING_MESSAGE' parameter to Manager.

@@ -5,18 +5,15 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.nullness.Opt;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.CommandsDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.EmptyDrop;
-import org.gwmdevelopments.sponge_plugin.crates.drop.drops.MultiDrop;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.gui.GWMCratesGUI;
 import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.ConfigurationDialog;
 import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.SavedSuperObjectConfigurationDialog;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -51,9 +48,7 @@ public final class GWMCratesUtils {
     }
 
     public static final ItemStack EMPTY_ITEM = ItemStack.of(ItemTypes.NONE, 0);
-    public static final Drop EMPTY_DROP = new EmptyDrop(Optional.empty(), 1,
-            Optional.empty(), Optional.empty(), Collections.EMPTY_MAP, Collections.EMPTY_MAP, Optional.empty(), true);
-
+    public static final Drop EMPTY_DROP = new EmptyDrop();
     public static final Pattern ID_PATTERN = Pattern.compile("[a-z]([-_]?[a-z0-9])*");
 
     public static void loadManager(File file, boolean force) {
@@ -417,50 +412,6 @@ public final class GWMCratesUtils {
         int yTo = locationTo.getBlockY();
         int zTo = locationTo.getBlockZ();
         return xFrom != xTo || zFrom != zTo || (ySensitive && yFrom != yTo);
-    }
-
-    public static Drop chooseDropByLevel(Iterable<Drop> drops, Player player, boolean fake) {
-        Map<Integer, List<Drop>> sortedDrops = new HashMap<>();
-        for (Drop drop : drops) {
-            boolean foundByPermission = false;
-            for (Map.Entry<String, Integer> entry : fake ?
-                    drop.getPermissionFakeLevels().entrySet() : drop.getPermissionLevels().entrySet()) {
-                String permission = entry.getKey();
-                int permissionLevel = entry.getValue();
-                if (player.hasPermission(permission)) {
-                    if (sortedDrops.containsKey(permissionLevel)) {
-                        sortedDrops.get(permissionLevel).add(drop);
-                        foundByPermission = true;
-                        break;
-                    } else {
-                        List<Drop> list = new ArrayList<>();
-                        list.add(drop);
-                        sortedDrops.put(permissionLevel, list);
-                        foundByPermission = true;
-                        break;
-                    }
-                }
-            }
-            if (!foundByPermission) {
-                int level = fake ? drop.getFakeLevel().orElse(drop.getLevel()) : drop.getLevel();
-                if (sortedDrops.containsKey(level)) {
-                    sortedDrops.get(level).add(drop);
-                } else {
-                    List<Drop> list = new ArrayList<>();
-                    list.add(drop);
-                    sortedDrops.put(level, list);
-                }
-            }
-        }
-        int level;
-        while (!sortedDrops.containsKey(level = GWMLibraryUtils.getRandomIntLevel())) {
-        }
-        List<Drop> actualDrops = sortedDrops.get(level);
-        Drop drop = actualDrops.get(new Random().nextInt(actualDrops.size()));
-        if (drop instanceof MultiDrop && ((MultiDrop) drop).isPrefetch() && !((MultiDrop) drop).isGiveAll()) {
-            return chooseDropByLevel(((MultiDrop) drop).getDrops(), player, fake);
-        }
-        return drop;
     }
 
     public static void addItemStack(Player player, ItemStack item, int amount) {

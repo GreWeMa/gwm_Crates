@@ -37,7 +37,7 @@ public final class NoGuiOpenManager extends OpenManager {
         if (openEvent.isCancelled()) {
             return;
         }
-        Drop drop = GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, false);
+        Drop drop = manager.getRandomManager().choose(manager.getDrops(), player, false);
         drop.give(player, 1);
         getOpenSound().ifPresent(open_sound -> player.playSound(open_sound, player.getLocation().getPosition(), 1.));
         PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, drop);
