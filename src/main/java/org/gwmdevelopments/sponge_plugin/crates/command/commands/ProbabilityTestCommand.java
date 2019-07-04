@@ -4,7 +4,6 @@ import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -12,7 +11,9 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class ProbabilityTestCommand implements CommandExecutor {
 
@@ -20,8 +21,8 @@ public class ProbabilityTestCommand implements CommandExecutor {
     public CommandResult execute(CommandSource src, CommandContext args) {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
         String managerId = manager.getId();
-        Player player = args.<Player>getOne(Text.of("player")).get();
         int amount = args.<Integer>getOne(Text.of("amount")).get();
+        Player player = args.<Player>getOne(Text.of("player")).get();
         boolean fake = args.<Boolean>getOne(Text.of("fake")).orElse(false);
         if (!src.hasPermission("gwm_crates.command.probability_test." + managerId)) {
             src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));

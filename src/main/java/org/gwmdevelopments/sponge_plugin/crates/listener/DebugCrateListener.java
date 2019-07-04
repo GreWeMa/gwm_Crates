@@ -86,8 +86,8 @@ public class DebugCrateListener {
             try {
                 LOG_FILE = new File(GWMCrates.getInstance().getLogsDirectory(),
                         LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
-                if (!LOG_FILE.exists()) {
-                    LOG_FILE.createNewFile();
+                if (!LOG_FILE.createNewFile()) {
+                    GWMCrates.getInstance().getLogger().warn("Failed to create file \"" + LOG_FILE.getAbsolutePath() + "\"! Maybe it is already created?");
                 }
                 ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
                 LocalDateTime now = LocalDateTime.now();

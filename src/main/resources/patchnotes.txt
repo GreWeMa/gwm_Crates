@@ -1,3 +1,8 @@
+v. beta-3.10.1
+1. Change arguments order in '/gwmcrates probabilitytest' command.
+2. Changed permission for `/gwmcrates` command to 'gwm_crates.command.base'
+3. COde refactoring
+
 v. beta-3.10
 1. Rework chance system.
 1.1 Add new Super Object 'RANDOM_MANAGER'

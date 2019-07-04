@@ -259,13 +259,13 @@ public class GWMCratesCommandUtils {
                 executor(new ProbabilityTestCommand()).
                 arguments(
                         new ManagerCommandElement(Text.of("manager")),
-                        GenericArguments.playerOrSource(Text.of("player")),
                         GenericArguments.integer(Text.of("amount")),
+                        GenericArguments.playerOrSource(Text.of("player")),
                         GenericArguments.optional(GenericArguments.bool(Text.of("fake")))
                 ).
                 build();
         CommandSpec spec = CommandSpec.builder().
-                permission("gwm_crates.command").
+                permission("gwm_crates.command.base").
                 description(Text.of("Main plugin command.")).
                 child(helpCommand, "help").
                 child(guiCommand, "gui").
