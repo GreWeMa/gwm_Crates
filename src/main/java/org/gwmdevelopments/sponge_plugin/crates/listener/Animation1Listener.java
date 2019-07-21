@@ -105,7 +105,9 @@ public class Animation1Listener {
         Sponge.getScheduler().createTaskBuilder().delayTicks(information.getOpenManager().getCloseDelay()).execute(() -> {
             information.getOriginalBlockStates().forEach(((location, state) ->
                 location.setBlock(state, BlockChangeFlags.NONE)));
-            information.getHolograms().forEach(HologramsService.Hologram::remove);
+            information.getHolograms().
+                    forEach(createdHologram -> createdHologram.getHolograms().
+                            forEach(HologramsService.Hologram::remove));
             Animation1OpenManager.PLAYERS_OPENING_ANIMATION1.remove(player);
             OPENED_PLAYERS.remove(player);
         }).submit(GWMCrates.getInstance());

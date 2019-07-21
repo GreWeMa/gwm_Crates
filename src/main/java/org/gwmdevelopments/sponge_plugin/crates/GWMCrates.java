@@ -57,7 +57,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.10.1",
+        version = "beta-3.10.2",
         description = "Universal crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -69,7 +69,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 10, 1);
+    public static final Version VERSION = new Version("beta", 3, 10, 2);
 
     private static GWMCrates instance = null;
 
@@ -194,6 +194,7 @@ public final class GWMCrates extends SpongePlugin {
         virtualKeysConfig = new Config(this, "virtual_keys.conf", true);
         timedCasesConfig = new Config(this, "timed_cases.conf", true);
         timedKeysConfig = new Config(this, "timed_keys.conf", true);
+        register();
         loadConfigValues();
         if (connectMySQL()) {
             createMySQLTables();
@@ -218,12 +219,6 @@ public final class GWMCrates extends SpongePlugin {
         Sponge.getEventManager().registerListeners(this, new DebugCrateListener());
         GWMCratesCommandUtils.registerCommands();
         logger.info("\"Initialization\" completed!");
-    }
-
-    @Listener
-    public void onPostInitialization(GamePostInitializationEvent event) {
-        register();
-        logger.info("\"PostInitialization\" completed!");
     }
 
     @Listener
@@ -277,12 +272,12 @@ public final class GWMCrates extends SpongePlugin {
         savedSuperObjectsConfig.reload();
         superObjects.clear();
         savedSuperObjects.clear();
+        register();
         loadConfigValues();
         if (connectMySQL()) {
             createMySQLTables();
         }
         language = new Language(this);
-        register();
         loadSavedSuperObjects();
         loadManagers();
         if (checkUpdates) {

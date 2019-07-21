@@ -5,6 +5,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
+import org.gwmdevelopments.sponge_plugin.library.utils.CreatedHologram;
 import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.HologramSettings;
 import org.spongepowered.api.entity.living.player.Player;
@@ -23,7 +24,7 @@ public final class BlockCase extends Case {
     private final List<Location<World>> locations;
     private final Optional<HologramSettings> hologram;
     private final boolean startPreviewOnLeftClick;
-    private Optional<List<HologramsService.Hologram>> createdHolograms;
+    private Optional<List<CreatedHologram>> createdHolograms;
 
     public BlockCase(ConfigurationNode node) {
         super(node);
@@ -50,8 +51,6 @@ public final class BlockCase extends Case {
             }
             locations = Collections.unmodifiableList(tempLocations);
             if (!hologramNode.isVirtual()) {
-                //Backwards compatibility
-                GWMCrates.getInstance().getLogger().warn("[BACKWARD COMPATIBILITY] Auto creation of hologram is now considered legacy and should be done manually by user!");
                 hologram = Optional.of(GWMLibraryUtils.parseHologramSettings(hologramNode,
                         GWMCrates.getInstance().getHologramOffset(),
                         GWMCrates.getInstance().getMultilineHologramsDistance()));
@@ -60,8 +59,8 @@ public final class BlockCase extends Case {
             }
             if (hologram.isPresent()) {
                 HologramSettings hgs = hologram.get();
-                List<HologramsService.Hologram> tempCreatedHolograms = new ArrayList<>();
-                locations.forEach(loc -> GWMLibraryUtils.createHologram(loc, hgs).ifPresent(tempCreatedHolograms::addAll));
+                List<CreatedHologram> tempCreatedHolograms = new ArrayList<>();
+                locations.forEach(loc -> tempCreatedHolograms.add(GWMLibraryUtils.createHologram(loc, hgs, true)));
                 createdHolograms = Optional.of(Collections.unmodifiableList(tempCreatedHolograms));
             } else {
                 createdHolograms = Optional.empty();
@@ -74,7 +73,7 @@ public final class BlockCase extends Case {
 
     public BlockCase(Optional<String> id,
                      List<Location<World>> locations, Optional<HologramSettings> hologram, boolean startPreviewOnLeftClick,
-                     Optional<List<HologramsService.Hologram>> createdHolograms) {
+                     Optional<List<CreatedHologram>> createdHolograms) {
         super(id, true);
         this.locations = locations;
         this.hologram = hologram;
@@ -84,9 +83,11 @@ public final class BlockCase extends Case {
 
     @Override
     public void shutdown() {
-        createdHolograms.ifPresent(holograms -> holograms.forEach(hologram -> {
+        createdHolograms.ifPresent(createdHolograms -> createdHolograms.forEach(createdHologram -> {
             try {
-                hologram.remove();
+                createdHologram.getHolograms().forEach(HologramsService.Hologram::remove);
+                createdHologram.getUsedTicket().ifPresent(ticket ->
+                        ticket.unforceChunk(createdHologram.getCachedLocation().getChunkPosition()));
             } catch (Exception e) {
                 GWMCrates.getInstance().getLogger().warn("Failed to remove hologram!", e);
             }
@@ -119,7 +120,7 @@ public final class BlockCase extends Case {
         return startPreviewOnLeftClick;
     }
 
-    public Optional<List<HologramsService.Hologram>> getCreatedHolograms() {
+    public Optional<List<CreatedHologram>> getCreatedHolograms() {
         return createdHolograms;
     }
 }

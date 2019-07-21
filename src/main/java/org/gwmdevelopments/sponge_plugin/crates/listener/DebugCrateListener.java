@@ -37,7 +37,7 @@ public class DebugCrateListener {
 
     @Listener(order = Order.LATE)
     public void onOpened(PlayerOpenedCrateEvent event) {
-        Player player = event.getPlayer();
+        Player player = event.getTargetEntity();
         Manager manager = event.getManager();
         Drop drop = event.getDrop();
         if (manager.isSendOpenMessage()) {

@@ -1,7 +1,13 @@
+v. beta-3.10.2
+1. Code refactoring
+2. Update message for IdFormatException
+3. Update to GWMLibrary version beta-1.8
+4. Fix a bug which prevented loading of `DEFAULT_RANDOM_MANAGER` from `config.conf`
+
 v. beta-3.10.1
 1. Change arguments order in '/gwmcrates probabilitytest' command.
 2. Changed permission for `/gwmcrates` command to 'gwm_crates.command.base'
-3. COde refactoring
+3. Code refactoring
 
 v. beta-3.10
 1. Rework chance system.

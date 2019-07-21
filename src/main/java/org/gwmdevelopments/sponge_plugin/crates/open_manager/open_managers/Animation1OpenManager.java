@@ -12,6 +12,7 @@ import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
+import org.gwmdevelopments.sponge_plugin.library.utils.CreatedHologram;
 import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.HologramSettings;
 import org.spongepowered.api.Sponge;
@@ -139,7 +140,7 @@ public final class Animation1OpenManager extends OpenManager {
                 }
             }
         }
-        HashSet<HologramsService.Hologram> holograms = new HashSet<>();
+        HashSet<CreatedHologram> holograms = new HashSet<>();
         Location<World> location1 = new Location<>(world, positionX + 2, positionY, positionZ);
         location1.setBlock(BlockState.builder().
                         blockType(crateBlockType).
@@ -165,10 +166,10 @@ public final class Animation1OpenManager extends OpenManager {
                         build(),
                 BlockChangeFlags.NONE);
         hologram.ifPresent(hg -> {
-            GWMLibraryUtils.createHologram(location1, hg).ifPresent(holograms::addAll);
-            GWMLibraryUtils.createHologram(location2, hg).ifPresent(holograms::addAll);
-            GWMLibraryUtils.createHologram(location3, hg).ifPresent(holograms::addAll);
-            GWMLibraryUtils.createHologram(location4, hg).ifPresent(holograms::addAll);
+            holograms.add(GWMLibraryUtils.createHologram(location1, hg, false));
+            holograms.add(GWMLibraryUtils.createHologram(location2, hg, false));
+            holograms.add(GWMLibraryUtils.createHologram(location3, hg, false));
+            holograms.add(GWMLibraryUtils.createHologram(location4, hg, false));
         });
         getOpenSound().ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
         PLAYERS_OPENING_ANIMATION1.put(player, new Information(this, manager,
@@ -192,7 +193,8 @@ public final class Animation1OpenManager extends OpenManager {
         PLAYERS_OPENING_ANIMATION1.values().stream().
                 filter(info -> info.getOpenManager() == this).
                 flatMap(info -> info.getHolograms().stream()).
-                forEach(HologramsService.Hologram::remove);
+                forEach(createdHologram -> createdHologram.getHolograms().
+                        forEach(HologramsService.Hologram::remove));
     }
 
     private boolean containsNearPlayers(Player player) {
@@ -239,11 +241,11 @@ public final class Animation1OpenManager extends OpenManager {
         private final Manager manager;
         private final Map<Location<World>, Boolean> locations;
         private final Map<Location<World>, BlockState> originalBlockStates;
-        private final Set<HologramsService.Hologram> holograms;
+        private final Set<CreatedHologram> holograms;
 
         public Information(Animation1OpenManager openManager, Manager manager,
                            Map<Location<World>, Boolean> locations, Map<Location<World>, BlockState> originalBlockStates,
-                           Set<HologramsService.Hologram> holograms) {
+                           Set<CreatedHologram> holograms) {
             this.openManager = openManager;
             this.manager = manager;
             this.locations = locations;
@@ -267,7 +269,7 @@ public final class Animation1OpenManager extends OpenManager {
             return originalBlockStates;
         }
 
-        public Set<HologramsService.Hologram> getHolograms() {
+        public Set<CreatedHologram> getHolograms() {
             return holograms;
         }
     }
