@@ -37,7 +37,7 @@ public class DebugCrateListener {
 
     @Listener(order = Order.LATE)
     public void onOpened(PlayerOpenedCrateEvent event) {
-        Player player = event.getPlayer();
+        Player player = event.getTargetEntity();
         Manager manager = event.getManager();
         Drop drop = event.getDrop();
         if (manager.isSendOpenMessage()) {
@@ -57,7 +57,7 @@ public class DebugCrateListener {
             String playerUuid = player.getUniqueId().toString();
             String managerName = manager.getName();
             String managerId = manager.getId();
-            String dropName = drop == null ? "null" : drop.getId().orElse("Unknown ID");
+            String dropName = drop == null ? "null" : drop.id().orElse("Unknown ID");
             Location<World> location = player.getLocation();
             String playerLocation = location.getExtent().getName() + ' ' +
                     location.getBlockX() + ' ' +
@@ -86,8 +86,8 @@ public class DebugCrateListener {
             try {
                 LOG_FILE = new File(GWMCrates.getInstance().getLogsDirectory(),
                         LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
-                if (!LOG_FILE.exists()) {
-                    LOG_FILE.createNewFile();
+                if (!LOG_FILE.createNewFile()) {
+                    GWMCrates.getInstance().getLogger().warn("Failed to create file \"" + LOG_FILE.getAbsolutePath() + "\"! Maybe it is already created?");
                 }
                 ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
                 LocalDateTime now = LocalDateTime.now();

@@ -1,23 +1,16 @@
 package org.gwmdevelopments.sponge_plugin.crates.exception;
 
+import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
+
 public class SSOCreationException extends RuntimeException {
 
-    public SSOCreationException() {
+    public static final String MESSAGE = "Failed to create SSO! SSO type: \"%s\", type: \"%s\"";
+
+    public SSOCreationException(SuperObjectType ssoType, String type) {
+        super(String.format(MESSAGE, ssoType.toString(), type));
     }
 
-    public SSOCreationException(String s) {
-        super(s);
-    }
-
-    public SSOCreationException(String s, Throwable throwable) {
-        super(s, throwable);
-    }
-
-    public SSOCreationException(Throwable throwable) {
-        super(throwable);
-    }
-
-    public SSOCreationException(String s, Throwable throwable, boolean b, boolean b1) {
-        super(s, throwable, b, b1);
+    public SSOCreationException(SuperObjectType ssoType, String type, Throwable throwable) {
+        super(String.format(MESSAGE, ssoType.toString(), type), throwable);
     }
 }

@@ -1,3 +1,0 @@
-If you want create translation or improve one of the exists translations
-than feel free to make Pull Request for it at GitHub, or send me Private Message with details.
-I myself created only default English (which is most likely not very accurate) and Russian translations.

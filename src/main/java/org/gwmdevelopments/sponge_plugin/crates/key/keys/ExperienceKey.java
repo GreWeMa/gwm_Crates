@@ -10,9 +10,11 @@ import org.spongepowered.api.service.economy.Currency;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-public class ExperienceKey extends GiveableKey {
+public final class ExperienceKey extends GiveableKey {
 
-    private int experience;
+    public static final String TYPE = "EXPERIENCE";
+
+    private final int experience;
 
     public ExperienceKey(ConfigurationNode node) {
         super(node);
@@ -23,15 +25,20 @@ public class ExperienceKey extends GiveableKey {
             }
             experience = experienceNode.getInt();
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Experience Key!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
-    public ExperienceKey(String type, Optional<String> id, boolean doNotWithdraw,
+    public ExperienceKey(Optional<String> id, boolean doNotWithdraw,
                          Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                          int experience) {
-        super(type, id, doNotWithdraw, price, sellCurrency, doNotAdd);
+        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.experience = experience;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -55,5 +62,9 @@ public class ExperienceKey extends GiveableKey {
     @Override
     public int get(Player player) {
         return player.get(Keys.TOTAL_EXPERIENCE).orElse(0) / experience;
+    }
+
+    public int getExperience() {
+        return experience;
     }
 }

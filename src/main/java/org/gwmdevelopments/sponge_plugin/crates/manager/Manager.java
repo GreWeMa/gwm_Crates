@@ -1,14 +1,18 @@
 package org.gwmdevelopments.sponge_plugin.crates.manager;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
+import org.gwmdevelopments.sponge_plugin.crates.exception.IdFormatException;
 import org.gwmdevelopments.sponge_plugin.crates.exception.ManagerCreationException;
-import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
+import org.gwmdevelopments.sponge_plugin.crates.random_manager.RandomManager;
+import org.gwmdevelopments.sponge_plugin.crates.random_manager.random_managers.LevelRandomManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import org.gwmdevelopments.sponge_plugin.crates.util.SuperObject;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -17,23 +21,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class Manager {
+public final class Manager {
 
-    private String id;
-    private String name;
-    private Case caze;
-    private Key key;
-    private OpenManager openManager;
-    private List<Drop> drops;
-    private Optional<Preview> preview = Optional.empty();
-    private boolean sendOpenMessage;
-    private Optional<String> customOpenMessage = Optional.empty();
-    private Optional<Text> customInfo = Optional.empty();
+    private final String id;
+    private final String name;
+    private final RandomManager randomManager;
+    private final Case caze;
+    private final Key key;
+    private final OpenManager openManager;
+    private final List<Drop> drops;
+    private final Optional<Preview> preview;
+    private final boolean sendOpenMessage;
+    private final Optional<String> customOpenMessage;
+    private final Optional<Text> customInfo;
+    private final boolean sendCaseMissingMessage;
+    private final boolean sendKeyMissingMessage;
+    private final Optional<Text> customCaseMissingMessage;
+    private final Optional<Text> customKeyMissingMessage;
 
     public Manager(ConfigurationNode node) {
         try {
             ConfigurationNode idNode = node.getNode("ID");
             ConfigurationNode nameNode = node.getNode("NAME");
+            ConfigurationNode randomManagerNode = node.getNode("RANDOM_MANAGER");
             ConfigurationNode caseNode = node.getNode("CASE");
             ConfigurationNode keyNode = node.getNode("KEY");
             ConfigurationNode openManagerNode = node.getNode("OPEN_MANAGER");
@@ -42,6 +52,10 @@ public class Manager {
             ConfigurationNode sendOpenMessageNode = node.getNode("SEND_OPEN_MESSAGE");
             ConfigurationNode customOpenMessageNode = node.getNode("CUSTOM_OPEN_MESSAGE");
             ConfigurationNode customInfoNode = node.getNode("CUSTOM_INFO");
+            ConfigurationNode sendCaseMissingMessageNode = node.getNode("SEND_CASE_MISSING_MESSAGE");
+            ConfigurationNode sendKeyMissingMessageNode = node.getNode("SEND_KEY_MISSING_MESSAGE");
+            ConfigurationNode customCaseMissingMessageNode = node.getNode("CUSTOM_CASE_MISSING_MESSAGE");
+            ConfigurationNode customKeyMissingMessageNode = node.getNode("CUSTOM_KEY_MISSING_MESSAGE");
             if (idNode.isVirtual()) {
                 throw new IllegalArgumentException("ID node does not exist!");
             }
@@ -61,7 +75,15 @@ public class Manager {
                 throw new IllegalArgumentException("DROPS node does not exist!");
             }
             id = idNode.getString();
+            if (!GWMCratesUtils.ID_PATTERN.matcher(id).matches()) {
+                throw new IdFormatException(id);
+            }
             name = nameNode.getString();
+            if (randomManagerNode.isVirtual()) {
+                randomManager = GWMCrates.getInstance().getDefaultRandomManager();
+            } else {
+                randomManager = (RandomManager) GWMCratesUtils.createSuperObject(randomManagerNode, SuperObjectType.RANDOM_MANAGER);
+            }
             caze = (Case) GWMCratesUtils.createSuperObject(caseNode, SuperObjectType.CASE);
             key = (Key) GWMCratesUtils.createSuperObject(keyNode, SuperObjectType.KEY);
             drops = new ArrayList<>();
@@ -71,24 +93,47 @@ public class Manager {
             openManager = (OpenManager) GWMCratesUtils.createSuperObject(openManagerNode, SuperObjectType.OPEN_MANAGER);
             if (!previewNode.isVirtual()) {
                 preview = Optional.of((Preview) GWMCratesUtils.createSuperObject(previewNode, SuperObjectType.PREVIEW));
+            } else {
+                preview = Optional.empty();
             }
             sendOpenMessage = sendOpenMessageNode.getBoolean(true);
             if (!customOpenMessageNode.isVirtual()) {
                 customOpenMessage = Optional.of(customOpenMessageNode.getString());
+            } else {
+                customOpenMessage = Optional.empty();
             }
             if (!customInfoNode.isVirtual()) {
                 customInfo = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(customInfoNode.getString()));
+            } else {
+                customInfo = Optional.empty();
+            }
+            sendCaseMissingMessage = sendCaseMissingMessageNode.getBoolean(true);
+            sendKeyMissingMessage = sendKeyMissingMessageNode.getBoolean(true);
+            if (!customCaseMissingMessageNode.isVirtual()) {
+                customCaseMissingMessage = Optional.of(TextSerializers.FORMATTING_CODE.
+                        deserialize(customCaseMissingMessageNode.getString()));
+            } else {
+                customCaseMissingMessage = Optional.empty();
+            }
+            if (!customKeyMissingMessageNode.isVirtual()) {
+                customKeyMissingMessage = Optional.of(TextSerializers.FORMATTING_CODE.
+                        deserialize(customKeyMissingMessageNode.getString()));
+            } else {
+                customKeyMissingMessage = Optional.empty();
             }
         } catch (Exception e) {
-            throw new ManagerCreationException("Failed to create Manager!", e);
+            throw new ManagerCreationException(e);
         }
     }
 
-    public Manager(String id, String name, Case caze, Key key, OpenManager openManager, List<Drop> drops,
+    public Manager(String id, String name, RandomManager randomManager,
+                   Case caze, Key key, OpenManager openManager, List<Drop> drops,
                    Optional<Preview> preview, boolean sendOpenMessage, Optional<String> customOpenMessage,
-                   Optional<Text> customInfo) {
+                   Optional<Text> customInfo, boolean sendCaseMissingMessage, boolean sendKeyMissingMessage,
+                   Optional<Text> customCaseMissingMessage, Optional<Text> customKeyMissingMessage) {
         this.id = id;
         this.name = name;
+        this.randomManager = randomManager;
         this.caze = caze;
         this.key = key;
         this.openManager = openManager;
@@ -97,11 +142,23 @@ public class Manager {
         this.sendOpenMessage = sendOpenMessage;
         this.customOpenMessage = customOpenMessage;
         this.customInfo = customInfo;
+        this.sendCaseMissingMessage = sendCaseMissingMessage;
+        this.sendKeyMissingMessage = sendKeyMissingMessage;
+        this.customCaseMissingMessage = customCaseMissingMessage;
+        this.customKeyMissingMessage = customKeyMissingMessage;
+    }
+
+    public void shutdown() {
+        openManager.shutdown();
+        preview.ifPresent(SuperObject::shutdown);
+        drops.forEach(SuperObject::shutdown);
+        caze.shutdown();
+        key.shutdown();
     }
 
     public Optional<Drop> getDropById(String id) {
         for (Drop drop : drops) {
-            if (drop.getId().isPresent() && drop.getId().get().equals(id)) {
+            if (drop.id().isPresent() && drop.id().get().equals(id)) {
                 return Optional.of(drop);
             }
         }
@@ -116,67 +173,55 @@ public class Manager {
         return name;
     }
 
-    public Case getCase() {
-        return caze;
+    public RandomManager getRandomManager() {
+        return randomManager;
     }
 
-    public void setCase(Case caze) {
-        this.caze = caze;
+    public Case getCase() {
+        return caze;
     }
 
     public Key getKey() {
         return key;
     }
 
-    public void setKey(Key key) {
-        this.key = key;
+    public OpenManager getOpenManager() {
+        return openManager;
     }
 
     public List<Drop> getDrops() {
         return drops;
     }
 
-    public void setDrops(List<Drop> drops) {
-        this.drops = drops;
-    }
-
-    public OpenManager getOpenManager() {
-        return openManager;
-    }
-
-    public void setOpenManager(OpenManager open_manager) {
-        this.openManager = open_manager;
-    }
-
     public Optional<Preview> getPreview() {
         return preview;
-    }
-
-    public void setPreview(Optional<Preview> preview) {
-        this.preview = preview;
     }
 
     public boolean isSendOpenMessage() {
         return sendOpenMessage;
     }
 
-    public void setSendOpenMessage(boolean send_open_message) {
-        this.sendOpenMessage = send_open_message;
-    }
-
     public Optional<String> getCustomOpenMessage() {
         return customOpenMessage;
-    }
-
-    public void setCustomOpenMessage(Optional<String> custom_open_message) {
-        this.customOpenMessage = custom_open_message;
     }
 
     public Optional<Text> getCustomInfo() {
         return customInfo;
     }
 
-    public void setCustomInfo(Optional<Text> custom_info) {
-        this.customInfo = custom_info;
+    public boolean isSendCaseMissingMessage() {
+        return sendCaseMissingMessage;
+    }
+
+    public boolean isSendKeyMissingMessage() {
+        return sendKeyMissingMessage;
+    }
+
+    public Optional<Text> getCustomCaseMissingMessage() {
+        return customCaseMissingMessage;
+    }
+
+    public Optional<Text> getCustomKeyMissingMessage() {
+        return customKeyMissingMessage;
     }
 }

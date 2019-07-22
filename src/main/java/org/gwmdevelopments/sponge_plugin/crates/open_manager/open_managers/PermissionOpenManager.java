@@ -3,7 +3,6 @@ package org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
@@ -12,11 +11,13 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Optional;
 
-public class PermissionOpenManager extends AbstractOpenManager {
+public final class PermissionOpenManager extends OpenManager {
 
-    private String permission;
-    private OpenManager openManager1;
-    private OpenManager openManager2;
+    public static final String TYPE = "PERMISSION";
+
+    private final String permission;
+    private final OpenManager openManager1;
+    private final OpenManager openManager2;
 
     public PermissionOpenManager(ConfigurationNode node) {
         super(node);
@@ -37,16 +38,21 @@ public class PermissionOpenManager extends AbstractOpenManager {
             openManager1 = (OpenManager) GWMCratesUtils.createSuperObject(openManager1Node, SuperObjectType.OPEN_MANAGER);
             openManager2 = (OpenManager) GWMCratesUtils.createSuperObject(openManager2Node, SuperObjectType.OPEN_MANAGER);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Permission Open Manager!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public PermissionOpenManager(Optional<String> id, Optional<SoundType> openSound,
                                  String permission, OpenManager openManager1, OpenManager openManager2) {
-        super("PERMISSION", id, openSound);
+        super(id, openSound);
         this.permission = permission;
         this.openManager1 = openManager1;
         this.openManager2 = openManager2;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -62,23 +68,11 @@ public class PermissionOpenManager extends AbstractOpenManager {
         return permission;
     }
 
-    public void setPermission(String permission) {
-        this.permission = permission;
-    }
-
     public OpenManager getOpenManager1() {
         return openManager1;
     }
 
-    public void setOpenManager1(OpenManager openManager1) {
-        this.openManager1 = openManager1;
-    }
-
     public OpenManager getOpenManager2() {
         return openManager2;
-    }
-
-    public void setOpenManager2(OpenManager openManager2) {
-        this.openManager2 = openManager2;
     }
 }

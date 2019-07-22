@@ -1,3 +1,98 @@
+v. beta-3.10.2
+1. Code refactoring
+2. Update message for IdFormatException
+3. Update to GWMLibrary version beta-1.8
+4. Fix a bug which prevented loading of `DEFAULT_RANDOM_MANAGER` from `config.conf`
+
+v. beta-3.10.1
+1. Change arguments order in '/gwmcrates probabilitytest' command.
+2. Changed permission for `/gwmcrates` command to 'gwm_crates.command.base'
+3. Code refactoring
+
+v. beta-3.10
+1. Rework chance system.
+1.1 Add new Super Object 'RANDOM_MANAGER'
+1.1.1 Add new 'RANDOM_MANAGER' type 'LEVEL' (default)
+1.1.2 Add new 'RANDOM_MANAGER' type 'WEIGHT'
+1,2 Add 'RANDOM_MANAGER' parameter to all Managers.
+1.3 Add 'RANDOM_MANAGER' parameter to 'MULTI' Drop.
+1.4 Add 'DEFAULT_RANDOM_MANAGER' parameter to 'config.conf'
+1.5 Add new parameters to all Drops for new weight chance system.
+1.5.1 Add 'WEIGHT' parameter to all Drops.
+1.5.2 Add 'FAKE_WEIGHT' parameter to all Drops.
+1.5.3 Add 'PERMISSION_WEIGHTS' parameter to all Drops.
+1.5.4 Add 'PERMISSION_FAKE_WEIGHTS' parameter to all Drops.
+2. Add '/gwmcrates probabilitytest' command.
+3. 'BLOCK' Case now throws an exception if no locations are configured.
+
+v. beta-3.9
+1. Add 'SEND_CASE_MISSING_MESSAGE' parameter to Manager.
+2. Add 'SEND_KEY_MISSING_MESSAGE' parameter to Manager.
+3. Add 'CUSTOM_CASE_MISSING_MESSAGE' parameter to Manager.
+4. Add 'CUSTOM_KEY_MISSING_MESSAGE' parameter to Manager.
+
+v. beta-3.8
+1. Add 'PREFETCH' parameter for 'MULTI' Drop.
+2. Simplified code for removal of holograms. NOTE: it's not possible to remove hologram if it's located in an unloaded chunk.
+Make holograms legacy in 'BLOCK' Case, users should place holograms themselves.
+
+v. beta-3.7.1
+1. Change permission for '/gwmcrates check' command
+
+v. beta-3.7
+1. Add 'BOUNDARIES' Key.
+2. Add 'RADIUS' Key.
+
+v. beta-3.6.2
+1. Update examples.
+
+v. beta-3.6.1
+1. Update Chinese translation (by SGYRE).
+
+v. beta-3.6
+1. Reworked holograms.
+2. Reworked 'BLOCK' Case.
+2.1. Now 'BLOCK' Case can have multiple locations.
+
+v. beta-3.5
+1. Code refactoring
+2. Add 'load' command
+3. Add 'unload' command
+4. Reworked removal of holograms (most likely it won't fix *that* bug ...)
+
+v. beta-3.4.2
+1. Add 'CUSTOM_DROPS' parameter to Preview.
+
+v. beta-3.4.1
+1. Add 'SHOW_IN_PREVIEW' parameter to Drop.
+2. Code refactoring.
+
+v. beta-3.4
+1. Code refactoring.
+2. Add permission for manager tab completion.
+3. Add permission for sso tab completion.
+4. "ITEM" Drop now drops on the floor if a player does not have enough space in his inventory.
+5. Fix bug with 'placeable' "ITEM" Drops. They can not be placed anymore.
+6. 'force' parameter in commands `giveeveryone` and `giveeveryone` not defaults to 'false'.
+7. Fix mistake in previous version changelog ¯\_(ツ)_/¯.
+8. Add 'CUSTOM_NAME' parameter to Drop.
+
+v. beta-3.3.6
+1. Add 'giveeveryone' command.
+
+v. beta-3.3.5
+1. Add new features to 'CASINO' Open Manager
+
+v. beta-3.3.4
+1. Update GWMLibrary beta-1.6.1
+
+v. beta-3.3.3
+1. Update to GWMLibrary beta-1.5
+
+v. beta-3.3.2
+1. Refactoring
+2. MySQL changes
+
 v. beta-3.3.1
 1. Refactoring
 

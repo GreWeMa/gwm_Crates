@@ -17,6 +17,7 @@ import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,8 +36,8 @@ public class BlockCaseListener {
             if (!(caze instanceof BlockCase)) {
                 continue;
             }
-            Location<World> blockCaseLocation = ((BlockCase) caze).getLocation();
-            if (!blockCaseLocation.equals(location)) {
+            List<Location<World>> blockCaseLocations = ((BlockCase) caze).getLocations();
+            if (!blockCaseLocations.contains(location)) {
                 continue;
             }
             event.setCancelled(true);
@@ -57,7 +58,7 @@ public class BlockCaseListener {
             }
             Key key = manager.getKey();
             if (key.get(player) < 1) {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_KEY", player, null));
+                GWMCratesUtils.sendKeyMissingMessage(player, manager);
                 return;
             }
             key.withdraw(player, 1, false);
@@ -80,8 +81,8 @@ public class BlockCaseListener {
             if (!(caze instanceof BlockCase)) {
                 continue;
             }
-            Location<World> blockCaseLocation = ((BlockCase) caze).getLocation();
-            if (!blockCaseLocation.equals(location)) {
+            List<Location<World>> blockCaseLocations = ((BlockCase) caze).getLocations();
+            if (!blockCaseLocations.contains(location)) {
                 continue;
             }
             event.setCancelled(true);

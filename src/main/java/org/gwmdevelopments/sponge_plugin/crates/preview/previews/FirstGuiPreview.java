@@ -7,10 +7,11 @@ import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.FirstOpenManager;
-import org.gwmdevelopments.sponge_plugin.crates.preview.AbstractPreview;
+import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
 import org.gwmdevelopments.sponge_plugin.crates.util.DecorativeDropChangeRunnable;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
+import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -25,17 +26,15 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class FirstGuiPreview extends AbstractPreview {
+public final class FirstGuiPreview extends Preview {
+
+    public static final String TYPE = "FIRST";
 
     public static final Map<Container, Pair<FirstGuiPreview, Manager>> FIRST_GUI_CONTAINERS = new HashMap<>();
 
     public static final List<Integer> DECORATIVE_ITEMS_INDICES;
-
-    private Optional<Text> displayName = Optional.empty();
-    private List<ItemStack> decorativeItems;
-    private int scrollDelay;
-    private Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode = Optional.empty();
 
     static {
         List<Integer> decorativeItemsIndices = new ArrayList<>();
@@ -48,6 +47,11 @@ public class FirstGuiPreview extends AbstractPreview {
         DECORATIVE_ITEMS_INDICES = Collections.unmodifiableList(decorativeItemsIndices);
     }
 
+    private final Optional<Text> displayName;
+    private final List<ItemStack> decorativeItems;
+    private final int scrollDelay;
+    private final Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode;
+
     public FirstGuiPreview(ConfigurationNode node) {
         super(node);
         try {
@@ -57,29 +61,40 @@ public class FirstGuiPreview extends AbstractPreview {
             ConfigurationNode decorativeItemsChangeModeNode = node.getNode("DECORATIVE_ITEMS_CHANGE_MODE");
             if (!displayNameNode.isVirtual()) {
                 displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
+            } else {
+                displayName = Optional.empty();
             }
-            decorativeItems = new ArrayList<>();
+            List<ItemStack> tempDecorativeItems = new ArrayList<>();
             if (!decorativeItemsNode.isVirtual()) {
                 for (ConfigurationNode decorativeItemNode : decorativeItemsNode.getChildrenList()) {
-                    decorativeItems.add(GWMCratesUtils.parseItem(decorativeItemNode));
+                    tempDecorativeItems.add(GWMLibraryUtils.parseItem(decorativeItemNode));
                 }
             }
+            decorativeItems = Collections.unmodifiableList(tempDecorativeItems);
             scrollDelay = scrollDelayNode.getInt(10);
             if (!decorativeItemsChangeModeNode.isVirtual()) {
                 decorativeItemsChangeMode = Optional.of((DecorativeItemsChangeMode) GWMCratesUtils.createSuperObject(decorativeItemsChangeModeNode, SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE));
+            } else {
+                decorativeItemsChangeMode = Optional.empty();
             }
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create First Gui Preview!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
-    public FirstGuiPreview(Optional<String> id, Optional<Text> displayName, List<ItemStack> decorativeItems,
+    public FirstGuiPreview(Optional<String> id, Optional<List<Drop>> customDrops,
+                           Optional<Text> displayName, List<ItemStack> decorativeItems,
                            int scrollDelay, Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode) {
-        super("FIRST", id);
+        super(id, customDrops);
         this.displayName = displayName;
         this.decorativeItems = decorativeItems;
         this.scrollDelay = scrollDelay;
         this.decorativeItemsChangeMode = decorativeItemsChangeMode;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -100,33 +115,38 @@ public class FirstGuiPreview extends AbstractPreview {
                         set(decorativeItems.get(index));
             }
         }
-        List<Drop> drops = manager.getDrops();
-        int index = 0;
-        for (int i = 10; i < 17; i++) {
-            if (index == drops.size()) {
-                index = 0;
+        List<Drop> drops = getCustomDrops().orElse(manager.getDrops()).
+                stream().
+                filter(Drop::isShowInPreview).
+                collect(Collectors.toList());
+        if (!drops.isEmpty()) {
+            int index = 0;
+            for (int i = 10; i < 17; i++) {
+                if (index == drops.size()) {
+                    index = 0;
+                }
+                ordered.getSlot(new SlotIndex(i)).get().set(drops.get(index).getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
+                index++;
             }
-            ordered.getSlot(new SlotIndex(i)).get().set(drops.get(index).getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
-            index++;
+            Container container = player.openInventory(inventory).get();
+            FIRST_GUI_CONTAINERS.put(container, new Pair<>(this, manager));
+            if (!decorativeItems.isEmpty()) {
+                decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
+                        createTaskBuilder().delayTicks(mode.getChangeDelay()).
+                        execute(new DecorativeDropChangeRunnable(player, container, ordered, new ArrayList<>(decorativeItems), mode, FirstOpenManager.DECORATIVE_ITEMS_INDICES)).
+                        submit(GWMCrates.getInstance()));
+            }
+            Sponge.getScheduler().createTaskBuilder().delayTicks(scrollDelay).
+                    execute(new DropChangeRunnable(container, drops, index)).
+                    submit(GWMCrates.getInstance());
         }
-        Container container = player.openInventory(inventory).get();
-        FIRST_GUI_CONTAINERS.put(container, new Pair<>(this, manager));
-        if (!decorativeItems.isEmpty()) {
-            decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
-                    createTaskBuilder().delayTicks(mode.getChangeDelay()).
-                    execute(new DecorativeDropChangeRunnable(player, container, ordered, new ArrayList<>(decorativeItems), mode, FirstOpenManager.DECORATIVE_ITEMS_INDICES)).
-                    submit(GWMCrates.getInstance()));
-        }
-        Sponge.getScheduler().createTaskBuilder().delayTicks(scrollDelay).
-                execute(new DropChangeRunnable(container, drops, index)).
-                submit(GWMCrates.getInstance());
     }
 
     public class DropChangeRunnable implements Runnable {
 
-        private Container container;
-        private OrderedInventory inventory;
-        private List<Drop> drops;
+        private final Container container;
+        private final OrderedInventory inventory;
+        private final List<Drop> drops;
         private int index;
 
         public DropChangeRunnable(Container container, List<Drop> drops, int index) {
@@ -152,7 +172,10 @@ public class FirstGuiPreview extends AbstractPreview {
             inventory.getSlot(new SlotIndex(16)).get().
                     set(drops.get(index).getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
             index++;
-            Sponge.getScheduler().createTaskBuilder().delayTicks(scrollDelay).execute(this).submit(GWMCrates.getInstance());
+            Sponge.getScheduler().createTaskBuilder().
+                    delayTicks(scrollDelay).
+                    execute(this).
+                    submit(GWMCrates.getInstance());
         }
     }
 
@@ -160,31 +183,15 @@ public class FirstGuiPreview extends AbstractPreview {
         return displayName;
     }
 
-    public void setDisplayName(Optional<Text> displayName) {
-        this.displayName = displayName;
-    }
-
     public List<ItemStack> getDecorativeItems() {
         return decorativeItems;
-    }
-
-    public void setDecorativeItems(List<ItemStack> decorativeItems) {
-        this.decorativeItems = decorativeItems;
     }
 
     public int getScrollDelay() {
         return scrollDelay;
     }
 
-    public void setScrollDelay(int scrollDelay) {
-        this.scrollDelay = scrollDelay;
-    }
-
     public Optional<DecorativeItemsChangeMode> getDecorativeItemsChangeMode() {
         return decorativeItemsChangeMode;
-    }
-
-    public void setDecorativeItemsChangeMode(Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode) {
-        this.decorativeItemsChangeMode = decorativeItemsChangeMode;
     }
 }

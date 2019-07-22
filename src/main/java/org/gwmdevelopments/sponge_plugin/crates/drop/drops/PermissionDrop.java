@@ -1,7 +1,6 @@
 package org.gwmdevelopments.sponge_plugin.crates.drop.drops;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.drop.AbstractDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
@@ -14,11 +13,13 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Optional;
 
-public class PermissionDrop extends AbstractDrop {
+public final class PermissionDrop extends Drop {
 
-    private String permission;
-    private Drop drop1;
-    private Drop drop2;
+    public static final String TYPE = "PERMISSION";
+
+    private final String permission;
+    private final Drop drop1;
+    private final Drop drop2;
 
     public PermissionDrop(ConfigurationNode node) {
         super(node);
@@ -39,18 +40,21 @@ public class PermissionDrop extends AbstractDrop {
             drop1 = (Drop) GWMCratesUtils.createSuperObject(drop1Node, SuperObjectType.DROP);
             drop2 = (Drop) GWMCratesUtils.createSuperObject(drop2Node, SuperObjectType.DROP);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Permission Drop!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
-    public PermissionDrop(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
-                          int level, Optional<ItemStack> dropItem, Optional<Integer> fakeLevel,
-                          Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels,
+    public PermissionDrop(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency, Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview, Optional<Integer> level, Optional<Integer> fakeLevel, Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels, Optional<Long> weight, Optional<Long> fakeWeight, Map<String, Long> permissionWeights, Map<String, Long> permissionFakeWeights,
                           String permission, Drop drop1, Drop drop2) {
-        super("PERMISSION", id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels);
+        super(id, price, sellCurrency, dropItem, customName, showInPreview, level, fakeLevel, permissionLevels, permissionFakeLevels, weight, fakeWeight, permissionWeights, permissionFakeWeights);
         this.permission = permission;
         this.drop1 = drop1;
         this.drop2 = drop2;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -66,23 +70,11 @@ public class PermissionDrop extends AbstractDrop {
         return permission;
     }
 
-    public void setPermission(String permission) {
-        this.permission = permission;
-    }
-
     public Drop getDrop1() {
         return drop1;
     }
 
-    public void setDrop1(Drop drop1) {
-        this.drop1 = drop1;
-    }
-
     public Drop getDrop2() {
         return drop2;
-    }
-
-    public void setDrop2(Drop drop2) {
-        this.drop2 = drop2;
     }
 }

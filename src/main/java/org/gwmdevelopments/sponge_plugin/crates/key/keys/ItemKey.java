@@ -4,6 +4,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.GiveableKey;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.economy.Currency;
@@ -11,9 +12,11 @@ import org.spongepowered.api.service.economy.Currency;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-public class ItemKey extends GiveableKey {
+public final class ItemKey extends GiveableKey {
 
-    private ItemStack item;
+    public static final String TYPE = "ITEM";
+
+    private final ItemStack item;
 
     public ItemKey(ConfigurationNode node) {
         super(node);
@@ -22,17 +25,22 @@ public class ItemKey extends GiveableKey {
             if (itemNode.isVirtual()) {
                 throw new IllegalArgumentException("ITEM node does not exist!");
             }
-            item = GWMCratesUtils.parseItem(itemNode);
+            item = GWMLibraryUtils.parseItem(itemNode);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Item Key!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public ItemKey(Optional<String> id, boolean doNotWithdraw,
                    Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                    ItemStack item) {
-        super("ITEM", id, doNotWithdraw, price, sellCurrency, doNotAdd);
+        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.item = item;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -55,10 +63,6 @@ public class ItemKey extends GiveableKey {
     }
 
     public ItemStack getItem() {
-        return item;
-    }
-
-    public void setItem(ItemStack item) {
-        this.item = item;
+        return item.copy();
     }
 }

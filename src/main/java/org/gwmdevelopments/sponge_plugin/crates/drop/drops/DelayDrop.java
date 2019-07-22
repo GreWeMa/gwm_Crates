@@ -2,7 +2,6 @@ package org.gwmdevelopments.sponge_plugin.crates.drop.drops;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
-import org.gwmdevelopments.sponge_plugin.crates.drop.AbstractDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
@@ -17,10 +16,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-public class DelayDrop extends AbstractDrop {
+public final class DelayDrop extends Drop {
 
-    private Drop childDrop;
-    private long delay;
+    public static final String TYPE = "DELAY";
+
+    private final Drop childDrop;
+    private final long delay;
 
     public DelayDrop(ConfigurationNode node) {
         super(node);
@@ -30,39 +31,26 @@ public class DelayDrop extends AbstractDrop {
             if (childDropNode.isVirtual()) {
                 throw new IllegalArgumentException("CHILD_DROP node does not exist!");
             }
-            childDrop = (Drop) GWMCratesUtils.createSuperObject(childDropNode, SuperObjectType.DROP);
             if (delayNode.isVirtual()) {
                 throw new IllegalArgumentException("DELAY node does not exist!");
             }
+            childDrop = (Drop) GWMCratesUtils.createSuperObject(childDropNode, SuperObjectType.DROP);
             delay = delayNode.getLong();
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Delay Drop!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
-    public DelayDrop(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency,
-                     int level, Optional<ItemStack> dropItem, Optional<Integer> fakeLevel,
-                     Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels,
-                     Drop childDrop, int delay) {
-        super("DELAY", id, price, sellCurrency, level, dropItem, fakeLevel, permissionLevels, permissionFakeLevels);
+    public DelayDrop(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency, Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview, Optional<Integer> level, Optional<Integer> fakeLevel, Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels, Optional<Long> weight, Optional<Long> fakeWeight, Map<String, Long> permissionWeights, Map<String, Long> permissionFakeWeights,
+                     Drop childDrop, long delay) {
+        super(id, price, sellCurrency, dropItem, customName, showInPreview, level, fakeLevel, permissionLevels, permissionFakeLevels, weight, fakeWeight, permissionWeights, permissionFakeWeights);
         this.childDrop = childDrop;
         this.delay = delay;
     }
 
-    public Drop getChildDrop() {
-        return childDrop;
-    }
-
-    public void setChildDrop(Drop childDrop) {
-        this.childDrop = childDrop;
-    }
-
-    public long getDelay() {
-        return delay;
-    }
-
-    public void setDelay(long delay) {
-        this.delay = delay;
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -70,5 +58,13 @@ public class DelayDrop extends AbstractDrop {
         Sponge.getScheduler().createTaskBuilder().delay(delay, TimeUnit.MILLISECONDS).
                 execute(() -> childDrop.give(player, amount)).
                 submit(GWMCrates.getInstance());
+    }
+
+    public Drop getChildDrop() {
+        return childDrop;
+    }
+
+    public long getDelay() {
+        return delay;
     }
 }

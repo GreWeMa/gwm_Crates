@@ -5,7 +5,7 @@ import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenedCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager;
+import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
@@ -13,14 +13,21 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Optional;
 
-public class NoGuiOpenManager extends AbstractOpenManager {
+public final class NoGuiOpenManager extends OpenManager {
+
+    public static final String TYPE = "NO-GUI";
 
     public NoGuiOpenManager(ConfigurationNode node) {
         super(node);
     }
 
     public NoGuiOpenManager(Optional<String> id, Optional<SoundType> openSound) {
-        super("NO-GUI", id, openSound);
+        super(id, openSound);
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -30,7 +37,7 @@ public class NoGuiOpenManager extends AbstractOpenManager {
         if (openEvent.isCancelled()) {
             return;
         }
-        Drop drop = GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, false);
+        Drop drop = manager.getRandomManager().choose(manager.getDrops(), player, false);
         drop.give(player, 1);
         getOpenSound().ifPresent(open_sound -> player.playSound(open_sound, player.getLocation().getPosition(), 1.));
         PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, drop);

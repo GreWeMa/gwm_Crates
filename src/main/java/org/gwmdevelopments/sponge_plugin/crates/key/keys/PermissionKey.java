@@ -2,14 +2,16 @@ package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
-import org.gwmdevelopments.sponge_plugin.crates.key.AbstractKey;
+import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Optional;
 
-public class PermissionKey extends AbstractKey {
+public final class PermissionKey extends Key {
 
-    private String permission;
+    public static final String TYPE = "PERMISSION";
+
+    private final String permission;
 
     public PermissionKey(ConfigurationNode node) {
         super(node);
@@ -20,14 +22,19 @@ public class PermissionKey extends AbstractKey {
             }
             permission = permissionNode.getString();
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Permission Key!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
-    public PermissionKey(String type, Optional<String> id,
+    public PermissionKey(Optional<String> id,
                          String permission) {
-        super(type, id, true);
+        super(id, true);
         this.permission = permission;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -41,9 +48,5 @@ public class PermissionKey extends AbstractKey {
 
     public String getPermission() {
         return permission;
-    }
-
-    public void setPermission(String permission) {
-        this.permission = permission;
     }
 }

@@ -47,11 +47,11 @@ public class OpenCommand implements CommandExecutor {
             return CommandResult.success();
         }
         if (caze.get(player) < 1) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_CASE", src, null));
+            GWMCratesUtils.sendCaseMissingMessage(src, manager);
             return CommandResult.success();
         }
         if (key.get(player) < 1) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_KEY", src, null));
+            GWMCratesUtils.sendKeyMissingMessage(src, manager);
             return CommandResult.success();
         }
         caze.withdraw(player, 1, false);

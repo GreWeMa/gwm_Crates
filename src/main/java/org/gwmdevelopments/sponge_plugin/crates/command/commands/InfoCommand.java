@@ -1,12 +1,10 @@
 package org.gwmdevelopments.sponge_plugin.crates.command.commands;
 
-import me.rojo8399.placeholderapi.PlaceholderService;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObject;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -35,22 +33,26 @@ public class InfoCommand implements CommandExecutor {
         List<Drop> drops = manager.getDrops();
         for (int i = 0; i < drops.size(); i++) {
             Drop drop = drops.get(i);
+            String id = drop.id().orElse("Unknown ID");
+            String customName = drop.getCustomName().orElse(id);
             if (i != drops.size() - 1) {
                 dropsBuilder.append(GWMCrates.getInstance().getLanguage().getPhrase("DROP_LIST_FORMAT",
-                        new Pair<>("%ID%", drop.getId().orElse("Unknown ID"))));
+                        new Pair<>("%ID%", id),
+                        new Pair<>("%CUSTOM_NAME%", customName)));
             } else {
                 dropsBuilder.append(GWMCrates.getInstance().getLanguage().getPhrase("LAST_DROP_LIST_FORMAT",
-                        new Pair<>("%ID%", drop.getId().orElse("Unknown ID"))));
+                        new Pair<>("%ID%", id),
+                        new Pair<>("%CUSTOM_NAME%", customName)));
             }
         }
         src.sendMessages(GWMCrates.getInstance().getLanguage().getTextList("MANAGER_INFO_MESSAGE", src, null,
                 new Pair<>("%MANAGER_ID%", manager.getId()),
                 new Pair<>("%MANAGER_NAME%", manager.getName()),
-                new Pair<>("%CASE_TYPE%", manager.getCase().getType()),
-                new Pair<>("%KEY_TYPE%", manager.getKey().getType()),
-                new Pair<>("%OPEN_MANAGER_TYPE%", manager.getOpenManager().getType()),
+                new Pair<>("%CASE_TYPE%", manager.getCase().type()),
+                new Pair<>("%KEY_TYPE%", manager.getKey().type()),
+                new Pair<>("%OPEN_MANAGER_TYPE%", manager.getOpenManager().type()),
                 new Pair<>("%PREVIEW_TYPE%", manager.getPreview().
-                        map(SuperObject::getType).orElse("No preview")),
+                        map(SuperObject::type).orElse("No preview")),
                 new Pair<>("%SEND_OPEN_MESSAGE%", manager.isSendOpenMessage()),
                 new Pair<>("%CUSTOM_OPEN_MESSAGE%", manager.getCustomOpenMessage().
                         orElse("No custom open message")),

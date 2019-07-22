@@ -9,10 +9,11 @@ import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenedCrateEvent;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.open_manager.AbstractOpenManager;
+import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.DecorativeDropChangeRunnable;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
+import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
@@ -29,7 +30,9 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.*;
 
-public class FirstOpenManager extends AbstractOpenManager {
+public final class FirstOpenManager extends OpenManager {
+
+    public static final String TYPE = "FIRST";
 
     public static final Map<Container, Pair<FirstOpenManager, Manager>> FIRST_GUI_CONTAINERS = new HashMap<>();
     public static final Set<Container> SHOWN_GUI = new HashSet<>();
@@ -58,16 +61,16 @@ public class FirstOpenManager extends AbstractOpenManager {
         DECORATIVE_ITEMS_INDICES = Collections.unmodifiableList(decorativeItemsIndices);
     }
 
-    private Optional<Text> displayName = Optional.empty();
-    private List<ItemStack> decorativeItems;
-    private List<Integer> scrollDelays = DEFAULT_SCROLL_DELAYS;
-    private boolean clearDecorativeItems;
-    private boolean clearOtherDrops;
-    private int closeDelay;
-    private boolean forbidClose;
-    private Optional<SoundType> scrollSound = Optional.empty();
-    private Optional<SoundType> winSound = Optional.empty();
-    private Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode = Optional.empty();
+    private final Optional<Text> displayName;
+    private final List<ItemStack> decorativeItems;
+    private final List<Integer> scrollDelays;
+    private final boolean clearDecorativeItems;
+    private final boolean clearOtherDrops;
+    private final int closeDelay;
+    private final boolean forbidClose;
+    private final Optional<SoundType> scrollSound;
+    private final Optional<SoundType> winSound;
+    private final Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode;
 
     public FirstOpenManager(ConfigurationNode node) {
         super(node);
@@ -84,15 +87,20 @@ public class FirstOpenManager extends AbstractOpenManager {
             ConfigurationNode decorativeItemsChangeModeNode = node.getNode("DECORATIVE_ITEMS_CHANGE_MODE");
             if (!displayNameNode.isVirtual()) {
                 displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
+            } else {
+                displayName = Optional.empty();
             }
-            decorativeItems = new ArrayList<>();
+            List<ItemStack> tempDecorativeItems = new ArrayList<>();
             if (!decorativeItemsNode.isVirtual()) {
                 for (ConfigurationNode decorativeItemNode : decorativeItemsNode.getChildrenList()) {
-                    decorativeItems.add(GWMCratesUtils.parseItem(decorativeItemNode));
+                    tempDecorativeItems.add(GWMLibraryUtils.parseItem(decorativeItemNode));
                 }
             }
+            decorativeItems = Collections.unmodifiableList(tempDecorativeItems);
             if (!scrollDelaysNode.isVirtual()) {
-                scrollDelays = scrollDelaysNode.getList(TypeToken.of(Integer.class));
+                scrollDelays = Collections.unmodifiableList(scrollDelaysNode.getList(TypeToken.of(Integer.class)));
+            } else {
+                scrollDelays = DEFAULT_SCROLL_DELAYS;
             }
             clearDecorativeItems = clearDecorativeItemsNode.getBoolean(false);
             clearOtherDrops = clearOtherDropsNode.getBoolean(true);
@@ -100,15 +108,21 @@ public class FirstOpenManager extends AbstractOpenManager {
             forbidClose = forbidCloseNode.getBoolean(true);
             if (!scrollSoundNode.isVirtual()) {
                 scrollSound = Optional.of(scrollSoundNode.getValue(TypeToken.of(SoundType.class)));
+            } else {
+                scrollSound = Optional.empty();
             }
             if (!winSoundNode.isVirtual()) {
                 winSound = Optional.of(winSoundNode.getValue(TypeToken.of(SoundType.class)));
+            } else {
+                winSound = Optional.empty();
             }
             if (!decorativeItemsChangeModeNode.isVirtual()) {
                 decorativeItemsChangeMode = Optional.of((DecorativeItemsChangeMode) GWMCratesUtils.createSuperObject(decorativeItemsChangeModeNode, SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE));
+            } else {
+                decorativeItemsChangeMode = Optional.empty();
             }
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create First Open Manager!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
@@ -117,7 +131,7 @@ public class FirstOpenManager extends AbstractOpenManager {
                             boolean clearDecorativeItems, boolean clearOtherDrops,
                             int closeDelay, boolean forbidClose, Optional<SoundType> scrollSound,
                             Optional<SoundType> winSound, Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode) {
-        super("FIRST", id, openSound);
+        super(id, openSound);
         this.displayName = displayName;
         this.decorativeItems = decorativeItems;
         this.scrollDelays = scrollDelays;
@@ -128,6 +142,11 @@ public class FirstOpenManager extends AbstractOpenManager {
         this.scrollSound = scrollSound;
         this.winSound = winSound;
         this.decorativeItemsChangeMode = decorativeItemsChangeMode;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -156,7 +175,7 @@ public class FirstOpenManager extends AbstractOpenManager {
         }
         for (int i = 10; i < 17; i++) {
             ordered.getSlot(new SlotIndex(i)).get().
-                    set(GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, true).
+                    set(manager.getRandomManager().choose(manager.getDrops(), player, true).
                             getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
         }
         Container container = player.openInventory(inventory).get();
@@ -179,7 +198,7 @@ public class FirstOpenManager extends AbstractOpenManager {
                             ordered.getSlot(new SlotIndex(j)).get().set(ordered.getSlot(new SlotIndex(j + 1)).get().peek().
                                     orElse(GWMCratesUtils.EMPTY_ITEM));
                         }
-                        Drop newDrop = GWMCratesUtils.chooseDropByLevel(manager.getDrops(), player, finalI != scrollDelays.size() - 5);
+                        Drop newDrop = manager.getRandomManager().choose(manager.getDrops(), player, finalI != scrollDelays.size() - 5);
                         dropList.add(newDrop);
                         ordered.getSlot(new SlotIndex(16)).get().set(newDrop.getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
                         scrollSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
@@ -227,79 +246,39 @@ public class FirstOpenManager extends AbstractOpenManager {
         return displayName;
     }
 
-    public void setDisplayName(Optional<Text> displayName) {
-        this.displayName = displayName;
-    }
-
     public List<ItemStack> getDecorativeItems() {
         return decorativeItems;
-    }
-
-    public void setDecorativeItems(List<ItemStack> decorativeItems) {
-        this.decorativeItems = decorativeItems;
     }
 
     public List<Integer> getScrollDelays() {
         return scrollDelays;
     }
 
-    public void setScrollDelays(List<Integer> scrollDelays) {
-        this.scrollDelays = scrollDelays;
-    }
-
     public boolean isClearDecorativeItems() {
         return clearDecorativeItems;
-    }
-
-    public void setClearDecorativeItems(boolean clearDecorativeItems) {
-        this.clearDecorativeItems = clearDecorativeItems;
     }
 
     public boolean isClearOtherDrops() {
         return clearOtherDrops;
     }
 
-    public void setClearOtherDrops(boolean clearOtherDrops) {
-        this.clearOtherDrops = clearOtherDrops;
-    }
-
     public int getCloseDelay() {
         return closeDelay;
-    }
-
-    public void setCloseDelay(int closeDelay) {
-        this.closeDelay = closeDelay;
     }
 
     public boolean isForbidClose() {
         return forbidClose;
     }
 
-    public void setForbidClose(boolean forbidClose) {
-        this.forbidClose = forbidClose;
-    }
-
     public Optional<SoundType> getScrollSound() {
         return scrollSound;
-    }
-
-    public void setScrollSound(Optional<SoundType> scrollSound) {
-        this.scrollSound = scrollSound;
     }
 
     public Optional<SoundType> getWinSound() {
         return winSound;
     }
 
-    public void setWinSound(Optional<SoundType> winSound) {
-        this.winSound = winSound;
-    }
-
     public Optional<DecorativeItemsChangeMode> getDecorativeItemsChangeMode() {
         return decorativeItemsChangeMode;
-    }
-
-    public void setDecorativeItemsChangeMode(Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode) {
-        this.decorativeItemsChangeMode = decorativeItemsChangeMode;
     }
 }

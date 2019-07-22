@@ -12,6 +12,10 @@
 
     <repositories>
         <repository>
+            <id>gwmdev</id>
+            <url>https://maven.gwm.dev</url>
+        </repository>
+        <repository>
             <id>sponge</id>
             <url>http://repo.spongepowered.org/maven</url>
         </repository>
@@ -39,7 +43,7 @@
         <dependency>
             <groupId>org.gwmdevelopments.sponge_plugin</groupId>
             <artifactId>library</artifactId>
-            <version>beta-1.4</version>
+            <version>beta-1.8</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

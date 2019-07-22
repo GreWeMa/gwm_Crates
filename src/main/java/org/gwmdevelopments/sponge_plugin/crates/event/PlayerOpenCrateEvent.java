@@ -5,9 +5,10 @@ import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.entity.living.humanoid.player.TargetPlayerEvent;
 import org.spongepowered.api.event.impl.AbstractEvent;
 
-public class PlayerOpenCrateEvent extends AbstractEvent implements Cancellable {
+public class PlayerOpenCrateEvent extends AbstractEvent implements TargetPlayerEvent, Cancellable {
 
     private final Player player;
     private final Manager manager;
@@ -33,7 +34,8 @@ public class PlayerOpenCrateEvent extends AbstractEvent implements Cancellable {
         return GWMCrates.getInstance().getCause();
     }
 
-    public Player getPlayer() {
+    @Override
+    public Player getTargetEntity() {
         return player;
     }
 

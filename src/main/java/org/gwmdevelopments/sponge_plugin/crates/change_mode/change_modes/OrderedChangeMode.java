@@ -1,7 +1,7 @@
 package org.gwmdevelopments.sponge_plugin.crates.change_mode.change_modes;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.change_mode.AbstractDecorativeItemsChangeMode;
+import org.gwmdevelopments.sponge_plugin.crates.change_mode.DecorativeItemsChangeMode;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.spongepowered.api.item.inventory.ItemStack;
 
@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class OrderedChangeMode extends AbstractDecorativeItemsChangeMode {
+public final class OrderedChangeMode extends DecorativeItemsChangeMode {
 
-    private boolean right;
+    public static final String TYPE = "ORDERED";
+
+    private final boolean right;
 
     public OrderedChangeMode(ConfigurationNode node) {
         super(node);
@@ -19,14 +21,19 @@ public class OrderedChangeMode extends AbstractDecorativeItemsChangeMode {
             ConfigurationNode rightNode = node.getNode("RIGHT");
             right = rightNode.getBoolean(false);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Ordered Decorative Items Change Mode!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public OrderedChangeMode(Optional<String> id, int changeDelay, List<Integer> ignoredIndices,
                              boolean right) {
-        super("ORDERED", id, changeDelay, ignoredIndices);
+        super(id, changeDelay, ignoredIndices);
         this.right = right;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -62,9 +69,5 @@ public class OrderedChangeMode extends AbstractDecorativeItemsChangeMode {
 
     public boolean isRight() {
         return right;
-    }
-
-    public void setRight(boolean right) {
-        this.right = right;
     }
 }

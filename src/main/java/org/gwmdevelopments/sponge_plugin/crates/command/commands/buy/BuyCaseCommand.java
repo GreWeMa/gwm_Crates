@@ -4,6 +4,7 @@ import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
 import org.gwmdevelopments.sponge_plugin.crates.util.Giveable;
+import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -43,7 +44,7 @@ public class BuyCaseCommand implements CommandExecutor {
             return CommandResult.success();
         }
         Giveable giveable = (Giveable) caze;
-        Optional<EconomyService> optionalEconomyService = GWMCrates.getInstance().getEconomyService();
+        Optional<EconomyService> optionalEconomyService = GWMLibrary.getInstance().getEconomyService();
         if (!optionalEconomyService.isPresent()) {
             player.sendMessage(GWMCrates.getInstance().getLanguage().getText("ECONOMY_SERVICE_NOT_FOUND", src, null));
             return CommandResult.success();

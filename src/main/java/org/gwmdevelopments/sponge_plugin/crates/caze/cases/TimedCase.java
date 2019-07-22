@@ -8,21 +8,32 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-public class TimedCase extends GiveableCase {
+public final class TimedCase extends GiveableCase {
 
-    private Map<UUID, Long> cache = new WeakHashMap<>();
+    public static final String TYPE = "TIMED";
 
-    private String virtualName;
-    private long delay;
+    public static final String SELECT_QUERY = "SELECT delay FROM timed_cases " +
+            "WHERE name = ? " +
+            "AND uuid = ?";
+
+    public static final String UPDATE_QUERY = "UPDATE timed_cases " +
+            "SET delay = ? " +
+            "WHERE name = ? " +
+            "AND uuid = ?";
+
+    public static final String INSERT_QUERY = "INSERT INTO timed_cases (name, uuid, delay) " +
+            "VALUES (?, ?, ?)";
+
+    private final Map<UUID, Long> cache = new WeakHashMap<>();
+
+    private final String virtualName;
+    private final long delay;
 
     public TimedCase(ConfigurationNode node) {
         super(node);
@@ -42,23 +53,32 @@ public class TimedCase extends GiveableCase {
             }
             delay = delayNode.getLong();
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Timed Case!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public TimedCase(Optional<String> id, boolean doNotWithdraw,
                      Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                      String virtualName, long delay) {
-        super("TIMED", id, doNotWithdraw, price, sellCurrency, doNotAdd);
+        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.virtualName = virtualName;
         this.delay = delay;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
     public void withdraw(Player player, int amount, boolean force) {
         if (!isDoNotWithdraw() || force) {
             if (GWMCrates.getInstance().isUseMySQLForTimedCases()) {
-                setSQL(player, true);
+                try {
+                    setSQL(player, true);
+                } catch (SQLException e) {
+                    throw new RuntimeException("Failed to set timed case \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + player.getUniqueId() + "\")!", e);
+                }
             } else {
                 setCfg(player, true);
             }
@@ -69,7 +89,11 @@ public class TimedCase extends GiveableCase {
     public void give(Player player, int amount, boolean force) {
         if (!isDoNotAdd() || force) {
             if (GWMCrates.getInstance().isUseMySQLForTimedCases()) {
-                setSQL(player, false);
+                try {
+                    setSQL(player, false);
+                } catch (SQLException e) {
+                    throw new RuntimeException("Failed to set timed case \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + player.getUniqueId() + "\")!", e);
+                }
             } else {
                 setCfg(player, false);
             }
@@ -86,48 +110,57 @@ public class TimedCase extends GiveableCase {
         }
     }
 
-    private void setSQL(Player player, boolean withdraw) {
+    private void setSQL(Player player, boolean withdraw) throws SQLException {
         UUID uuid = player.getUniqueId();
-        try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
-             Statement statement = connection.createStatement()) {
-            ResultSet set = statement.executeQuery("SELECT delay FROM timed_cases " +
-                    "WHERE uuid = '" + uuid + "' AND " +
-                    "name = '" + virtualName + "';");
-            if (set.next()) {
-                if (withdraw) {
-                    long expire = System.currentTimeMillis() + delay;
-                    cache.put(uuid, expire);
-                    statement.executeQuery("UPDATE timed_cases " +
-                            "SET delay = " + expire + " " +
-                            "WHERE uuid = '" + uuid + "' AND " +
-                            "name = '" + virtualName + "';");
-                } else {
-                    cache.put(uuid, 0L);
-                    statement.executeQuery("UPDATE timed_cases " +
-                            "SET delay = " + 0L + " " +
-                            "WHERE uuid = '" + uuid + "' AND " +
-                            "name = '" + virtualName + "';");
-                }
+        try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection()) {
+            long expire = withdraw ? System.currentTimeMillis() + delay : 0L;
+            if (hasValue(connection, uuid)) {
+                update(connection, uuid, delay);
             } else {
-                if (withdraw) {
-                    long expire = System.currentTimeMillis() + delay;
-                    cache.put(uuid, expire);
-                    statement.executeQuery("INSERT INTO timed_cases (uuid, name, delay) " +
-                            "VALUES ('" + uuid + "', '" + virtualName + "', " + expire + ");");
-                } else {
-                    cache.put(uuid, 0L);
-                    statement.executeQuery("INSERT INTO timed_cases (uuid, name, delay) " +
-                            "VALUES ('" + uuid + "', '" + virtualName + "', " + 0L + ");");
-                }
+                insert(connection, uuid, delay);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to set timed case \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
+            cache.put(uuid, delay);
+        }
+    }
+
+    private boolean hasValue(Connection connection, UUID uuid) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
+            statement.setString(1, virtualName);
+            statement.setString(2, uuid.toString());
+            ResultSet set = statement.executeQuery();
+            return set.next();
+        }
+    }
+
+    private void update(Connection connection, UUID uuid, long delay) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)) {
+            statement.setLong(1, delay);
+            statement.setString(2, virtualName);
+            statement.setString(3, uuid.toString());
+            statement.execute();
+        }
+    }
+
+    private void insert(Connection connection, UUID uuid, long delay) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(INSERT_QUERY)) {
+            statement.setString(1, virtualName);
+            statement.setString(2, uuid.toString());
+            statement.setLong(3, delay);
+            statement.execute();
         }
     }
 
     @Override
     public int get(Player player) {
-        return GWMCrates.getInstance().isUseMySQLForTimedCases() ? getSQL(player) : getCfg(player);
+        if (GWMCrates.getInstance().isUseMySQLForTimedCases()) {
+            try {
+                return getSQL(player);
+            } catch (SQLException e) {
+                throw new RuntimeException("Failed to get timed case \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + player.getUniqueId() + "\")!", e);
+            }
+        } else {
+            return getCfg(player);
+        }
     }
 
     private int getCfg(Player player) {
@@ -140,17 +173,17 @@ public class TimedCase extends GiveableCase {
         return System.currentTimeMillis() >= delay ? 1 : 0;
     }
 
-    private int getSQL(Player player) {
+    private int getSQL(Player player) throws SQLException {
         UUID uuid = player.getUniqueId();
         if (cache.containsKey(uuid)) {
             long delay = cache.get(uuid);
             return System.currentTimeMillis() >= delay ? 1 : 0;
         }
         try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
-             Statement statement = connection.createStatement()) {
-            ResultSet set = statement.executeQuery("SELECT delay FROM timed_cases " +
-                    "WHERE uuid = '" + uuid + "' AND " +
-                    "name = '" + virtualName + "';");
+             PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
+            statement.setString(1, virtualName);
+            statement.setString(2, uuid.toString());
+            ResultSet set = statement.executeQuery();
             if (set.next()) {
                 long delay = set.getLong(1);
                 cache.put(uuid, delay);
@@ -159,8 +192,6 @@ public class TimedCase extends GiveableCase {
                 cache.put(uuid, 0L);
                 return 1;
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to get timed case \"" + virtualName + "\" delay for player \"" + player.getName() + "\" (\"" + uuid + "\")!", e);
         }
     }
 
@@ -168,15 +199,7 @@ public class TimedCase extends GiveableCase {
         return virtualName;
     }
 
-    public void setVirtualName(String virtualName) {
-        this.virtualName = virtualName;
-    }
-
     public long getDelay() {
         return delay;
-    }
-
-    public void setDelay(long delay) {
-        this.delay = delay;
     }
 }

@@ -3,18 +3,21 @@ package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
-import org.gwmdevelopments.sponge_plugin.crates.key.AbstractKey;
+import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.weather.Weather;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class WorldWeatherKey extends AbstractKey {
+public final class WorldWeatherKey extends Key {
 
-    private boolean whitelistMode;
-    private List<Weather> weathers;
+    public static final String TYPE = "WORLD-WEATHER";
+
+    private final boolean whitelistMode;
+    private final List<Weather> weathers;
 
     public WorldWeatherKey(ConfigurationNode node) {
         super(node);
@@ -25,20 +28,26 @@ public class WorldWeatherKey extends AbstractKey {
                 throw new IllegalArgumentException("WEATHERS node does not exist!");
             }
             whitelistMode = whitelistModeNode.getBoolean(true);
-            weathers = new ArrayList<>();
+            List<Weather> tempWeathers = new ArrayList<>();
             for (ConfigurationNode weatherNode : weathersNode.getChildrenList()) {
-                weathers.add(weatherNode.getValue(TypeToken.of(Weather.class)));
+                tempWeathers.add(weatherNode.getValue(TypeToken.of(Weather.class)));
             }
+            weathers = Collections.unmodifiableList(tempWeathers);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create World Weather Key!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
-    public WorldWeatherKey(String type, Optional<String> id, boolean doNotWithdraw,
+    public WorldWeatherKey(Optional<String> id, boolean doNotWithdraw,
                            boolean whitelistMode, List<Weather> weathers) {
-        super(type, id, doNotWithdraw);
+        super(id, doNotWithdraw);
         this.whitelistMode = whitelistMode;
         this.weathers = weathers;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -52,5 +61,13 @@ public class WorldWeatherKey extends AbstractKey {
         } else {
             return weathers.contains(player.getLocation().getExtent().getWeather()) ? 0 : 1;
         }
+    }
+
+    public boolean isWhitelistMode() {
+        return whitelistMode;
+    }
+
+    public List<Weather> getWeathers() {
+        return weathers;
     }
 }

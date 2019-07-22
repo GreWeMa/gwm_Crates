@@ -5,7 +5,7 @@ import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.preview.AbstractPreview;
+import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.entity.living.player.Player;
@@ -20,16 +20,15 @@ import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-public class SecondGuiPreview extends AbstractPreview {
+public final class SecondGuiPreview extends Preview {
+
+    public static final String TYPE = "SECOND";
 
     public static final Map<Container, Pair<SecondGuiPreview, Manager>> SECOND_GUI_CONTAINERS = new HashMap<>();
 
-    private Optional<Text> displayName = Optional.empty();
+    private final Optional<Text> displayName;
 
     public SecondGuiPreview(ConfigurationNode node) {
         super(node);
@@ -37,15 +36,23 @@ public class SecondGuiPreview extends AbstractPreview {
             ConfigurationNode displayNameNode = node.getNode("DISPLAY_NAME");
             if (!displayNameNode.isVirtual()) {
                 displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
+            } else {
+                displayName = Optional.empty();
             }
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Second Gui Preview!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
-    public SecondGuiPreview(Optional<String> id, Optional<Text> displayName) {
-        super("SECOND", id);
+    public SecondGuiPreview(Optional<String> id, Optional<List<Drop>> customDrops,
+                            Optional<Text> displayName) {
+        super(id, customDrops);
         this.displayName = displayName;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -58,10 +65,13 @@ public class SecondGuiPreview extends AbstractPreview {
                 builder.property(InventoryTitle.PROPERTY_NAME, new InventoryTitle(title)));
         Inventory inventory = builder.build(GWMCrates.getInstance());
         OrderedInventory ordered = GWMCratesUtils.castToOrdered(inventory);
-        Iterator<Drop> drop_iterator = manager.getDrops().iterator();
+        Iterator<Drop> dropIterator = getCustomDrops().orElse(manager.getDrops()).
+                stream().
+                filter(Drop::isShowInPreview).
+                iterator();
         int size = 9 * dimension.getRows();
-        for (int i = 0; i < size && drop_iterator.hasNext();) {
-            Drop next = drop_iterator.next();
+        for (int i = 0; i < size && dropIterator.hasNext();) {
+            Drop next = dropIterator.next();
             Optional<ItemStack> optionalDropItem = next.getDropItem();
             if (!optionalDropItem.isPresent()) {
                 continue;
@@ -75,9 +85,5 @@ public class SecondGuiPreview extends AbstractPreview {
 
     public Optional<Text> getDisplayName() {
         return displayName;
-    }
-
-    public void setDisplayName(Optional<Text> displayName) {
-        this.displayName = displayName;
     }
 }

@@ -4,6 +4,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.caze.GiveableCase;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.economy.Currency;
@@ -11,10 +12,12 @@ import org.spongepowered.api.service.economy.Currency;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-public class ItemCase extends GiveableCase {
+public final class ItemCase extends GiveableCase {
 
-    private ItemStack item;
-    private boolean startPreviewOnLeftClick;
+    public static final String TYPE = "ITEM";
+
+    private final ItemStack item;
+    private final boolean startPreviewOnLeftClick;
 
     public ItemCase(ConfigurationNode node) {
         super(node);
@@ -24,19 +27,24 @@ public class ItemCase extends GiveableCase {
             if (item_node.isVirtual()) {
                 throw new IllegalArgumentException("ITEM node does not exist!");
             }
-            item = GWMCratesUtils.parseItem(item_node);
+            item = GWMLibraryUtils.parseItem(item_node);
             startPreviewOnLeftClick = startPreviewOnLeftClickNode.getBoolean(false);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Item Case!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public ItemCase(Optional<String> id, boolean doNotWithdraw,
                     Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                     ItemStack item, boolean startPreviewOnLeftClick) {
-        super("ITEM", id, doNotWithdraw, price, sellCurrency, doNotAdd);
+        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.item = item;
         this.startPreviewOnLeftClick = startPreviewOnLeftClick;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -62,15 +70,7 @@ public class ItemCase extends GiveableCase {
         return item.copy();
     }
 
-    public void setItem(ItemStack item) {
-        this.item = item;
-    }
-
     public boolean isStartPreviewOnLeftClick() {
         return startPreviewOnLeftClick;
-    }
-
-    public void setStartPreviewOnLeftClick(boolean startPreviewOnLeftClick) {
-        this.startPreviewOnLeftClick = startPreviewOnLeftClick;
     }
 }

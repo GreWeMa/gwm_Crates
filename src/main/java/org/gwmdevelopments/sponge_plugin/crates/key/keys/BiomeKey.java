@@ -3,18 +3,21 @@ package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
-import org.gwmdevelopments.sponge_plugin.crates.key.AbstractKey;
+import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.biome.BiomeType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class BiomeKey extends AbstractKey {
+public final class BiomeKey extends Key {
 
-    private boolean whitelistMode;
-    private List<BiomeType> biomes;
+    public static final String TYPE = "BIOME";
+
+    private final boolean whitelistMode;
+    private final List<BiomeType> biomes;
 
     public BiomeKey(ConfigurationNode node) {
         super(node);
@@ -25,20 +28,26 @@ public class BiomeKey extends AbstractKey {
                 throw new IllegalArgumentException("BIOMES node does not exist!");
             }
             whitelistMode = whitelistModeNode.getBoolean(true);
-            biomes = new ArrayList<>();
+            List<BiomeType> tempBiomes = new ArrayList<>();
             for (ConfigurationNode biomeNode : biomesNode.getChildrenList()) {
-                biomes.add(biomeNode.getValue(TypeToken.of(BiomeType.class)));
+                tempBiomes.add(biomeNode.getValue(TypeToken.of(BiomeType.class)));
             }
+            biomes = Collections.unmodifiableList(tempBiomes);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Biome Key!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
-    public BiomeKey(String type, Optional<String> id, boolean doNotWithdraw,
+    public BiomeKey(Optional<String> id, boolean doNotWithdraw,
                     boolean whitelistMode, List<BiomeType> biomes) {
-        super(type, id, doNotWithdraw);
+        super(id, doNotWithdraw);
         this.whitelistMode = whitelistMode;
         this.biomes = biomes;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -52,5 +61,13 @@ public class BiomeKey extends AbstractKey {
         } else {
             return biomes.contains(player.getLocation().getBiome()) ? 0 : 1;
         }
+    }
+
+    public boolean isWhitelistMode() {
+        return whitelistMode;
+    }
+
+    public List<BiomeType> getBiomes() {
+        return biomes;
     }
 }

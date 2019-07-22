@@ -1,31 +1,25 @@
 package org.gwmdevelopments.sponge_plugin.crates.util;
 
-import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.SimpleConfigurationNode;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
-import org.gwmdevelopments.sponge_plugin.crates.caze.cases.BlockCase;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.CommandsDrop;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.EmptyDrop;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.Animation1OpenManager;
-import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
-import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.ConsoleSource;
-import org.spongepowered.api.data.DataContainer;
-import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.enchantment.Enchantment;
-import org.spongepowered.api.item.enchantment.EnchantmentType;
 import org.spongepowered.api.item.inventory.*;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
@@ -33,8 +27,6 @@ import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -42,8 +34,11 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.sql.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 public final class GWMCratesUtils {
 
@@ -51,8 +46,31 @@ public final class GWMCratesUtils {
     }
 
     public static final ItemStack EMPTY_ITEM = ItemStack.of(ItemTypes.NONE, 0);
-    public static final Drop EMPTY_DROP = new EmptyDrop(Optional.empty(), 1,
-            Optional.empty(), Optional.empty(), Collections.EMPTY_MAP, Collections.EMPTY_MAP);
+    public static final Drop EMPTY_DROP = new EmptyDrop();
+    public static final Pattern ID_PATTERN = Pattern.compile("[a-z]([-_]?[a-z0-9])*");
+
+    public static void loadManager(File file, boolean force) {
+        try {
+            ConfigurationLoader<CommentedConfigurationNode> managerConfigurationLoader =
+                    HoconConfigurationLoader.builder().setFile(file).build();
+            ConfigurationNode managerNode = managerConfigurationLoader.load();
+            if (force || managerNode.getNode("LOAD").getBoolean(true)) {
+                Manager manager = new Manager(managerNode);
+                for (Manager createdManager : GWMCrates.getInstance().getCreatedManagers()) {
+                    if (manager.getId().equals(createdManager.getId())) {
+                        GWMCrates.getInstance().getLogger().warn("Manager from file \"" + GWMCratesUtils.getManagerRelativePath(file) + "\" is not loaded because its ID is not unique!");
+                        return;
+                    }
+                }
+                GWMCrates.getInstance().getCreatedManagers().add(manager);
+                GWMCrates.getInstance().getLogger().info("Manager \"" + manager.getId() + "\" (\"" + manager.getName() + "\") from file \"" + GWMCratesUtils.getManagerRelativePath(file) + "\" successfully loaded!");
+            } else {
+                GWMCrates.getInstance().getLogger().info("Skipping manager from file \"" + GWMCratesUtils.getManagerRelativePath(file) + "\"!");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static Optional<Currency> getCurrencyById(EconomyService economyService, String id) {
         for (Currency currency : economyService.getCurrencies()) {
@@ -61,35 +79,6 @@ public final class GWMCratesUtils {
             }
         }
         return Optional.empty();
-    }
-
-    public static void deleteHolograms() {
-        if (!GWMLibrary.getInstance().getHologramsService().isPresent()) {
-            return;
-        }
-        GWMCrates.getInstance().getCreatedManagers().stream().
-                filter(manager -> manager.getCase() instanceof BlockCase).
-                map(manager -> (BlockCase) manager.getCase()).
-                forEach(caze -> caze.getCreatedHolograms().ifPresent(holograms -> holograms.forEach(hologram -> {
-                    try {
-                        Location<World> location = caze.getLocation();
-                        location.getExtent().loadChunk(location.getChunkPosition(), true);
-                        hologram.remove();
-                    } catch (Exception e) {
-                        GWMCrates.getInstance().getLogger().warn("Failed to remove hologram!", e);
-                    }
-                })));
-        Animation1OpenManager.PLAYERS_OPENING_ANIMATION1.values().forEach(information -> {
-            information.getLocations().keySet().forEach(location ->
-                    location.getExtent().loadChunk(location.getChunkPosition(), true));
-            information.getHolograms().forEach(hologram -> {
-                try {
-                    hologram.remove();
-                } catch (Exception e) {
-                    GWMCrates.getInstance().getLogger().warn("Failed to remove hologram (ANIMATION1)!", e);
-                }
-            });
-        });
     }
 
     public static void asyncImportToMySQL() {
@@ -349,82 +338,6 @@ public final class GWMCratesUtils {
         GWMCrates.getInstance().getCrateOpenDelays().put(uuid, System.currentTimeMillis() + GWMCrates.getInstance().getCrateOpenDelay());
     }
 
-    public static ItemStack parseItem(ConfigurationNode node) {
-        try {
-            ConfigurationNode itemTypeNode = node.getNode("ITEM_TYPE");
-            ConfigurationNode quantityNode = node.getNode("QUANTITY");
-            ConfigurationNode subIdNode = node.getNode("SUB_ID");
-            ConfigurationNode nbtNode = node.getNode("NBT");
-            ConfigurationNode durabilityNode = node.getNode("DURABILITY");
-            ConfigurationNode displayNameNode = node.getNode("DISPLAY_NAME");
-            ConfigurationNode loreNode = node.getNode("LORE");
-            ConfigurationNode enchantmentsNode = node.getNode("ENCHANTMENTS");
-            ConfigurationNode hideEnchantmentsNode = node.getNode("HIDE_ENCHANTMENTS");
-            if (itemTypeNode.isVirtual()) {
-                throw new IllegalArgumentException("ITEM_TYPE node does not exist!");
-            }
-            //Mega-shit-code start
-            ConfigurationNode tempNode = SimpleConfigurationNode.root();
-            tempNode.getNode("ItemType").setValue(itemTypeNode.getString());
-            tempNode.getNode("UnsafeDamage").setValue(subIdNode.getInt(0));
-            tempNode.getNode("Count").setValue(quantityNode.getInt(1));
-            ItemStack item = tempNode.getValue(TypeToken.of(ItemStack.class));
-            //Mega-shit-code end; Another not good code start
-            if (!nbtNode.isVirtual()) {
-                LinkedHashMap nbtMap = (LinkedHashMap) nbtNode.getValue();
-                if (item.toContainer().get(DataQuery.of("UnsafeData")).isPresent()) {
-                    Map unsafeDataMap = item.toContainer().getMap(DataQuery.of("UnsafeData")).get();
-                    nbtMap.putAll(unsafeDataMap);
-                }
-                DataContainer container = item.toContainer().set(DataQuery.of("UnsafeData"), nbtMap);
-                item = ItemStack.builder().fromContainer(container).build();
-            }
-            //Another not good code end
-            if (!durabilityNode.isVirtual()) {
-                int durability = durabilityNode.getInt();
-                item.offer(Keys.ITEM_DURABILITY, durability);
-            }
-            if (!displayNameNode.isVirtual()) {
-                Text displayName = TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString());
-                item.offer(Keys.DISPLAY_NAME, displayName);
-            }
-            if (!loreNode.isVirtual()) {
-                List<Text> lore = loreNode.getList(TypeToken.of(String.class)).stream().
-                        map(TextSerializers.FORMATTING_CODE::deserialize).
-                        collect(Collectors.toList());
-                item.offer(Keys.ITEM_LORE, lore);
-            }
-            if (!enchantmentsNode.isVirtual()) {
-                List<Enchantment> itemEnchantments = new ArrayList<>();
-                for (ConfigurationNode enchantment_node : enchantmentsNode.getChildrenList()) {
-                    itemEnchantments.add(parseEnchantment(enchantment_node));
-                }
-                item.offer(Keys.ITEM_ENCHANTMENTS, itemEnchantments);
-            }
-            if (!hideEnchantmentsNode.isVirtual()) {
-                item.offer(Keys.HIDE_ENCHANTMENTS, hideEnchantmentsNode.getBoolean());
-            }
-            return item;
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to parse item!", e);
-        }
-    }
-
-    public static Enchantment parseEnchantment(ConfigurationNode node) {
-        ConfigurationNode enchantmentNode = node.getNode("ENCHANTMENT");
-        ConfigurationNode levelNode = node.getNode("LEVEL");
-        if (enchantmentNode.isVirtual()) {
-            throw new IllegalArgumentException("ENCHANTMENT node does not exist!");
-        }
-        try {
-            EnchantmentType type = enchantmentNode.getValue(TypeToken.of(EnchantmentType.class));
-            int level = levelNode.getInt(1);
-            return Enchantment.of(type, level);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to parse enchantment!", e);
-        }
-    }
-
     public static CommandsDrop.ExecutableCommand parseCommand(ConfigurationNode node) {
         ConfigurationNode commandNode = node.getNode("COMMAND");
         { //Backward compatibility
@@ -440,9 +353,14 @@ public final class GWMCratesUtils {
         String command = commandNode.getString();
         breakpoint:
         { //Backward compatibility
-            if (!command.contains("")) {
-                break breakpoint;
-            }
+            //What the hell is this? How much did I drink?
+            //This is always false, so I think it's safe to remove this code.
+            //But maybe one day I will remember what it was here for, so I'll just comment it out for now.
+            //Never, just NEVER write code while you're drunk... It's a really bad idea...
+            //
+            //if (!command.contains("")) {
+            //    break breakpoint;
+            //}
             String[] splited = command.split(" ");
             if (splited.length < 5) {
                 break breakpoint;
@@ -492,46 +410,6 @@ public final class GWMCratesUtils {
         int yTo = locationTo.getBlockY();
         int zTo = locationTo.getBlockZ();
         return xFrom != xTo || zFrom != zTo || (ySensitive && yFrom != yTo);
-    }
-
-    public static Drop chooseDropByLevel(Iterable<Drop> drops, Player player, boolean fake) {
-        Map<Integer, List<Drop>> sortedDrops = new HashMap<>();
-        for (Drop drop : drops) {
-            boolean foundByPermission = false;
-            for (Map.Entry<String, Integer> entry : fake ?
-                    drop.getPermissionFakeLevels().entrySet() : drop.getPermissionLevels().entrySet()) {
-                String permission = entry.getKey();
-                int permissionLevel = entry.getValue();
-                if (player.hasPermission(permission)) {
-                    if (sortedDrops.containsKey(permissionLevel)) {
-                        sortedDrops.get(permissionLevel).add(drop);
-                        foundByPermission = true;
-                        break;
-                    } else {
-                        List<Drop> list = new ArrayList<>();
-                        list.add(drop);
-                        sortedDrops.put(permissionLevel, list);
-                        foundByPermission = true;
-                        break;
-                    }
-                }
-            }
-            if (!foundByPermission) {
-                int level = fake ? drop.getFakeLevel().orElse(drop.getLevel()) : drop.getLevel();
-                if (sortedDrops.containsKey(level)) {
-                    sortedDrops.get(level).add(drop);
-                } else {
-                    List<Drop> list = new ArrayList<>();
-                    list.add(drop);
-                    sortedDrops.put(level, list);
-                }
-            }
-        }
-        int level;
-        while (!sortedDrops.containsKey(level = GWMLibraryUtils.getRandomIntLevel())) {
-        }
-        List<Drop> actualDrops = sortedDrops.get(level);
-        return actualDrops.get(new Random().nextInt(actualDrops.size()));
     }
 
     public static void addItemStack(Player player, ItemStack item, int amount) {
@@ -650,7 +528,7 @@ public final class GWMCratesUtils {
             Constructor<? extends SuperObject> superObjectConstructor = superObjectClass.getConstructor(ConfigurationNode.class);
             return superObjectConstructor.newInstance(node);
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Super Object \"" + superObjectType + "\" with type \"" + type + "\" and ID \"" + id + "\"!", e);
+            throw new SSOCreationException(superObjectType, type, e);
         }
     }
 
@@ -665,7 +543,7 @@ public final class GWMCratesUtils {
 
     public static Optional<SuperObject> getSavedSuperObject(String savedSuperObjectId) {
         for (SuperObject superObject : GWMCrates.getInstance().getSavedSuperObjects().values()) {
-            if (superObject.getId().isPresent() && superObject.getId().get().equals(savedSuperObjectId)) {
+            if (superObject.id().isPresent() && superObject.id().get().equals(savedSuperObjectId)) {
                 return Optional.of(superObject);
             }
         }
@@ -710,5 +588,19 @@ public final class GWMCratesUtils {
 
     public static Path getManagerRelativePath(File managerFile) {
         return GWMCrates.getInstance().getManagersDirectory().toPath().relativize(managerFile.toPath());
+    }
+
+    public static void sendCaseMissingMessage(CommandSource source, Manager manager) {
+        if (manager.isSendCaseMissingMessage()) {
+            source.sendMessage(manager.getCustomCaseMissingMessage().
+                    orElse(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_CASE", source, null)));
+        }
+    }
+
+    public static void sendKeyMissingMessage(CommandSource source, Manager manager) {
+        if (manager.isSendKeyMissingMessage()) {
+            source.sendMessage(manager.getCustomKeyMissingMessage().
+                    orElse(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_KEY", source, null)));
+        }
     }
 }

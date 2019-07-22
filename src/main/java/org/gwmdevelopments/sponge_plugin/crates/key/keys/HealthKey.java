@@ -10,9 +10,11 @@ import org.spongepowered.api.service.economy.Currency;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-public class HealthKey extends GiveableKey {
+public final class HealthKey extends GiveableKey {
 
-    private double health;
+    public static final String TYPE = "HEALTH";
+
+    private final double health;
 
     public HealthKey(ConfigurationNode node) {
         super(node);
@@ -23,15 +25,20 @@ public class HealthKey extends GiveableKey {
             }
             health = healthNode.getDouble();
         } catch (Exception e) {
-            throw new SSOCreationException("Failed to create Health Key!", e);
+            throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
-    public HealthKey(String type, Optional<String> id, boolean doNotWithdraw,
+    public HealthKey(Optional<String> id, boolean doNotWithdraw,
                      Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
                      double health) {
-        super(type, id, doNotWithdraw, price, sellCurrency, doNotAdd);
+        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
         this.health = health;
+    }
+
+    @Override
+    public String type() {
+        return TYPE;
     }
 
     @Override
@@ -48,7 +55,7 @@ public class HealthKey extends GiveableKey {
     @Override
     public void give(Player player, int amount, boolean force) {
         if (!isDoNotAdd() || force) {
-            double value = player.get(Keys.HEALTH).orElse(0.D) + (health * amount);
+            double value = player.get(Keys.HEALTH).orElse(0.0D) + (health * amount);
             double max = player.get(Keys.MAX_HEALTH).orElse(20.0D);
             if (value > max) {
                 value = max;
@@ -59,6 +66,10 @@ public class HealthKey extends GiveableKey {
 
     @Override
     public int get(Player player) {
-        return player.get(Keys.HEALTH).orElse(0.0D) >= health ? 1 : 0;
+        return (int) (player.get(Keys.HEALTH).orElse(0.0D) / health);
+    }
+
+    public double getHealth() {
+        return health;
     }
 }
