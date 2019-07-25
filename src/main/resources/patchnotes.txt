@@ -1,3 +1,8 @@
+v.beta-3.11
+1. Add 'WORLD' Key.
+2. Add 'WORLD' parameter to 'WORLD-TIME' Key.
+3. Add 'WORLD' parameter to 'WORLD-WEATHER' Key.
+
 v. beta-3.10.2
 1. Code refactoring
 2. Update message for IdFormatException

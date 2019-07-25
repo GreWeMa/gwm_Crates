@@ -57,7 +57,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.10.2",
+        version = "beta-3.11",
         description = "Universal crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -69,7 +69,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 10, 2);
+    public static final Version VERSION = new Version("beta", 3, 11);
 
     private static GWMCrates instance = null;
 
@@ -308,6 +308,7 @@ public final class GWMCrates extends SpongePlugin {
         registrationEvent.register(SuperObjectType.KEY, HealthKey.TYPE, HealthKey.class, Optional.empty());
         registrationEvent.register(SuperObjectType.KEY, FoodKey.TYPE, FoodKey.class, Optional.empty());
         registrationEvent.register(SuperObjectType.KEY, BiomeKey.TYPE, BiomeKey.class, Optional.empty());
+        registrationEvent.register(SuperObjectType.KEY, WorldKey.TYPE, WorldKey.class, Optional.empty());
         registrationEvent.register(SuperObjectType.KEY, WorldTimeKey.TYPE, WorldTimeKey.class, Optional.empty());
         registrationEvent.register(SuperObjectType.KEY, WorldWeatherKey.TYPE, WorldWeatherKey.class, Optional.empty());
         registrationEvent.register(SuperObjectType.KEY, BoundariesKey.TYPE, BoundariesKey.class, Optional.empty());
