@@ -3,7 +3,9 @@ package org.gwmdevelopments.sponge_plugin.crates.key.keys;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.key.Key;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.world.World;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,12 +18,14 @@ public final class WorldTimeKey extends Key {
 
     private final boolean whitelistMode;
     private final Map<Integer, Integer> timeValues;
+    private final Optional<World> world;
 
     public WorldTimeKey(ConfigurationNode node) {
         super(node);
         try {
             ConfigurationNode whitelistModeNode = node.getNode("WHITELIST_MODE");
             ConfigurationNode timeValuesNode = node.getNode("TIME_VALUES");
+            ConfigurationNode worldNode = node.getNode("WORLD");
             if (timeValuesNode.isVirtual()) {
                 throw new IllegalArgumentException("TIME_VALUES node does not exist!");
             }
@@ -33,16 +37,26 @@ public final class WorldTimeKey extends Key {
                 tempTimeValues.put(key, value);
             }
             timeValues = Collections.unmodifiableMap(tempTimeValues);
+            if (!worldNode.isVirtual()) {
+                String worldName = worldNode.getString();
+                world = Sponge.getServer().getWorld(worldName);
+                if (!world.isPresent()) {
+                    throw new IllegalArgumentException("WORLD \"" + worldNode + "\" does not exist!");
+                }
+            } else {
+                world = Optional.empty();
+            }
         } catch (Exception e) {
             throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public WorldTimeKey(Optional<String> id, boolean doNotWithdraw,
-                        boolean whitelistMode, Map<Integer, Integer> timeValues) {
+                        boolean whitelistMode, Map<Integer, Integer> timeValues, Optional<World> world) {
         super(id, doNotWithdraw);
         this.whitelistMode = whitelistMode;
         this.timeValues = timeValues;
+        this.world = world;
     }
 
     @Override
@@ -56,7 +70,7 @@ public final class WorldTimeKey extends Key {
 
     @Override
     public int get(Player player) {
-        long time = player.getWorld().getProperties().getWorldTime() % 2400;
+        long time = world.orElse(player.getWorld()).getProperties().getWorldTime() % 2400;
         if (whitelistMode) {
             for (Map.Entry<Integer, Integer> entry : timeValues.entrySet()) {
                 if (entry.getKey() >= time && time <= entry.getValue()) {
@@ -80,5 +94,9 @@ public final class WorldTimeKey extends Key {
 
     public Map<Integer, Integer> getTimeValues() {
         return timeValues;
+    }
+
+    public Optional<World> getWorld() {
+        return world;
     }
 }

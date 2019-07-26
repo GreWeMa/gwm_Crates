@@ -47,7 +47,7 @@ public final class BlockCase extends Case {
                 throw new IllegalArgumentException("None of LOCATIONS and LOCATION nodes exist!");
             }
             if (tempLocations.isEmpty()) {
-                throw new IllegalArgumentException("No locations are configured! At least one location is needed!");
+                throw new IllegalArgumentException("No locations are configured! At least one location is required!");
             }
             locations = Collections.unmodifiableList(tempLocations);
             if (!hologramNode.isVirtual()) {

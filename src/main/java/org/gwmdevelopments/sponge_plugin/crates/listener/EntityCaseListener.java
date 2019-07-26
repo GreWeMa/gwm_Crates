@@ -30,7 +30,7 @@ public class EntityCaseListener {
             if (!(caze instanceof EntityCase)) {
                 continue;
             }
-            if (((EntityCase) caze).getEntityUuid().equals(entity.getUniqueId())) {
+            if (((EntityCase) caze).getEntityUuids().contains(entity.getUniqueId())) {
                 event.setCancelled(true);
                 if (event instanceof InteractEntityEvent.Secondary.MainHand) {
                     if (!player.hasPermission("gwm_crates.open." + manager.getId())) {
