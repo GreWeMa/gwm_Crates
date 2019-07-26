@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "nogui-beta-3.12",
+        version = "nogui_beta-3.12",
         description = "Universal crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -60,7 +60,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("nogui-beta", 3, 12);
+    public static final Version VERSION = new Version("nogui_beta", 3, 12);
 
     private static GWMCrates instance = null;
 
