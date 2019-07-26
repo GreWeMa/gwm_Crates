@@ -30,6 +30,9 @@ public final class CommandsDrop extends Drop {
             for (ConfigurationNode commandNode : commandsNode.getChildrenList()) {
                 tempExecutableCommands.add(GWMCratesUtils.parseCommand(commandNode));
             }
+            if (tempExecutableCommands.isEmpty()) {
+                throw new IllegalArgumentException("No commands are configured! At least one command is required!");
+            }
             executableCommands = Collections.unmodifiableList(tempExecutableCommands);
         } catch (Exception e) {
             throw new SSOCreationException(ssoType(), type(), e);

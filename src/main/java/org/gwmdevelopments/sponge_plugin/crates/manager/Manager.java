@@ -10,7 +10,6 @@ import org.gwmdevelopments.sponge_plugin.crates.key.Key;
 import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
 import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
 import org.gwmdevelopments.sponge_plugin.crates.random_manager.RandomManager;
-import org.gwmdevelopments.sponge_plugin.crates.random_manager.random_managers.LevelRandomManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObject;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
@@ -18,6 +17,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,10 +86,14 @@ public final class Manager {
             }
             caze = (Case) GWMCratesUtils.createSuperObject(caseNode, SuperObjectType.CASE);
             key = (Key) GWMCratesUtils.createSuperObject(keyNode, SuperObjectType.KEY);
-            drops = new ArrayList<>();
-            for (ConfigurationNode drop_node : dropsNode.getChildrenList()) {
-                drops.add((Drop) GWMCratesUtils.createSuperObject(drop_node, SuperObjectType.DROP));
+            List<Drop> tempDrops = new ArrayList<>();
+            for (ConfigurationNode dropNode : dropsNode.getChildrenList()) {
+                tempDrops.add((Drop) GWMCratesUtils.createSuperObject(dropNode, SuperObjectType.DROP));
             }
+            if (tempDrops.isEmpty()) {
+                throw new IllegalArgumentException("No drops are configured! At least one drop is required!");
+            }
+            drops = Collections.unmodifiableList(tempDrops);
             openManager = (OpenManager) GWMCratesUtils.createSuperObject(openManagerNode, SuperObjectType.OPEN_MANAGER);
             if (!previewNode.isVirtual()) {
                 preview = Optional.of((Preview) GWMCratesUtils.createSuperObject(previewNode, SuperObjectType.PREVIEW));

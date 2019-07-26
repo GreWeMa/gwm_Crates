@@ -5,7 +5,6 @@ import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
 import org.gwmdevelopments.sponge_plugin.crates.drop.Drop;
 import org.gwmdevelopments.sponge_plugin.crates.exception.SSOCreationException;
 import org.gwmdevelopments.sponge_plugin.crates.random_manager.RandomManager;
-import org.gwmdevelopments.sponge_plugin.crates.random_manager.random_managers.LevelRandomManager;
 import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
 import org.spongepowered.api.entity.living.player.Player;
@@ -35,8 +34,11 @@ public final class MultiDrop extends Drop {
                 throw new IllegalArgumentException("DROPS node does not exist");
             }
             List<Drop> tempDrops = new ArrayList<>();
-            for (ConfigurationNode drop_node : dropsNode.getChildrenList()) {
-                tempDrops.add((Drop) GWMCratesUtils.createSuperObject(drop_node, SuperObjectType.DROP));
+            for (ConfigurationNode dropNode : dropsNode.getChildrenList()) {
+                tempDrops.add((Drop) GWMCratesUtils.createSuperObject(dropNode, SuperObjectType.DROP));
+            }
+            if (tempDrops.isEmpty()) {
+                throw new IllegalArgumentException("No drops are configured! At least one drop is required!");
             }
             drops = Collections.unmodifiableList(tempDrops);
             giveAll = giveAllNode.getBoolean(true);

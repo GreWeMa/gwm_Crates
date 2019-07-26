@@ -1,4 +1,13 @@
-v.beta-3.11
+v. beta-3.12
+1. Code refactoring
+2. Replace 'ENTITY_UUID' parameter with 'ENTITY_UUID' parameter in 'ENTITY' Case.
+3. Change message that is sent if no locations are found in 'BLOCK' Case.
+4. Forbid to create 'MULTI' Drop with no drops.
+5. Forbid to create 'COMMANDS' Drop with no commands.
+6. Forbid to create Managers with no drops.
+7. Replace 'WORLD' parameter with 'WORLDS' parameter in 'WORLD' Key.
+
+v. beta-3.11
 1. Add 'WORLD' Key.
 2. Add 'WORLD' parameter to 'WORLD-TIME' Key.
 3. Add 'WORLD' parameter to 'WORLD-WEATHER' Key.

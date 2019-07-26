@@ -7,33 +7,39 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.World;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 public final class WorldKey extends Key {
 
     public static final String TYPE = "WORLD";
 
-    private final World world;
+    private final List<World> worlds;
 
     public WorldKey(ConfigurationNode node) {
         super(node);
         try {
-            ConfigurationNode worldNode = node.getNode("WORLD");
-            if (worldNode.isVirtual()) {
-                throw new IllegalArgumentException("WORLD node does not exist!");
+            ConfigurationNode worldsNode = node.getNode("WORLDS");
+            List<World> tempWorlds = new ArrayList<>();
+            for (ConfigurationNode worldNode : worldsNode.getChildrenList()) {
+                tempWorlds.add(Sponge.getServer().getWorld(worldNode.getString()).
+                        orElseThrow(() -> new IllegalArgumentException("WORLD \"" + worldNode + "\" does not exist!")));
             }
-            String worldName = worldNode.getString();
-            world = Sponge.getServer().getWorld(worldName).
-                    orElseThrow(() -> new IllegalArgumentException("WORLD \"" + worldNode + "\" does not exist!"));
+            if (tempWorlds.isEmpty()) {
+                throw new IllegalArgumentException("No world are configured! At least one world is required!");
+            }
+            worlds = Collections.unmodifiableList(tempWorlds);
         } catch (Exception e) {
             throw new SSOCreationException(ssoType(), type(), e);
         }
     }
 
     public WorldKey(Optional<String> id, boolean doNotWithdraw,
-                    World world) {
+                    List<World> worlds) {
         super(id, doNotWithdraw);
-        this.world = world;
+        this.worlds = worlds;
     }
 
     @Override
@@ -47,6 +53,10 @@ public final class WorldKey extends Key {
 
     @Override
     public int get(Player player) {
-        return player.getLocation().getExtent().equals(world) ? 1 : 0;
+        return worlds.contains(player.getLocation().getExtent()) ? 1 : 0;
+    }
+
+    public List<World> getWorlds() {
+        return worlds;
     }
 }
