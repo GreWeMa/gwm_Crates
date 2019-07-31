@@ -8,15 +8,6 @@ import org.gwmdevelopments.sponge_plugin.crates.change_mode.change_modes.RandomC
 import org.gwmdevelopments.sponge_plugin.crates.command.GWMCratesCommandUtils;
 import org.gwmdevelopments.sponge_plugin.crates.drop.drops.*;
 import org.gwmdevelopments.sponge_plugin.crates.event.GWMCratesRegistrationEvent;
-import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.caze.*;
-import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.change_mode.OrderedChangeModeConfigurationDialog;
-import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.change_mode.RandomChangeModeConfigurationDialog;
-import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.drop.*;
-import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.key.*;
-import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.open_manager.*;
-import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.preview.FirstPreviewConfigurationDialog;
-import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.preview.PermissionPreviewConfigurationDialog;
-import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.configuration_dialogues.preview.SecondPreviewConfigurationDialog;
 import org.gwmdevelopments.sponge_plugin.crates.key.keys.*;
 import org.gwmdevelopments.sponge_plugin.crates.listener.*;
 import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
@@ -57,7 +48,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-3.12",
+        version = "nogui_beta-3.12",
         description = "Universal crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -69,7 +60,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 3, 12);
+    public static final Version VERSION = new Version("nogui_beta", 3, 12);
 
     private static GWMCrates instance = null;
 
@@ -288,49 +279,48 @@ public final class GWMCrates extends SpongePlugin {
 
     private void register() {
         GWMCratesRegistrationEvent registrationEvent = new GWMCratesRegistrationEvent();
-        registrationEvent.register(SuperObjectType.RANDOM_MANAGER, LevelRandomManager.TYPE, LevelRandomManager.class, Optional.empty());
-        registrationEvent.register(SuperObjectType.RANDOM_MANAGER, WeightRandomManager.TYPE, WeightRandomManager.class, Optional.empty());
-        registrationEvent.register(SuperObjectType.CASE, ItemCase.TYPE, ItemCase.class, Optional.of(ItemCaseConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.CASE, BlockCase.TYPE, BlockCase.class, Optional.of(BlockCaseConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.CASE, EntityCase.TYPE, EntityCase.class, Optional.of(EntityCaseConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.CASE, TimedCase.TYPE, TimedCase.class, Optional.of(TimedCaseConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.CASE, VirtualCase.TYPE, VirtualCase.class, Optional.of(VirtualCaseConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.CASE, EmptyCase.TYPE, EmptyCase.class, Optional.of(EmptyCaseConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.KEY, ItemKey.TYPE, ItemKey.class, Optional.of(ItemKeyConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.KEY, MultiKey.TYPE, MultiKey.class, Optional.of(MultiKeyConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.KEY, MultipleAmountKey.TYPE, MultipleAmountKey.class, Optional.of(MultipleAmountKeyConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.KEY, TimedKey.TYPE, TimedKey.class, Optional.of(TimedKeyConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.KEY, VirtualKey.TYPE, VirtualKey.class, Optional.of(VirtualKeyConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.KEY, PermissionKey.TYPE, PermissionKey.class, Optional.empty());
-        registrationEvent.register(SuperObjectType.KEY, CurrencyKey.TYPE, CurrencyKey.class, Optional.empty());
-        registrationEvent.register(SuperObjectType.KEY, ExperienceKey.TYPE, ExperienceKey.class, Optional.empty());
-        registrationEvent.register(SuperObjectType.KEY, ExperienceLevelKey.TYPE, ExperienceLevelKey.class, Optional.empty());
-        registrationEvent.register(SuperObjectType.KEY, HealthKey.TYPE, HealthKey.class, Optional.empty());
-        registrationEvent.register(SuperObjectType.KEY, FoodKey.TYPE, FoodKey.class, Optional.empty());
-        registrationEvent.register(SuperObjectType.KEY, BiomeKey.TYPE, BiomeKey.class, Optional.empty());
-        registrationEvent.register(SuperObjectType.KEY, WorldKey.TYPE, WorldKey.class, Optional.empty());
-        registrationEvent.register(SuperObjectType.KEY, WorldTimeKey.TYPE, WorldTimeKey.class, Optional.empty());
-        registrationEvent.register(SuperObjectType.KEY, WorldWeatherKey.TYPE, WorldWeatherKey.class, Optional.empty());
-        registrationEvent.register(SuperObjectType.KEY, BoundariesKey.TYPE, BoundariesKey.class, Optional.empty());
-        registrationEvent.register(SuperObjectType.KEY, RadiusKey.TYPE, RadiusKey.class, Optional.empty());
-        registrationEvent.register(SuperObjectType.KEY, EmptyKey.TYPE, EmptyKey.class, Optional.of(EmptyKeyConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.OPEN_MANAGER, NoGuiOpenManager.TYPE, NoGuiOpenManager.class, Optional.of(NoGuiOpenManagerConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.OPEN_MANAGER, FirstOpenManager.TYPE, FirstOpenManager.class, Optional.of(FirstOpenManagerConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.OPEN_MANAGER, SecondOpenManager.TYPE, SecondOpenManager.class, Optional.of(SecondOpenManagerConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.OPEN_MANAGER, Animation1OpenManager.TYPE, Animation1OpenManager.class, Optional.of(Animation1OpenManagerConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.OPEN_MANAGER, PermissionOpenManager.TYPE, PermissionOpenManager.class, Optional.of(PermissionOpenManagerConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.OPEN_MANAGER, CasinoOpenManager.TYPE, CasinoOpenManager.class, Optional.of(CasinoOpenManagerConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.PREVIEW, FirstGuiPreview.TYPE, FirstGuiPreview.class, Optional.of(FirstPreviewConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.PREVIEW, SecondGuiPreview.TYPE, SecondGuiPreview.class, Optional.of(SecondPreviewConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.PREVIEW, PermissionPreview.TYPE, PermissionPreview.class, Optional.of(PermissionPreviewConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.DROP, ItemDrop.TYPE, ItemDrop.class, Optional.of(ItemDropConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.DROP, CommandsDrop.TYPE, CommandsDrop.class, Optional.of(CommandsDropConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.DROP, MultiDrop.TYPE, MultiDrop.class, Optional.of(MultiDropConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.DROP, DelayDrop.TYPE, DelayDrop.class, Optional.of(DelayDropConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.DROP, PermissionDrop.TYPE, PermissionDrop.class, Optional.of(PermissionDropConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.DROP, EmptyDrop.TYPE, EmptyDrop.class, Optional.of(EmptyDropConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE, RandomChangeMode.TYPE, RandomChangeMode.class, Optional.of(RandomChangeModeConfigurationDialog.class));
-        registrationEvent.register(SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE, OrderedChangeMode.TYPE, OrderedChangeMode.class, Optional.of(OrderedChangeModeConfigurationDialog.class));
+        registrationEvent.register(SuperObjectType.RANDOM_MANAGER, LevelRandomManager.TYPE, LevelRandomManager.class);
+        registrationEvent.register(SuperObjectType.RANDOM_MANAGER, WeightRandomManager.TYPE, WeightRandomManager.class);
+        registrationEvent.register(SuperObjectType.CASE, ItemCase.TYPE, ItemCase.class);
+        registrationEvent.register(SuperObjectType.CASE, BlockCase.TYPE, BlockCase.class);
+        registrationEvent.register(SuperObjectType.CASE, EntityCase.TYPE, EntityCase.class);
+        registrationEvent.register(SuperObjectType.CASE, TimedCase.TYPE, TimedCase.class);
+        registrationEvent.register(SuperObjectType.CASE, VirtualCase.TYPE, VirtualCase.class);
+        registrationEvent.register(SuperObjectType.CASE, EmptyCase.TYPE, EmptyCase.class);
+        registrationEvent.register(SuperObjectType.KEY, ItemKey.TYPE, ItemKey.class);
+        registrationEvent.register(SuperObjectType.KEY, MultiKey.TYPE, MultiKey.class);
+        registrationEvent.register(SuperObjectType.KEY, MultipleAmountKey.TYPE, MultipleAmountKey.class);
+        registrationEvent.register(SuperObjectType.KEY, TimedKey.TYPE, TimedKey.class);
+        registrationEvent.register(SuperObjectType.KEY, VirtualKey.TYPE, VirtualKey.class);
+        registrationEvent.register(SuperObjectType.KEY, PermissionKey.TYPE, PermissionKey.class);
+        registrationEvent.register(SuperObjectType.KEY, CurrencyKey.TYPE, CurrencyKey.class);
+        registrationEvent.register(SuperObjectType.KEY, ExperienceKey.TYPE, ExperienceKey.class);
+        registrationEvent.register(SuperObjectType.KEY, ExperienceLevelKey.TYPE, ExperienceLevelKey.class);
+        registrationEvent.register(SuperObjectType.KEY, HealthKey.TYPE, HealthKey.class);
+        registrationEvent.register(SuperObjectType.KEY, FoodKey.TYPE, FoodKey.class);
+        registrationEvent.register(SuperObjectType.KEY, BiomeKey.TYPE, BiomeKey.class);
+        registrationEvent.register(SuperObjectType.KEY, WorldTimeKey.TYPE, WorldTimeKey.class);
+        registrationEvent.register(SuperObjectType.KEY, WorldWeatherKey.TYPE, WorldWeatherKey.class);
+        registrationEvent.register(SuperObjectType.KEY, BoundariesKey.TYPE, BoundariesKey.class);
+        registrationEvent.register(SuperObjectType.KEY, RadiusKey.TYPE, RadiusKey.class);
+        registrationEvent.register(SuperObjectType.KEY, EmptyKey.TYPE, EmptyKey.class);
+        registrationEvent.register(SuperObjectType.OPEN_MANAGER, NoGuiOpenManager.TYPE, NoGuiOpenManager.class);
+        registrationEvent.register(SuperObjectType.OPEN_MANAGER, FirstOpenManager.TYPE, FirstOpenManager.class);
+        registrationEvent.register(SuperObjectType.OPEN_MANAGER, SecondOpenManager.TYPE, SecondOpenManager.class);
+        registrationEvent.register(SuperObjectType.OPEN_MANAGER, Animation1OpenManager.TYPE, Animation1OpenManager.class);
+        registrationEvent.register(SuperObjectType.OPEN_MANAGER, PermissionOpenManager.TYPE, PermissionOpenManager.class);
+        registrationEvent.register(SuperObjectType.OPEN_MANAGER, CasinoOpenManager.TYPE, CasinoOpenManager.class);
+        registrationEvent.register(SuperObjectType.PREVIEW, FirstGuiPreview.TYPE, FirstGuiPreview.class);
+        registrationEvent.register(SuperObjectType.PREVIEW, SecondGuiPreview.TYPE, SecondGuiPreview.class);
+        registrationEvent.register(SuperObjectType.PREVIEW, PermissionPreview.TYPE, PermissionPreview.class);
+        registrationEvent.register(SuperObjectType.DROP, ItemDrop.TYPE, ItemDrop.class);
+        registrationEvent.register(SuperObjectType.DROP, CommandsDrop.TYPE, CommandsDrop.class);
+        registrationEvent.register(SuperObjectType.DROP, MultiDrop.TYPE, MultiDrop.class);
+        registrationEvent.register(SuperObjectType.DROP, DelayDrop.TYPE, DelayDrop.class);
+        registrationEvent.register(SuperObjectType.DROP, PermissionDrop.TYPE, PermissionDrop.class);
+        registrationEvent.register(SuperObjectType.DROP, EmptyDrop.TYPE, EmptyDrop.class);
+        registrationEvent.register(SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE, RandomChangeMode.TYPE, RandomChangeMode.class);
+        registrationEvent.register(SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE, OrderedChangeMode.TYPE, OrderedChangeMode.class);
         Sponge.getEventManager().post(registrationEvent);
         for (SuperObjectStorage superObjectStorage : registrationEvent.getSuperObjectStorage()) {
             SuperObjectType superObjectType = superObjectStorage.getSuperObjectType();

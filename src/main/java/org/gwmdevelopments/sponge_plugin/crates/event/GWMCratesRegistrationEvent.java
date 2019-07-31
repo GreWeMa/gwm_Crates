@@ -1,7 +1,6 @@
 package org.gwmdevelopments.sponge_plugin.crates.event;
 
 import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
-import org.gwmdevelopments.sponge_plugin.crates.gui.configuration_dialog.ConfigurationDialog;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObject;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectStorage;
 import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
@@ -9,7 +8,6 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.impl.AbstractEvent;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 public class GWMCratesRegistrationEvent extends AbstractEvent {
@@ -17,8 +15,7 @@ public class GWMCratesRegistrationEvent extends AbstractEvent {
     private final HashSet<SuperObjectStorage> superObjectStorage =
             new HashSet<>();
 
-    public void register(SuperObjectType superObjectType, String type, Class<? extends SuperObject> superObjectClass,
-                         Optional<Class<? extends ConfigurationDialog>> configurationDialog) {
+    public void register(SuperObjectType superObjectType, String type, Class<? extends SuperObject> superObjectClass) {
         for (SuperObjectStorage storage : superObjectStorage) {
             if (storage.getType().equals(type) &&
                     storage.getSuperObjectType().equals(superObjectType)) {
@@ -27,7 +24,7 @@ public class GWMCratesRegistrationEvent extends AbstractEvent {
                 throw new IllegalArgumentException("Super Object class \"" + superObjectClass.getName() + "\" already registered!");
             }
         }
-        superObjectStorage.add(new SuperObjectStorage(superObjectType, type, superObjectClass, configurationDialog));
+        superObjectStorage.add(new SuperObjectStorage(superObjectType, type, superObjectClass));
     }
 
     public void unregister(SuperObjectType superObjectType, String type) {

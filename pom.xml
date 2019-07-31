@@ -6,7 +6,7 @@
 
     <groupId>org.gwmdevelopments.sponge_plugin</groupId>
     <artifactId>crates</artifactId>
-    <version>beta-3.12</version>
+    <version>nogui_beta-3.12</version>
     <name>GWMCrates</name>
     <packaging>jar</packaging>
 
