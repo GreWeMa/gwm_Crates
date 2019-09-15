@@ -1,13 +1,12 @@
-package dev.gwm.spongeplugin.crates.superobject.keys;
+package dev.gwm.spongeplugin.crates.superobject.key;
 
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.superobject.GiveableKey;
+import dev.gwm.spongeplugin.crates.superobject.key.base.GiveableKey;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.utils.GiveableData;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.economy.Currency;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 public final class ExperienceKey extends GiveableKey {
@@ -24,15 +23,21 @@ public final class ExperienceKey extends GiveableKey {
                 throw new IllegalArgumentException("EXPERIENCE node does not exist!");
             }
             experience = experienceNode.getInt();
+            if (experience <= 0) {
+                throw new IllegalArgumentException("Experience is equal to or less than 0!");
+            }
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
     public ExperienceKey(Optional<String> id, boolean doNotWithdraw,
-                         Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
+                         GiveableData giveableData, boolean doNotAdd,
                          int experience) {
-        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
+        super(id, doNotWithdraw, giveableData, doNotAdd);
+        if (experience <= 0) {
+            throw new IllegalArgumentException("Experience is equal to or less than 0!");
+        }
         this.experience = experience;
     }
 

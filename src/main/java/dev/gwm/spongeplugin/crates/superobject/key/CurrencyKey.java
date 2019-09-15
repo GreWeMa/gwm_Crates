@@ -1,11 +1,12 @@
-package dev.gwm.spongeplugin.crates.superobject.keys;
+package dev.gwm.spongeplugin.crates.superobject.key;
 
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.superobject.GiveableKey;
+import dev.gwm.spongeplugin.crates.superobject.key.base.GiveableKey;
+import dev.gwm.spongeplugin.library.GWMLibrary;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.utils.GiveableData;
 import ninja.leaping.configurate.ConfigurationNode;
-import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
-import org.gwmdevelopments.sponge_plugin.library.GWMLibrary;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
@@ -19,43 +20,48 @@ public final class CurrencyKey extends GiveableKey {
 
     public static final String TYPE = "CURRENCY";
 
-    private final BigDecimal amount;
     private final Optional<Currency> currency;
+    private final BigDecimal amount;
 
     public CurrencyKey(ConfigurationNode node) {
         super(node);
         try {
-            ConfigurationNode amountNode = node.getNode("AMOUNT");
             ConfigurationNode currencyNode = node.getNode("CURRENCY");
+            ConfigurationNode amountNode = node.getNode("AMOUNT");
             if (amountNode.isVirtual()) {
                 throw new IllegalArgumentException("AMOUNT node does not exist!");
             }
-            amount = new BigDecimal(amountNode.getString());
             if (!currencyNode.isVirtual()) {
                 String currencyId = currencyNode.getString();
                 Optional<EconomyService> optionalEconomyService = GWMLibrary.getInstance().getEconomyService();
                 if (!optionalEconomyService.isPresent()) {
-                    throw new IllegalArgumentException("Economy Service not found!");
+                    throw new IllegalArgumentException("Economy Service is not found!");
                 }
-                currency = GWMCratesUtils.getCurrencyById(optionalEconomyService.get(), currencyId);
+                currency = GWMLibraryUtils.getCurrencyById(optionalEconomyService.get(), currencyId);
                 if (!currency.isPresent()) {
-                    throw new IllegalArgumentException("Currency \"" + currencyId + "\" not found!");
+                    throw new IllegalArgumentException("Currency \"" + currencyId + "\" is not found!");
                 }
             } else {
                 currency = Optional.empty();
             }
-
+            amount = new BigDecimal(amountNode.getString());
+            if (amount.compareTo(BigDecimal.ZERO) < 1) {
+                throw new IllegalArgumentException("Amount is equal to or less than 0!");
+            }
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
     public CurrencyKey(Optional<String> id, boolean doNotWithdraw,
-                       Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
-                       BigDecimal amount, Optional<Currency> currency) {
-        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
-        this.amount = amount;
+                       GiveableData giveableData, boolean doNotAdd,
+                       Optional<Currency> currency, BigDecimal amount) {
+        super(id, doNotWithdraw, giveableData, doNotAdd);
+        if (amount.compareTo(BigDecimal.ZERO) < 1) {
+            throw new IllegalArgumentException("Amount is equal to or less than 0!");
+        }
         this.currency = currency;
+        this.amount = amount;
     }
 
     @Override
@@ -124,11 +130,11 @@ public final class CurrencyKey extends GiveableKey {
         }
     }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
     public Optional<Currency> getCurrency() {
         return currency;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
     }
 }

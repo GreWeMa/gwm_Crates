@@ -1,19 +1,18 @@
-package dev.gwm.spongeplugin.crates.drop.drops;
+package dev.gwm.spongeplugin.crates.superobject.drop;
 
-import dev.gwm.spongeplugin.crates.drop.Drop;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
+import dev.gwm.spongeplugin.crates.superobject.drop.base.AbstractDrop;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.utils.DefaultRandomableData;
+import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.utils.GiveableData;
 import ninja.leaping.configurate.ConfigurationNode;
-import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
-import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.service.economy.Currency;
 
-import java.math.BigDecimal;
-import java.util.Map;
 import java.util.Optional;
 
-public final class ItemDrop extends Drop {
+public final class ItemDrop extends AbstractDrop {
 
     public static final String TYPE = "ITEM";
 
@@ -28,13 +27,16 @@ public final class ItemDrop extends Drop {
             }
             item = GWMLibraryUtils.parseItem(itemNode);
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
-    public ItemDrop(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency, Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview, Optional<Integer> level, Optional<Integer> fakeLevel, Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels, Optional<Long> weight, Optional<Long> fakeWeight, Map<String, Long> permissionWeights, Map<String, Long> permissionFakeWeights,
+    public ItemDrop(Optional<String> id,
+                    GiveableData giveableData,
+                    Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview,
+                    DefaultRandomableData defaultRandomableData,
                     ItemStack item) {
-        super(id, price, sellCurrency, dropItem, customName, showInPreview, level, fakeLevel, permissionLevels, permissionFakeLevels, weight, fakeWeight, permissionWeights, permissionFakeWeights);
+        super(id, giveableData, dropItem, customName, showInPreview, defaultRandomableData);
         this.item = item;
     }
 

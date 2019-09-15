@@ -1,11 +1,11 @@
-package org.gwmdevelopments.sponge_plugin.crates.listener;
+package dev.gwm.spongeplugin.crates.listener;
 
 import com.flowpowered.math.vector.Vector3i;
 import de.randombyte.holograms.api.HologramsService;
-import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
-import org.gwmdevelopments.sponge_plugin.crates.event.PlayerOpenedCrateEvent;
-import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.Animation1OpenManager;
-import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
+import dev.gwm.spongeplugin.crates.GWMCrates;
+import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEvent;
+import dev.gwm.spongeplugin.crates.superobject.openmanager.Animation1OpenManager;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.Entity;
@@ -21,6 +21,7 @@ import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -99,7 +100,7 @@ public class Animation1Listener {
                 return;
             }
         }
-        PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, information.getManager(), null);
+        PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, information.getManager(), Collections.emptyList());
         Sponge.getEventManager().post(openedEvent);
         OPENED_PLAYERS.put(player, information.getOpenManager());
         Sponge.getScheduler().createTaskBuilder().delayTicks(information.getOpenManager().getCloseDelay()).execute(() -> {

@@ -1,7 +1,7 @@
-package dev.gwm.spongeplugin.crates.superobject.keys;
+package dev.gwm.spongeplugin.crates.superobject.key;
 
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.superobject.Key;
+import dev.gwm.spongeplugin.crates.superobject.key.base.AbstractKey;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public final class WorldKey extends Key {
+public final class WorldKey extends AbstractKey {
 
     public static final String TYPE = "WORLD";
 
@@ -22,24 +22,30 @@ public final class WorldKey extends Key {
         super(node);
         try {
             ConfigurationNode worldsNode = node.getNode("WORLDS");
+            if (worldsNode.isVirtual()) {
+                throw new IllegalArgumentException("WORLDS node does not exist!");
+            }
             List<World> tempWorlds = new ArrayList<>();
             for (ConfigurationNode worldNode : worldsNode.getChildrenList()) {
                 tempWorlds.add(Sponge.getServer().getWorld(worldNode.getString()).
-                        orElseThrow(() -> new IllegalArgumentException("WORLD \"" + worldNode + "\" does not exist!")));
+                        orElseThrow(() -> new IllegalArgumentException("World \"" + worldNode + "\" is not found!")));
             }
             if (tempWorlds.isEmpty()) {
-                throw new IllegalArgumentException("No world are configured! At least one world is required!");
+                throw new IllegalArgumentException("No Worlds are configured! At least one World is required!");
             }
             worlds = Collections.unmodifiableList(tempWorlds);
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
     public WorldKey(Optional<String> id, boolean doNotWithdraw,
                     List<World> worlds) {
         super(id, doNotWithdraw);
-        this.worlds = worlds;
+        if (worlds.isEmpty()) {
+            throw new IllegalArgumentException("No Worlds are configured! At least one World is required!");
+        }
+        this.worlds = Collections.unmodifiableList(worlds);
     }
 
     @Override

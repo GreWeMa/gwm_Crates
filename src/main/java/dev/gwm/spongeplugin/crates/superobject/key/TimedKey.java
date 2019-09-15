@@ -1,14 +1,16 @@
-package dev.gwm.spongeplugin.crates.superobject.keys;
+package dev.gwm.spongeplugin.crates.superobject.key;
 
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.superobject.GiveableKey;
+import dev.gwm.spongeplugin.crates.superobject.key.base.GiveableKey;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.utils.GiveableData;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.economy.Currency;
 
-import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,16 +20,16 @@ public final class TimedKey extends GiveableKey {
 
     public static final String TYPE = "TIMED";
 
-    public static final String SELECT_QUERY = "SELECT delay FROM timed_keys " +
+    public static final String SELECT_QUERY = "SELECT expire FROM timed_keys " +
             "WHERE name = ? " +
             "AND uuid = ?";
 
     public static final String UPDATE_QUERY = "UPDATE timed_keys " +
-            "SET delay = ? " +
+            "SET expire = ? " +
             "WHERE name = ? " +
             "AND uuid = ?";
 
-    public static final String INSERT_QUERY = "INSERT INTO timed_keys (name, uuid, delay) " +
+    public static final String INSERT_QUERY = "INSERT INTO timed_keys (name, uuid, expire) " +
             "VALUES (?, ?, ?)";
 
     private final Map<UUID, Long> cache = new WeakHashMap<>();
@@ -48,20 +50,30 @@ public final class TimedKey extends GiveableKey {
             }
             virtualName = virtualNameNode.getString();
             if (virtualName.length() > GWMCrates.getInstance().getMaxVirtualNamesLength()) {
-                throw new IllegalArgumentException("VIRTUAL_NAME length is more than \"MAX_VIRTUAL_NAMES_LENGTH\" (" +
+                throw new IllegalArgumentException("Virtual Name length is greater than MAX_VIRTUAL_NAMES_LENGTH (" +
                         GWMCrates.getInstance().getMaxVirtualNamesLength() + ")!");
             }
             delay = delayNode.getLong();
+            if (delay <= 0) {
+                throw new IllegalArgumentException("Delay is equal to or less than 0!");
+            }
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
     public TimedKey(Optional<String> id, boolean doNotWithdraw,
-                    Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
+                    GiveableData giveableData, boolean doNotAdd,
                     String virtualName, long delay) {
-        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
+        super(id, doNotWithdraw, giveableData, doNotAdd);
+        if (virtualName.length() > GWMCrates.getInstance().getMaxVirtualNamesLength()) {
+            throw new IllegalArgumentException("Virtual Name length is greater than MAX_VIRTUAL_NAMES_LENGTH (" +
+                    GWMCrates.getInstance().getMaxVirtualNamesLength() + ")!");
+        }
         this.virtualName = virtualName;
+        if (delay <= 0) {
+            throw new IllegalArgumentException("Delay is equal to or less than 0!");
+        }
         this.delay = delay;
     }
 
@@ -101,12 +113,12 @@ public final class TimedKey extends GiveableKey {
     }
 
     private void setCfg(Player player, boolean withdraw) {
-        ConfigurationNode delayNode = GWMCrates.getInstance().getTimedKeysConfig().
+        ConfigurationNode expireNode = GWMCrates.getInstance().getTimedKeysConfig().
                 getNode(player.getUniqueId().toString(), virtualName);
         if (withdraw) {
-            delayNode.setValue(System.currentTimeMillis() + delay);
+            expireNode.setValue(System.currentTimeMillis() + delay);
         } else {
-            delayNode.setValue(0L);
+            expireNode.setValue(0L);
         }
     }
 
@@ -115,11 +127,11 @@ public final class TimedKey extends GiveableKey {
         try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection()) {
             long expire = withdraw ? System.currentTimeMillis() + delay : 0L;
             if (hasValue(connection, uuid)) {
-                update(connection, uuid, delay);
+                update(connection, uuid, expire);
             } else {
-                insert(connection, uuid, delay);
+                insert(connection, uuid, expire);
             }
-            cache.put(uuid, delay);
+            cache.put(uuid, expire);
         }
     }
 
@@ -164,20 +176,20 @@ public final class TimedKey extends GiveableKey {
     }
 
     private int getCfg(Player player) {
-        ConfigurationNode delayNode = GWMCrates.getInstance().getTimedKeysConfig().
+        ConfigurationNode expireNode = GWMCrates.getInstance().getTimedKeysConfig().
                 getNode(player.getUniqueId().toString(), virtualName);
-        if (delayNode.isVirtual()) {
+        if (expireNode.isVirtual()) {
             return 1;
         }
-        long delay = delayNode.getLong();
-        return System.currentTimeMillis() >= delay ? 1 : 0;
+        long expire = expireNode.getLong();
+        return System.currentTimeMillis() >= expire ? 1 : 0;
     }
 
     private int getSQL(Player player) throws SQLException {
         UUID uuid = player.getUniqueId();
         if (cache.containsKey(uuid)) {
-            long delay = cache.get(uuid);
-            return System.currentTimeMillis() >= delay ? 1 : 0;
+            long expire = cache.get(uuid);
+            return System.currentTimeMillis() >= expire ? 1 : 0;
         }
         try (Connection connection = GWMCrates.getInstance().getDataSource().get().getConnection();
              PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
@@ -185,9 +197,9 @@ public final class TimedKey extends GiveableKey {
             statement.setString(2, uuid.toString());
             ResultSet set = statement.executeQuery();
             if (set.next()) {
-                long delay = set.getLong(1);
-                cache.put(uuid, delay);
-                return System.currentTimeMillis() >= delay ? 1 : 0;
+                long expire = set.getLong(1);
+                cache.put(uuid, expire);
+                return System.currentTimeMillis() >= expire ? 1 : 0;
             } else {
                 cache.put(uuid, 0L);
                 return 1;

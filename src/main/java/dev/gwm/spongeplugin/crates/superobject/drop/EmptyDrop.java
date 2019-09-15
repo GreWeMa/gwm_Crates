@@ -1,17 +1,16 @@
-package dev.gwm.spongeplugin.crates.drop.drops;
+package dev.gwm.spongeplugin.crates.superobject.drop;
 
-import dev.gwm.spongeplugin.crates.drop.Drop;
+import dev.gwm.spongeplugin.crates.superobject.drop.base.AbstractDrop;
+import dev.gwm.spongeplugin.library.utils.DefaultRandomableData;
+import dev.gwm.spongeplugin.library.utils.GiveableData;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.service.economy.Currency;
 
-import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
-public final class EmptyDrop extends Drop {
+public final class EmptyDrop extends AbstractDrop {
 
     public static final String TYPE = "EMPTY";
 
@@ -19,12 +18,21 @@ public final class EmptyDrop extends Drop {
         super(node);
     }
 
-    public EmptyDrop(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency, Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview, Optional<Integer> level, Optional<Integer> fakeLevel, Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels, Optional<Long> weight, Optional<Long> fakeWeight, Map<String, Long> permissionWeights, Map<String, Long> permissionFakeWeights) {
-        super(id, price, sellCurrency, dropItem, customName, showInPreview, level, fakeLevel, permissionLevels, permissionFakeLevels, weight, fakeWeight, permissionWeights, permissionFakeWeights);
+    public EmptyDrop(Optional<String> id,
+                     GiveableData giveableDataice,
+                     Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview,
+                     DefaultRandomableData defaultRandomableData) {
+        super(id, giveableDataice, dropItem, customName, showInPreview, defaultRandomableData);
     }
 
     public EmptyDrop() {
-        super(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), false, Optional.empty(), Optional.empty(), Collections.emptyMap(), Collections.emptyMap(), Optional.empty(), Optional.empty(), Collections.emptyMap(), Collections.emptyMap());
+        super(Optional.empty(),
+                new GiveableData(Optional.empty(), Optional.empty()),
+                Optional.empty(), Optional.empty(), false,
+                new DefaultRandomableData(1, Optional.empty(),
+                        Collections.emptyMap(), Collections.emptyMap(),
+                        1L, Optional.empty(),
+                        Collections.emptyMap(), Collections.emptyMap()));
     }
 
     @Override

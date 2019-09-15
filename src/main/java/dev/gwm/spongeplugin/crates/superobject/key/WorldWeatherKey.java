@@ -1,8 +1,8 @@
-package dev.gwm.spongeplugin.crates.superobject.keys;
+package dev.gwm.spongeplugin.crates.superobject.key;
 
 import com.google.common.reflect.TypeToken;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.superobject.Key;
+import dev.gwm.spongeplugin.crates.superobject.key.base.AbstractKey;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public final class WorldWeatherKey extends Key {
+public final class WorldWeatherKey extends AbstractKey {
 
     public static final String TYPE = "WORLD-WEATHER";
 
@@ -36,18 +36,21 @@ public final class WorldWeatherKey extends Key {
             for (ConfigurationNode weatherNode : weathersNode.getChildrenList()) {
                 tempWeathers.add(weatherNode.getValue(TypeToken.of(Weather.class)));
             }
+            if (tempWeathers.isEmpty()) {
+                throw new IllegalArgumentException("No Weathers are configured! At least one Weather is required!");
+            }
             weathers = Collections.unmodifiableList(tempWeathers);
             if (!worldNode.isVirtual()) {
                 String worldName = worldNode.getString();
                 world = Sponge.getServer().getWorld(worldName);
                 if (!world.isPresent()) {
-                    throw new IllegalArgumentException("WORLD \"" + worldNode + "\" does not exist!");
+                    throw new IllegalArgumentException("World \"" + worldNode + "\" is not found!");
                 }
             } else {
                 world = Optional.empty();
             }
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
@@ -55,7 +58,10 @@ public final class WorldWeatherKey extends Key {
                            boolean whitelistMode, List<Weather> weathers, Optional<World> world) {
         super(id, doNotWithdraw);
         this.whitelistMode = whitelistMode;
-        this.weathers = weathers;
+        if (weathers.isEmpty()) {
+            throw new IllegalArgumentException("No Weathers are configured! At least one Weather is required!");
+        }
+        this.weathers = Collections.unmodifiableList(weathers);
         this.world = world;
     }
 

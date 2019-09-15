@@ -1,14 +1,13 @@
-package org.gwmdevelopments.sponge_plugin.crates.listener;
+package dev.gwm.spongeplugin.crates.listener;
 
-import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
-import org.gwmdevelopments.sponge_plugin.crates.caze.Case;
-import org.gwmdevelopments.sponge_plugin.crates.caze.BlockCase;
-import org.gwmdevelopments.sponge_plugin.crates.key.Key;
-import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.open_manager.OpenManager;
-import org.gwmdevelopments.sponge_plugin.crates.preview.Preview;
-import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
+import dev.gwm.spongeplugin.crates.superobject.caze.BlockCase;
+import dev.gwm.spongeplugin.crates.superobject.caze.base.Case;
+import dev.gwm.spongeplugin.crates.superobject.key.base.Key;
+import dev.gwm.spongeplugin.crates.superobject.openmanager.base.OpenManager;
+import dev.gwm.spongeplugin.crates.superobject.preview.base.Preview;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.library.utils.Language;
+import dev.gwm.spongeplugin.library.utils.Pair;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -17,11 +16,17 @@ import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
 public class BlockCaseListener {
+
+    private final Language language;
+
+    public BlockCaseListener(Language language) {
+        this.language = language;
+    }
 
     @Listener(order = Order.LATE)
     public void openBlockCase(InteractBlockEvent.Secondary.MainHand event, @First Player player) {
@@ -31,41 +36,35 @@ public class BlockCaseListener {
             return;
         }
         Location<World> location = optionalLocation.get();
-        for (Manager manager : GWMCrates.getInstance().getCreatedManagers()) {
-            Case caze = manager.getCase();
-            if (!(caze instanceof BlockCase)) {
-                continue;
-            }
-            List<Location<World>> blockCaseLocations = ((BlockCase) caze).getLocations();
-            if (!blockCaseLocations.contains(location)) {
-                continue;
-            }
-            event.setCancelled(true);
-            if (!player.hasPermission("gwm_crates.open." + manager.getId())) {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", player, null));
-                return;
-            }
-            long delay = GWMCratesUtils.getCrateOpenDelay(uuid);
-            if (delay > 0L) {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CRATE_OPEN_DELAY", player, null,
-                        new Pair<>("%TIME%", GWMCratesUtils.millisToString(delay))));
-                return;
-            }
-            OpenManager openManager = manager.getOpenManager();
-            if (!openManager.canOpen(player, manager)) {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("CAN_NOT_OPEN_MANAGER", player, null));
-                return;
-            }
-            Key key = manager.getKey();
-            if (key.get(player) < 1) {
-                GWMCratesUtils.sendKeyMissingMessage(player, manager);
-                return;
-            }
-            key.withdraw(player, 1, false);
-            GWMCratesUtils.updateCrateOpenDelay(uuid);
-            manager.getOpenManager().open(player, manager);
-            break;
-        }
+        GWMCratesUtils.getManagersStream().
+                filter(manager -> manager.getCase() instanceof BlockCase &&
+                        ((BlockCase) manager.getCase()).getLocations().contains(location)).
+                findFirst().
+                ifPresent(manager -> {
+                    event.setCancelled(true);
+                    if (!player.hasPermission("gwm_crates.open." + manager.getId())) {
+                        GWMCratesUtils.sendNoPermissionToOpenMessage(player, manager);
+                        return;
+                    }
+                    long delay = GWMCratesUtils.getCrateOpenDelay(uuid);
+                    if (delay > 0L) {
+                        GWMCratesUtils.sendCrateDelayMessage(player, manager, delay);
+                        return;
+                    }
+                    OpenManager openManager = manager.getOpenManager();
+                    if (!openManager.canOpen(player, manager)) {
+                        GWMCratesUtils.sendCannotOpenMessage(player, manager);
+                        return;
+                    }
+                    Key key = manager.getKey();
+                    if (key.get(player) < 1) {
+                        GWMCratesUtils.sendKeyMissingMessage(player, manager);
+                        return;
+                    }
+                    key.withdraw(player, 1, false);
+                    GWMCratesUtils.updateCrateOpenDelay(uuid);
+                    manager.getOpenManager().open(player, manager);
+                });
     }
 
     @Listener(order = Order.LATE)
@@ -75,35 +74,32 @@ public class BlockCaseListener {
             return;
         }
         Location<World> location = optionalLocation.get();
-        for (Manager manager : GWMCrates.getInstance().getCreatedManagers()) {
-            String manager_id = manager.getId();
-            Case caze = manager.getCase();
-            if (!(caze instanceof BlockCase)) {
-                continue;
-            }
-            List<Location<World>> blockCaseLocations = ((BlockCase) caze).getLocations();
-            if (!blockCaseLocations.contains(location)) {
-                continue;
-            }
-            event.setCancelled(true);
-            if (!((BlockCase) caze).isStartPreviewOnLeftClick()) {
-                return;
-            }
-            Optional<Preview> optionalPreview = manager.getPreview();
-            if (!optionalPreview.isPresent()) {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("PREVIEW_NOT_AVAILABLE", player, null,
-                        new Pair<>("%MANAGER%", manager.getName())));
-                return;
-            }
-            Preview preview = optionalPreview.get();
-            if (!player.hasPermission("gwm_crates.preview." + manager_id)) {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", player, null));
-                return;
-            }
-            preview.preview(player, manager);
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("PREVIEW_STARTED", player, null,
-                    new Pair<>("%MANAGER%", manager.getName())));
-            break;
-        }
+        GWMCratesUtils.getManagersStream().
+                filter(manager -> manager.getCase() instanceof BlockCase &&
+                        ((BlockCase) manager.getCase()).getLocations().contains(location)).
+                findFirst().
+                ifPresent(manager -> {
+                    String managerId = manager.getId();
+                    Case caze = manager.getCase();
+                    event.setCancelled(true);
+                    if (!((BlockCase) caze).isStartPreviewOnLeftClick()) {
+                        return;
+                    }
+                    Optional<Preview> optionalPreview = manager.getPreview();
+                    if (!optionalPreview.isPresent()) {
+                        GWMCratesUtils.sendPreviewNotAvailableMessage(player, manager);
+                        return;
+                    }
+                    Preview preview = optionalPreview.get();
+                    if (!player.hasPermission("gwm_crates.preview." + managerId)) {
+                        GWMCratesUtils.sendNoPermissionToPreviewMessage(player, manager);
+                        return;
+                    }
+                    preview.preview(player, manager);
+                    player.sendMessages(language.getTranslation("PREVIEW_STARTED", Arrays.asList(
+                            new Pair<>("MANAGER_NAME", manager.getName()),
+                            new Pair<>("MANAGER_ID", manager.getId())
+                    ), player));
+        });
     }
 }

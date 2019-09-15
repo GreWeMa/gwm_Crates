@@ -1,20 +1,22 @@
-package dev.gwm.spongeplugin.crates.open_manager.open_managers;
+package dev.gwm.spongeplugin.crates.superobject.openmanager;
 
 import com.google.common.reflect.TypeToken;
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.superobject.DecorativeItemsChangeMode;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import ninja.leaping.configurate.ConfigurationNode;
-import dev.gwm.spongeplugin.crates.superobject.Drop;
 import dev.gwm.spongeplugin.crates.event.PlayerOpenCrateEvent;
 import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEvent;
-import dev.gwm.spongeplugin.crates.manager.Manager;
-import dev.gwm.spongeplugin.crates.open_manager.OpenManager;
-import dev.gwm.spongeplugin.crates.util.DecorativeDropChangeRunnable;
-import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
-import dev.gwm.spongeplugin.crates.util.SuperObjectType;
-import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
+import dev.gwm.spongeplugin.crates.superobject.changemode.base.DecorativeItemsChangeMode;
+import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
+import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
+import dev.gwm.spongeplugin.crates.superobject.openmanager.base.AbstractOpenManager;
+import dev.gwm.spongeplugin.crates.utils.DecorativeItemsChangeRunnable;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.superobject.SuperObject;
+import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.utils.Pair;
+import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.living.player.Player;
@@ -26,11 +28,10 @@ import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.*;
 
-public final class FirstOpenManager extends OpenManager {
+public final class FirstOpenManager extends AbstractOpenManager {
 
     public static final String TYPE = "FIRST";
 
@@ -86,7 +87,7 @@ public final class FirstOpenManager extends OpenManager {
             ConfigurationNode winSoundNode = node.getNode("WIN_SOUND");
             ConfigurationNode decorativeItemsChangeModeNode = node.getNode("DECORATIVE_ITEMS_CHANGE_MODE");
             if (!displayNameNode.isVirtual()) {
-                displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
+                displayName = Optional.of(displayNameNode.getValue(TypeToken.of(Text.class)));
             } else {
                 displayName = Optional.empty();
             }
@@ -117,12 +118,13 @@ public final class FirstOpenManager extends OpenManager {
                 winSound = Optional.empty();
             }
             if (!decorativeItemsChangeModeNode.isVirtual()) {
-                decorativeItemsChangeMode = Optional.of((DecorativeItemsChangeMode) GWMCratesUtils.createSuperObject(decorativeItemsChangeModeNode, SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE));
+                decorativeItemsChangeMode = Optional.of(Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                        create(GWMCratesSuperObjectCategories.DECORATIVE_ITEMS_CHANGE_MODE, decorativeItemsChangeModeNode));
             } else {
                 decorativeItemsChangeMode = Optional.empty();
             }
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
@@ -133,8 +135,8 @@ public final class FirstOpenManager extends OpenManager {
                             Optional<SoundType> winSound, Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode) {
         super(id, openSound);
         this.displayName = displayName;
-        this.decorativeItems = decorativeItems;
-        this.scrollDelays = scrollDelays;
+        this.decorativeItems = Collections.unmodifiableList(decorativeItems);
+        this.scrollDelays = Collections.unmodifiableList(scrollDelays);
         this.clearDecorativeItems = clearDecorativeItems;
         this.clearOtherDrops = clearOtherDrops;
         this.closeDelay = closeDelay;
@@ -142,6 +144,13 @@ public final class FirstOpenManager extends OpenManager {
         this.scrollSound = scrollSound;
         this.winSound = winSound;
         this.decorativeItemsChangeMode = decorativeItemsChangeMode;
+    }
+
+    @Override
+    public Set<SuperObject> getInternalSuperObjects() {
+        Set<SuperObject> set = super.getInternalSuperObjects();
+        decorativeItemsChangeMode.ifPresent(set::add);
+        return set;
     }
 
     @Override
@@ -175,7 +184,7 @@ public final class FirstOpenManager extends OpenManager {
         }
         for (int i = 10; i < 17; i++) {
             ordered.getSlot(new SlotIndex(i)).get().
-                    set(manager.getRandomManager().choose(manager.getDrops(), player, true).
+                    set(((Drop) manager.getRandomManager().choose(manager.getDrops(), player, true)).
                             getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
         }
         Container container = player.openInventory(inventory).get();
@@ -184,7 +193,7 @@ public final class FirstOpenManager extends OpenManager {
         if (!decorativeItems.isEmpty()) {
             decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
                     createTaskBuilder().delayTicks(mode.getChangeDelay()).
-                    execute(new DecorativeDropChangeRunnable(player, container, ordered, new ArrayList<>(decorativeItems), mode, DECORATIVE_ITEMS_INDICES)).
+                    execute(new DecorativeItemsChangeRunnable(player, container, ordered, mode, DECORATIVE_ITEMS_INDICES, decorativeItems)).
                     submit(GWMCrates.getInstance()));
         }
         int waitTime = 0;
@@ -198,7 +207,7 @@ public final class FirstOpenManager extends OpenManager {
                             ordered.getSlot(new SlotIndex(j)).get().set(ordered.getSlot(new SlotIndex(j + 1)).get().peek().
                                     orElse(GWMCratesUtils.EMPTY_ITEM));
                         }
-                        Drop newDrop = manager.getRandomManager().choose(manager.getDrops(), player, finalI != scrollDelays.size() - 5);
+                        Drop newDrop = (Drop) manager.getRandomManager().choose(manager.getDrops(), player, finalI != scrollDelays.size() - 5);
                         dropList.add(newDrop);
                         ordered.getSlot(new SlotIndex(16)).get().set(newDrop.getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
                         scrollSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
@@ -226,7 +235,7 @@ public final class FirstOpenManager extends OpenManager {
                         }
                     }
                     SHOWN_GUI.add(container);
-                    PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, drop);
+                    PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, Collections.singletonList(drop));
                     Sponge.getEventManager().post(openedEvent);
                 }).submit(GWMCrates.getInstance());
         waitTime += closeDelay;

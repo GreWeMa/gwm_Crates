@@ -1,20 +1,18 @@
-package dev.gwm.spongeplugin.crates.superobject.keys;
+package dev.gwm.spongeplugin.crates.superobject.key;
 
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.superobject.GiveableKey;
-import dev.gwm.spongeplugin.crates.superobject.Key;
+import dev.gwm.spongeplugin.crates.superobject.key.base.GiveableKey;
+import dev.gwm.spongeplugin.crates.superobject.key.base.Key;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.superobject.Giveable;
+import dev.gwm.spongeplugin.library.superobject.SuperObject;
+import dev.gwm.spongeplugin.library.utils.GiveableData;
+import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
 import ninja.leaping.configurate.ConfigurationNode;
-import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
-import dev.gwm.spongeplugin.crates.util.Giveable;
-import dev.gwm.spongeplugin.crates.util.SuperObjectType;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.economy.Currency;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public final class MultiKey extends GiveableKey {
 
@@ -33,21 +31,35 @@ public final class MultiKey extends GiveableKey {
             }
             List<Key> tempKeys = new ArrayList<>();
             for (ConfigurationNode keyNode : keysNode.getChildrenList()) {
-                tempKeys.add((Key) GWMCratesUtils.createSuperObject(keyNode, SuperObjectType.KEY));
+                tempKeys.add(Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                        create(GWMCratesSuperObjectCategories.KEY, keyNode));
+            }
+            if (tempKeys.isEmpty()) {
+                throw new IllegalArgumentException("No Keys are configured! At least one Key is required!");
             }
             keys = Collections.unmodifiableList(tempKeys);
             allKeysNeeded = allKeysNeededNode.getBoolean(true);
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
     public MultiKey(Optional<String> id, boolean doNotWithdraw,
-                    Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
+                    GiveableData giveableData, boolean doNotAdd,
                     List<Key> keys, boolean allKeysNeeded) {
-        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
-        this.keys = keys;
+        super(id, doNotWithdraw, giveableData, doNotAdd);
+        if (keys.isEmpty()) {
+            throw new IllegalArgumentException("No Keys are configured! At least one Key is required!");
+        }
+        this.keys = Collections.unmodifiableList(keys);
         this.allKeysNeeded = allKeysNeeded;
+    }
+
+    @Override
+    public Set<SuperObject> getInternalSuperObjects() {
+        Set<SuperObject> set = super.getInternalSuperObjects();
+        set.addAll(keys);
+        return set;
     }
 
     @Override

@@ -1,23 +1,24 @@
-package dev.gwm.spongeplugin.crates.open_manager.open_managers;
+package dev.gwm.spongeplugin.crates.superobject.openmanager;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.reflect.TypeToken;
 import de.randombyte.holograms.api.HologramsService;
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.listener.Animation1Listener;
-import ninja.leaping.configurate.ConfigurationNode;
 import dev.gwm.spongeplugin.crates.event.PlayerOpenCrateEvent;
-import dev.gwm.spongeplugin.crates.manager.Manager;
-import dev.gwm.spongeplugin.crates.open_manager.OpenManager;
-import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
-import dev.gwm.spongeplugin.crates.util.SuperObjectType;
-import org.gwmdevelopments.sponge_plugin.library.utils.CreatedHologram;
-import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
-import org.gwmdevelopments.sponge_plugin.library.utils.HologramSettings;
+import dev.gwm.spongeplugin.crates.listener.Animation1Listener;
+import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
+import dev.gwm.spongeplugin.crates.superobject.openmanager.base.AbstractOpenManager;
+import dev.gwm.spongeplugin.crates.superobject.openmanager.base.OpenManager;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.superobject.SuperObject;
+import dev.gwm.spongeplugin.library.utils.CreatedHologram;
+import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.utils.HologramSettings;
+import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.effect.sound.SoundType;
@@ -29,19 +30,25 @@ import org.spongepowered.api.world.World;
 
 import java.util.*;
 
-public final class Animation1OpenManager extends OpenManager {
+public final class Animation1OpenManager extends AbstractOpenManager {
 
     public static final String TYPE = "ANIMATION1";
 
     public static final Map<Player, Information> PLAYERS_OPENING_ANIMATION1 = new HashMap<>();
 
-    public static final BlockType DEFAULT_FLOOR_BLOCK_TYPE = BlockTypes.NETHER_BRICK;
-    public static final BlockType DEFAULT_FENCE_BLOCK_TYPE = BlockTypes.NETHER_BRICK_FENCE;
-    public static final BlockType DEFAULT_CRATE_BLOCK_TYPE = BlockTypes.ENDER_CHEST;
+    public static final BlockState DEFAULT_FLOOR_BLOCK = BlockState.builder().
+            blockType(BlockTypes.NETHER_BRICK).
+            build();
+    public static final BlockState DEFAULT_FENCE_BLOCK = BlockState.builder().
+            blockType(BlockTypes.NETHER_BRICK_FENCE).
+            build();
+    public static final BlockState DEFAULT_CRATE_BLOCK = BlockState.builder().
+            blockType(BlockTypes.ENDER_CHEST).
+            build();
 
-    private final BlockType floorBlockType;
-    private final BlockType fenceBlockType;
-    private final BlockType crateBlockType;
+    private final BlockState floorBlock;
+    private final BlockState fenceBlock;
+    private final BlockState crateBlock;
     private final OpenManager openManager;
     private final Optional<HologramSettings> hologram;
     private final long closeDelay;
@@ -49,29 +56,30 @@ public final class Animation1OpenManager extends OpenManager {
     public Animation1OpenManager(ConfigurationNode node) {
         super(node);
         try {
-            ConfigurationNode floorBlockTypeNode = node.getNode("FLOOR_BLOCK_TYPE");
-            ConfigurationNode fenceBlockTypeNode = node.getNode("FENCE_BLOCK_TYPE");
-            ConfigurationNode crateBlockTypeNode = node.getNode("CRATE_BLOCK_TYPE");
+            ConfigurationNode floorBlockTypeNode = node.getNode("FLOOR_BLOCK");
+            ConfigurationNode fenceBlockTypeNode = node.getNode("FENCE_BLOCK");
+            ConfigurationNode crateBlockTypeNode = node.getNode("CRATE_BLOCK");
             ConfigurationNode openManagerNode = node.getNode("OPEN_MANAGER");
             ConfigurationNode closeDelayNode = node.getNode("CLOSE_DELAY");
             ConfigurationNode hologramNode = node.getNode("HOLOGRAM");
             if (!floorBlockTypeNode.isVirtual()) {
-                floorBlockType = floorBlockTypeNode.getValue(TypeToken.of(BlockType.class));
+                floorBlock = floorBlockTypeNode.getValue(TypeToken.of(BlockState.class));
             } else {
-                floorBlockType = DEFAULT_FLOOR_BLOCK_TYPE;
+                floorBlock = DEFAULT_FLOOR_BLOCK;
             }
             if (!fenceBlockTypeNode.isVirtual()) {
-                fenceBlockType = fenceBlockTypeNode.getValue(TypeToken.of(BlockType.class));
+                fenceBlock = fenceBlockTypeNode.getValue(TypeToken.of(BlockState.class));
             } else {
-                fenceBlockType = DEFAULT_FENCE_BLOCK_TYPE;
+                fenceBlock = DEFAULT_FENCE_BLOCK;
             }
             if (!crateBlockTypeNode.isVirtual()) {
-                crateBlockType = crateBlockTypeNode.getValue(TypeToken.of(BlockType.class));
+                crateBlock = crateBlockTypeNode.getValue(TypeToken.of(BlockState.class));
             } else {
-                crateBlockType = DEFAULT_CRATE_BLOCK_TYPE;
+                crateBlock = DEFAULT_CRATE_BLOCK;
             }
             if (!openManagerNode.isVirtual()) {
-                openManager = (OpenManager) GWMCratesUtils.createSuperObject(openManagerNode, SuperObjectType.OPEN_MANAGER);
+                openManager = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                        create(GWMCratesSuperObjectCategories.OPEN_MANAGER, openManagerNode);
             } else {
                 openManager = new NoGuiOpenManager(Optional.empty(), Optional.empty());
             }
@@ -84,20 +92,37 @@ public final class Animation1OpenManager extends OpenManager {
             }
             closeDelay = closeDelayNode.getInt(0);
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
-    public Animation1OpenManager(Optional<String> id, Optional<SoundType> openSound, BlockType floorBlockType,
-                                 BlockType fenceBlockType, BlockType crateBlockType, OpenManager openManager,
-                                 Optional<HologramSettings> hologram, int closeDelay) {
+    public Animation1OpenManager(Optional<String> id,
+                                 Optional<SoundType> openSound,
+                                 BlockState floorBlock, BlockState fenceBlock, BlockState crateBlock,
+                                 OpenManager openManager, Optional<HologramSettings> hologram, int closeDelay) {
         super(id, openSound);
-        this.floorBlockType = floorBlockType;
-        this.fenceBlockType = fenceBlockType;
-        this.crateBlockType = crateBlockType;
+        this.floorBlock = floorBlock;
+        this.fenceBlock = fenceBlock;
+        this.crateBlock = crateBlock;
         this.openManager = openManager;
         this.hologram = hologram;
         this.closeDelay = closeDelay;
+    }
+
+    @Override
+    public void shutdown() {
+        PLAYERS_OPENING_ANIMATION1.values().stream().
+                filter(info -> info.getOpenManager() == this).
+                flatMap(info -> info.getHolograms().stream()).
+                forEach(createdHologram -> createdHologram.getHolograms().
+                        forEach(HologramsService.Hologram::remove));
+    }
+
+    @Override
+    public Set<SuperObject> getInternalSuperObjects() {
+        Set<SuperObject> set = super.getInternalSuperObjects();
+        set.add(openManager);
+        return set;
     }
 
     @Override
@@ -133,35 +158,35 @@ public final class Animation1OpenManager extends OpenManager {
         for (int x = -2; x <= 2; x++) {
             for (int z = -2; z <= 2; z++) {
                 new Location<>(world, positionX + x, positionY - 1, positionZ + z).
-                        setBlockType(floorBlockType, BlockChangeFlags.NONE);
+                        setBlock(floorBlock, BlockChangeFlags.NONE);
                 if (z == 2 || z == -2 || x == 2 || x == -2) {
                     new Location<>(world, positionX + x, positionY , positionZ + z).
-                            setBlockType(fenceBlockType, BlockChangeFlags.NONE);
+                            setBlock(fenceBlock, BlockChangeFlags.NONE);
                 }
             }
         }
         HashSet<CreatedHologram> holograms = new HashSet<>();
         Location<World> location1 = new Location<>(world, positionX + 2, positionY, positionZ);
         location1.setBlock(BlockState.builder().
-                        blockType(crateBlockType).
+                        from(crateBlock).
                         add(Keys.DIRECTION, Direction.WEST).
                         build(),
                 BlockChangeFlags.NONE);
         Location<World> location2 = new Location<>(world, positionX - 2, positionY, positionZ);
         location2.setBlock(BlockState.builder().
-                        blockType(crateBlockType).
+                        from(crateBlock).
                         add(Keys.DIRECTION, Direction.EAST).
                         build(),
                 BlockChangeFlags.NONE);
         Location<World> location3 = new Location<>(world, positionX, positionY, positionZ + 2);
         location3.setBlock(BlockState.builder().
-                        blockType(crateBlockType).
+                        from(crateBlock).
                         add(Keys.DIRECTION, Direction.NORTH).
                         build(),
                 BlockChangeFlags.NONE);
         Location<World> location4 = new Location<>(world, positionX, positionY, positionZ - 2);
         location4.setBlock(BlockState.builder().
-                        blockType(crateBlockType).
+                        from(crateBlock).
                         add(Keys.DIRECTION, Direction.SOUTH).
                         build(),
                 BlockChangeFlags.NONE);
@@ -188,15 +213,6 @@ public final class Animation1OpenManager extends OpenManager {
                 !containsNearPlayers(player);
     }
 
-    @Override
-    public void shutdown() {
-        PLAYERS_OPENING_ANIMATION1.values().stream().
-                filter(info -> info.getOpenManager() == this).
-                flatMap(info -> info.getHolograms().stream()).
-                forEach(createdHologram -> createdHologram.getHolograms().
-                        forEach(HologramsService.Hologram::remove));
-    }
-
     private boolean containsNearPlayers(Player player) {
         for (Player p : PLAYERS_OPENING_ANIMATION1.keySet()) {
             if (p.getLocation().getPosition().distance(player.getLocation().getPosition()) < 5) {
@@ -211,16 +227,16 @@ public final class Animation1OpenManager extends OpenManager {
         return false;
     }
 
-    public BlockType getFloorBlockType() {
-        return floorBlockType;
+    public BlockState getFloorBlock() {
+        return floorBlock;
     }
 
-    public BlockType getFenceBlockType() {
-        return fenceBlockType;
+    public BlockState getFenceBlock() {
+        return fenceBlock;
     }
 
-    public BlockType getCrateBlockType() {
-        return crateBlockType;
+    public BlockState getCrateBlock() {
+        return crateBlock;
     }
 
     public OpenManager getOpenManager() {

@@ -1,13 +1,13 @@
-package dev.gwm.spongeplugin.crates.caze;
+package dev.gwm.spongeplugin.crates.superobject.caze;
 
 import de.randombyte.holograms.api.HologramsService;
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.superobject.Case;
+import dev.gwm.spongeplugin.crates.superobject.caze.base.AbstractCase;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.utils.CreatedHologram;
+import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.utils.HologramSettings;
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.library.utils.CreatedHologram;
-import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
-import org.gwmdevelopments.sponge_plugin.library.utils.HologramSettings;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -17,39 +17,35 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public final class BlockCase extends Case {
+public final class BlockCase extends AbstractCase {
 
     public static final String TYPE = "BLOCK";
 
     private final List<Location<World>> locations;
-    private final Optional<HologramSettings> hologram;
     private final boolean startPreviewOnLeftClick;
+    private final Optional<HologramSettings> hologram;
     private Optional<List<CreatedHologram>> createdHolograms;
 
     public BlockCase(ConfigurationNode node) {
         super(node);
         try {
-            ConfigurationNode locationNode = node.getNode("LOCATION");
             ConfigurationNode locationsNode = node.getNode("LOCATIONS");
-            ConfigurationNode hologramNode = node.getNode("HOLOGRAM");
             ConfigurationNode startPreviewOnLeftClickNode = node.getNode("START_PREVIEW_ON_LEFT_CLICK");
+            ConfigurationNode hologramNode = node.getNode("HOLOGRAM");
+            if (locationsNode.isVirtual()) {
+                throw new IllegalArgumentException("LOCATIONS node does not exist!");
+            }
             List<Location<World>> tempLocations = new ArrayList<>();
             if (!locationsNode.isVirtual()) {
                 for (ConfigurationNode innerLocationNode : locationsNode.getChildrenList()) {
                     tempLocations.add(GWMLibraryUtils.parseLocation(innerLocationNode));
                 }
             }
-            //Backwards compatibility
-            else if (!locationNode.isVirtual()) {
-                GWMCrates.getInstance().getLogger().warn("[BACKWARD COMPATIBILITY] LOCATIONS node does not exist! Trying to use LOCATION node!");
-                tempLocations.add(GWMLibraryUtils.parseLocation(locationNode));
-            } else {
-                throw new IllegalArgumentException("None of LOCATIONS and LOCATION nodes exist!");
-            }
             if (tempLocations.isEmpty()) {
-                throw new IllegalArgumentException("No locations are configured! At least one location is required!");
+                throw new IllegalArgumentException("No Locations are configured! At least one Location is required!");
             }
             locations = Collections.unmodifiableList(tempLocations);
+            startPreviewOnLeftClick = startPreviewOnLeftClickNode.getBoolean(false);
             if (!hologramNode.isVirtual()) {
                 hologram = Optional.of(GWMLibraryUtils.parseHologramSettings(hologramNode,
                         GWMCrates.getInstance().getHologramOffset(),
@@ -58,27 +54,35 @@ public final class BlockCase extends Case {
                 hologram = Optional.empty();
             }
             if (hologram.isPresent()) {
-                HologramSettings hgs = hologram.get();
+                HologramSettings hologramSettings = hologram.get();
                 List<CreatedHologram> tempCreatedHolograms = new ArrayList<>();
-                locations.forEach(loc -> tempCreatedHolograms.add(GWMLibraryUtils.createHologram(loc, hgs, true)));
+                locations.forEach(loc -> tempCreatedHolograms.add(GWMLibraryUtils.createHologram(loc, hologramSettings, true)));
                 createdHolograms = Optional.of(Collections.unmodifiableList(tempCreatedHolograms));
             } else {
                 createdHolograms = Optional.empty();
             }
-            startPreviewOnLeftClick = startPreviewOnLeftClickNode.getBoolean(false);
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
     public BlockCase(Optional<String> id,
-                     List<Location<World>> locations, Optional<HologramSettings> hologram, boolean startPreviewOnLeftClick,
-                     Optional<List<CreatedHologram>> createdHolograms) {
+                     List<Location<World>> locations, boolean startPreviewOnLeftClick, Optional<HologramSettings> hologram) {
         super(id, true);
-        this.locations = locations;
-        this.hologram = hologram;
+        if (locations.isEmpty()) {
+            throw new IllegalArgumentException("No Locations are configured! At least one Location is required!");
+        }
+        this.locations = Collections.unmodifiableList(locations);
         this.startPreviewOnLeftClick = startPreviewOnLeftClick;
-        this.createdHolograms = createdHolograms;
+        this.hologram = hologram;
+        if (hologram.isPresent()) {
+            HologramSettings hologramSettings = hologram.get();
+            List<CreatedHologram> tempCreatedHolograms = new ArrayList<>();
+            locations.forEach(loc -> tempCreatedHolograms.add(GWMLibraryUtils.createHologram(loc, hologramSettings, true)));
+            createdHolograms = Optional.of(Collections.unmodifiableList(tempCreatedHolograms));
+        } else {
+            createdHolograms = Optional.empty();
+        }
     }
 
     @Override
@@ -112,12 +116,12 @@ public final class BlockCase extends Case {
         return locations;
     }
 
-    public Optional<HologramSettings> getHologram() {
-        return hologram;
-    }
-
     public boolean isStartPreviewOnLeftClick() {
         return startPreviewOnLeftClick;
+    }
+
+    public Optional<HologramSettings> getHologram() {
+        return hologram;
     }
 
     public Optional<List<CreatedHologram>> getCreatedHolograms() {

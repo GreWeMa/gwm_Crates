@@ -4,32 +4,27 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.gwmdevelopments.sponge_plugin</groupId>
+    <groupId>dev.gwm.spongeplugin</groupId>
     <artifactId>crates</artifactId>
-    <version>nogui_beta-3.12</version>
+    <version>4.0</version>
     <name>GWMCrates</name>
     <packaging>jar</packaging>
 
     <repositories>
         <repository>
-            <id>gwmdev</id>
-            <url>https://maven.gwm.dev</url>
-        </repository>
-        <repository>
+            <!--spongeapi-->
             <id>sponge</id>
             <url>http://repo.spongepowered.org/maven</url>
         </repository>
         <repository>
+            <!--library-->
+            <id>gwmdev</id>
+            <url>https://maven.gwm.dev</url>
+        </repository>
+        <repository>
+            <!--holograms, placeholderapi-->
             <id>jitpack</id>
             <url>https://jitpack.io</url>
-        </repository>
-        <repository>
-            <id>jcenter</id>
-            <url>http://jcenter.bintray.com</url>
-        </repository>
-        <repository>
-            <id>forge</id>
-            <url>http://files.minecraftforge.net/maven</url>
         </repository>
     </repositories>
 
@@ -41,9 +36,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.gwmdevelopments.sponge_plugin</groupId>
+            <groupId>dev.gwm.spongeplugin</groupId>
             <artifactId>library</artifactId>
-            <version>beta-1.8</version>
+            <version>2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -56,12 +51,6 @@
             <groupId>com.github.rojo8399</groupId>
             <artifactId>PlaceholderAPI</artifactId>
             <version>4.5.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>me.ryanhamshire</groupId>
-            <artifactId>griefprevention</artifactId>
-            <version>1.12.2-4.3.0.662</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

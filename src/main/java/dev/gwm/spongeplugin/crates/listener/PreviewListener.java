@@ -1,7 +1,7 @@
-package org.gwmdevelopments.sponge_plugin.crates.listener;
+package dev.gwm.spongeplugin.crates.listener;
 
-import org.gwmdevelopments.sponge_plugin.crates.preview.previews.FirstGuiPreview;
-import org.gwmdevelopments.sponge_plugin.crates.preview.previews.SecondGuiPreview;
+import dev.gwm.spongeplugin.crates.superobject.preview.FirstGuiPreview;
+import dev.gwm.spongeplugin.crates.superobject.preview.SecondGuiPreview;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;

@@ -1,22 +1,24 @@
-package dev.gwm.spongeplugin.crates.drop.drops;
+package dev.gwm.spongeplugin.crates.superobject.drop;
 
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.drop.Drop;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
+import dev.gwm.spongeplugin.crates.superobject.drop.base.AbstractDrop;
+import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.superobject.SuperObject;
+import dev.gwm.spongeplugin.library.utils.DefaultRandomableData;
+import dev.gwm.spongeplugin.library.utils.GiveableData;
+import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
 import ninja.leaping.configurate.ConfigurationNode;
-import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
-import dev.gwm.spongeplugin.crates.util.SuperObjectType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.service.economy.Currency;
 
-import java.math.BigDecimal;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-public final class DelayDrop extends Drop {
+public final class DelayDrop extends AbstractDrop {
 
     public static final String TYPE = "DELAY";
 
@@ -34,18 +36,35 @@ public final class DelayDrop extends Drop {
             if (delayNode.isVirtual()) {
                 throw new IllegalArgumentException("DELAY node does not exist!");
             }
-            childDrop = (Drop) GWMCratesUtils.createSuperObject(childDropNode, SuperObjectType.DROP);
+            childDrop = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                    create(GWMCratesSuperObjectCategories.DROP, childDropNode);
             delay = delayNode.getLong();
+            if (delay <= 0) {
+                throw new IllegalArgumentException("Delay is equal to or less than 0!");
+            }
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
-    public DelayDrop(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency, Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview, Optional<Integer> level, Optional<Integer> fakeLevel, Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels, Optional<Long> weight, Optional<Long> fakeWeight, Map<String, Long> permissionWeights, Map<String, Long> permissionFakeWeights,
+    public DelayDrop(Optional<String> id,
+                     GiveableData giveableData,
+                     Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview,
+                     DefaultRandomableData defaultRandomableData,
                      Drop childDrop, long delay) {
-        super(id, price, sellCurrency, dropItem, customName, showInPreview, level, fakeLevel, permissionLevels, permissionFakeLevels, weight, fakeWeight, permissionWeights, permissionFakeWeights);
+        super(id, giveableData, dropItem, customName, showInPreview, defaultRandomableData);
         this.childDrop = childDrop;
+        if (delay <= 0) {
+            throw new IllegalArgumentException("Delay is equal to or less than 0!");
+        }
         this.delay = delay;
+    }
+
+    @Override
+    public Set<SuperObject> getInternalSuperObjects() {
+        Set<SuperObject> set = super.getInternalSuperObjects();
+        set.add(childDrop);
+        return set;
     }
 
     @Override

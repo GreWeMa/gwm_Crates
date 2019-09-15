@@ -1,18 +1,21 @@
-package dev.gwm.spongeplugin.crates.superobject.previews;
+package dev.gwm.spongeplugin.crates.superobject.preview;
 
+import com.google.common.reflect.TypeToken;
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.superobject.DecorativeItemsChangeMode;
-import dev.gwm.spongeplugin.crates.superobject.Drop;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.manager.Manager;
-import dev.gwm.spongeplugin.crates.open_manager.open_managers.FirstOpenManager;
-import dev.gwm.spongeplugin.crates.util.DecorativeDropChangeRunnable;
-import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
-import dev.gwm.spongeplugin.crates.util.SuperObjectType;
+import dev.gwm.spongeplugin.crates.superobject.changemode.base.DecorativeItemsChangeMode;
+import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
+import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
+import dev.gwm.spongeplugin.crates.superobject.openmanager.FirstOpenManager;
+import dev.gwm.spongeplugin.crates.superobject.preview.base.AbstractPreview;
+import dev.gwm.spongeplugin.crates.utils.DecorativeItemsChangeRunnable;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.superobject.SuperObject;
+import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.utils.Pair;
+import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
 import ninja.leaping.configurate.ConfigurationNode;
-import dev.gwm.spongeplugin.crates.superobject.Preview;
-import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Container;
@@ -23,12 +26,11 @@ import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public final class FirstGuiPreview extends Preview {
+public final class FirstGuiPreview extends AbstractPreview {
 
     public static final String TYPE = "FIRST";
 
@@ -60,7 +62,7 @@ public final class FirstGuiPreview extends Preview {
             ConfigurationNode scrollDelayNode = node.getNode("SCROLL_DELAY");
             ConfigurationNode decorativeItemsChangeModeNode = node.getNode("DECORATIVE_ITEMS_CHANGE_MODE");
             if (!displayNameNode.isVirtual()) {
-                displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
+                displayName = Optional.of(displayNameNode.getValue(TypeToken.of(Text.class)));
             } else {
                 displayName = Optional.empty();
             }
@@ -73,12 +75,13 @@ public final class FirstGuiPreview extends Preview {
             decorativeItems = Collections.unmodifiableList(tempDecorativeItems);
             scrollDelay = scrollDelayNode.getInt(10);
             if (!decorativeItemsChangeModeNode.isVirtual()) {
-                decorativeItemsChangeMode = Optional.of((DecorativeItemsChangeMode) GWMCratesUtils.createSuperObject(decorativeItemsChangeModeNode, SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE));
+                decorativeItemsChangeMode = Optional.of(Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                        create(GWMCratesSuperObjectCategories.DECORATIVE_ITEMS_CHANGE_MODE, decorativeItemsChangeModeNode));
             } else {
                 decorativeItemsChangeMode = Optional.empty();
             }
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
@@ -87,9 +90,16 @@ public final class FirstGuiPreview extends Preview {
                            int scrollDelay, Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode) {
         super(id, customDrops);
         this.displayName = displayName;
-        this.decorativeItems = decorativeItems;
+        this.decorativeItems = Collections.unmodifiableList(decorativeItems);
         this.scrollDelay = scrollDelay;
         this.decorativeItemsChangeMode = decorativeItemsChangeMode;
+    }
+
+    @Override
+    public Set<SuperObject> getInternalSuperObjects() {
+        Set<SuperObject> set = super.getInternalSuperObjects();
+        decorativeItemsChangeMode.ifPresent(set::add);
+        return set;
     }
 
     @Override
@@ -133,7 +143,7 @@ public final class FirstGuiPreview extends Preview {
             if (!decorativeItems.isEmpty()) {
                 decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
                         createTaskBuilder().delayTicks(mode.getChangeDelay()).
-                        execute(new DecorativeDropChangeRunnable(player, container, ordered, new ArrayList<>(decorativeItems), mode, FirstOpenManager.DECORATIVE_ITEMS_INDICES)).
+                        execute(new DecorativeItemsChangeRunnable(player, container, ordered, mode, FirstOpenManager.DECORATIVE_ITEMS_INDICES, decorativeItems)).
                         submit(GWMCrates.getInstance()));
             }
             Sponge.getScheduler().createTaskBuilder().delayTicks(scrollDelay).

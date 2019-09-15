@@ -1,6 +1,7 @@
-package dev.gwm.spongeplugin.crates.command.commands;
+package dev.gwm.spongeplugin.crates.command;
 
 import dev.gwm.spongeplugin.crates.GWMCrates;
+import dev.gwm.spongeplugin.library.utils.Language;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -8,10 +9,16 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 
 public class SaveCommand implements CommandExecutor {
 
+    private final Language language;
+
+    public SaveCommand(Language language) {
+        this.language = language;
+    }
+
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) {
+    public CommandResult execute(CommandSource source, CommandContext args) {
         GWMCrates.getInstance().save();
-        src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_SAVED", src, null));
+        source.sendMessages(language.getTranslation("SUCCESSFULLY_SAVED", source));
         return CommandResult.success();
     }
 }

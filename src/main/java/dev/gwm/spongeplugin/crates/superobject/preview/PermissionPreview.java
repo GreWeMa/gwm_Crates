@@ -1,18 +1,22 @@
-package dev.gwm.spongeplugin.crates.superobject.previews;
+package dev.gwm.spongeplugin.crates.superobject.preview;
 
-import dev.gwm.spongeplugin.crates.superobject.Drop;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.manager.Manager;
-import dev.gwm.spongeplugin.crates.superobject.Preview;
-import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
-import dev.gwm.spongeplugin.crates.util.SuperObjectType;
+import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
+import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
+import dev.gwm.spongeplugin.crates.superobject.preview.base.AbstractPreview;
+import dev.gwm.spongeplugin.crates.superobject.preview.base.Preview;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.superobject.SuperObject;
+import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
-public final class PermissionPreview extends Preview {
+public final class PermissionPreview extends AbstractPreview {
 
     public static final String TYPE = "PREVIEW";
 
@@ -36,10 +40,12 @@ public final class PermissionPreview extends Preview {
                 throw new IllegalArgumentException("PREVIEW2 node does not exist!");
             }
             permission = permissionNode.getString();
-            preview1 = (Preview) GWMCratesUtils.createSuperObject(preview1Node, SuperObjectType.PREVIEW);
-            preview2 = (Preview) GWMCratesUtils.createSuperObject(preview2Node, SuperObjectType.PREVIEW);
+            preview1 = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                    create(GWMCratesSuperObjectCategories.PREVIEW, preview1Node);
+            preview2 = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                    create(GWMCratesSuperObjectCategories.PREVIEW, preview2Node);
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
@@ -49,6 +55,14 @@ public final class PermissionPreview extends Preview {
         this.permission = permission;
         this.preview1 = preview1;
         this.preview2 = preview2;
+    }
+
+    @Override
+    public Set<SuperObject> getInternalSuperObjects() {
+        Set<SuperObject> set = super.getInternalSuperObjects();
+        set.add(preview1);
+        set.add(preview2);
+        return set;
     }
 
     @Override

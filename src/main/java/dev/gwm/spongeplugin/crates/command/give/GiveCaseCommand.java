@@ -1,10 +1,10 @@
-package dev.gwm.spongeplugin.crates.command.commands.give;
+package dev.gwm.spongeplugin.crates.command.give;
 
-import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.superobject.Case;
+import dev.gwm.spongeplugin.crates.superobject.caze.base.Case;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
-import dev.gwm.spongeplugin.crates.util.Giveable;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
+import dev.gwm.spongeplugin.library.superobject.Giveable;
+import dev.gwm.spongeplugin.library.utils.Language;
+import dev.gwm.spongeplugin.library.utils.Pair;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -12,41 +12,56 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
+import java.util.Arrays;
+
 public class GiveCaseCommand implements CommandExecutor {
 
+    private final Language language;
+
+    public GiveCaseCommand(Language language) {
+        this.language = language;
+    }
+
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) {
+    public CommandResult execute(CommandSource source, CommandContext args) {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
         String managerId = manager.getId();
         Player player = args.<Player>getOne(Text.of("player")).get();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
-        boolean force = args.<Boolean>getOne(Text.of("force")).orElse(false);
-        boolean self = src.equals(player);
+        boolean force = args.hasAny("f");
+        boolean self = source.equals(player);
         if (self) {
-            if (!player.hasPermission("gwm_crates.command.give.manager." + managerId + ".case")) {
-                player.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
-                return CommandResult.success();
+            if (!source.hasPermission("gwm_crates.command.give." + managerId + ".case")) {
+                source.sendMessages(language.getTranslation("HAVE_NOT_PERMISSION", source));
+                return CommandResult.empty();
             }
         } else {
-            if (!src.hasPermission("gwm_crates.command.give_others.manager." + managerId + ".case")) {
-                src.sendMessage(GWMCrates.getInstance().getLanguage().getText("HAVE_NOT_PERMISSION", src, null));
-                return CommandResult.success();
+            if (!source.hasPermission("gwm_crates.command.give_others." + managerId + ".case")) {
+                source.sendMessages(language.getTranslation("HAVE_NOT_PERMISSION", source));
+                return CommandResult.empty();
             }
         }
         Case caze = manager.getCase();
         if (!(caze instanceof Giveable)) {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SSO_IS_NOT_GIVEABLE", src, null,
-                    new Pair<>("%SUPER_OBJECT%", caze)));
-            return CommandResult.success();
+            source.sendMessages(language.getTranslation("CASE_IS_NOT_GIVEABLE", Arrays.asList(
+                    new Pair<>("MANAGER_NAME", manager.getName()),
+                    new Pair<>("MANAGER_ID", manager.getId())
+            ), source));
+            return CommandResult.empty();
         }
         ((Giveable) caze).give(player, amount, force);
         if (self) {
-            player.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_GOT_CASE", src, null,
-                    new Pair<>("%MANAGER%", manager.getName())));
+            source.sendMessages(language.getTranslation("SUCCESSFULLY_GOT_CASE", Arrays.asList(
+                    new Pair<>("MANAGER_NAME", manager.getName()),
+                    new Pair<>("MANAGER_ID", manager.getId())
+            ), source));
         } else {
-            src.sendMessage(GWMCrates.getInstance().getLanguage().getText("SUCCESSFULLY_GAVE_CASE", src, null,
-                    new Pair<>("%MANAGER%", manager.getName()),
-                    new Pair<>("%PLAYER%", player.getName())));
+            source.sendMessages(language.getTranslation("SUCCESSFULLY_GAVE_CASE", Arrays.asList(
+                    new Pair<>("MANAGER_NAME", manager.getName()),
+                    new Pair<>("MANAGER_ID", manager.getId()),
+                    new Pair<>("PLAYER_NAME", player.getName()),
+                    new Pair<>("PLAYER_UUID", player.getUniqueId())
+            ), source));
         }
         return CommandResult.success();
     }

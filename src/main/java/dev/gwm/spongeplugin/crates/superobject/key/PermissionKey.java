@@ -1,13 +1,13 @@
-package dev.gwm.spongeplugin.crates.superobject.keys;
+package dev.gwm.spongeplugin.crates.superobject.key;
 
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.superobject.Key;
+import dev.gwm.spongeplugin.crates.superobject.key.base.AbstractKey;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Optional;
 
-public final class PermissionKey extends Key {
+public final class PermissionKey extends AbstractKey {
 
     public static final String TYPE = "PERMISSION";
 
@@ -22,7 +22,7 @@ public final class PermissionKey extends Key {
             }
             permission = permissionNode.getString();
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 

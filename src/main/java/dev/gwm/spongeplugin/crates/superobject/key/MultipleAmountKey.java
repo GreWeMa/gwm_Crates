@@ -1,17 +1,19 @@
-package dev.gwm.spongeplugin.crates.superobject.keys;
+package dev.gwm.spongeplugin.crates.superobject.key;
 
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.superobject.GiveableKey;
-import dev.gwm.spongeplugin.crates.superobject.Key;
+import dev.gwm.spongeplugin.crates.superobject.key.base.GiveableKey;
+import dev.gwm.spongeplugin.crates.superobject.key.base.Key;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.superobject.Giveable;
+import dev.gwm.spongeplugin.library.superobject.SuperObject;
+import dev.gwm.spongeplugin.library.utils.GiveableData;
+import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
 import ninja.leaping.configurate.ConfigurationNode;
-import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
-import dev.gwm.spongeplugin.crates.util.Giveable;
-import dev.gwm.spongeplugin.crates.util.SuperObjectType;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.economy.Currency;
 
-import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.Set;
 
 public final class MultipleAmountKey extends GiveableKey {
 
@@ -28,19 +30,36 @@ public final class MultipleAmountKey extends GiveableKey {
             if (childKeyNode.isVirtual()) {
                 throw new IllegalArgumentException("CHILD_KEY node does not exist!");
             }
-            childKey = (Key) GWMCratesUtils.createSuperObject(childKeyNode, SuperObjectType.KEY);
-            amount = amountNode.getInt(1);
+            if (amountNode.isVirtual()) {
+                throw new IllegalArgumentException("AMOUNT node does not exist!");
+            }
+            childKey = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                    create(GWMCratesSuperObjectCategories.KEY, childKeyNode);
+            amount = amountNode.getInt();
+            if (amount <= 0) {
+                throw new IllegalArgumentException("Amount is equal to or less than 0!");
+            }
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
     public MultipleAmountKey(Optional<String> id, boolean doNotWithdraw,
-                             Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
+                             GiveableData giveableData, boolean doNotAdd,
                              Key childKey, int amount) {
-        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
+        super(id, doNotWithdraw, giveableData, doNotAdd);
         this.childKey = childKey;
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount is equal to or less than 0!");
+        }
         this.amount = amount;
+    }
+
+    @Override
+    public Set<SuperObject> getInternalSuperObjects() {
+        Set<SuperObject> set = super.getInternalSuperObjects();
+        set.add(childKey);
+        return set;
     }
 
     @Override

@@ -1,14 +1,16 @@
-package dev.gwm.spongeplugin.crates.superobject.keys;
+package dev.gwm.spongeplugin.crates.superobject.key;
 
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
+import dev.gwm.spongeplugin.crates.superobject.key.base.GiveableKey;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.utils.GiveableData;
 import ninja.leaping.configurate.ConfigurationNode;
-import dev.gwm.spongeplugin.crates.superobject.GiveableKey;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.economy.Currency;
 
-import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,18 +45,22 @@ public final class VirtualKey extends GiveableKey {
             }
             virtualName = virtualNameNode.getString();
             if (virtualName.length() > GWMCrates.getInstance().getMaxVirtualNamesLength()) {
-                throw new IllegalArgumentException("VIRTUAL_NAME length is more than \"MAX_VIRTUAL_NAMES_LENGTH\" (" +
+                throw new IllegalArgumentException("Virtual Name length is greater than MAX_VIRTUAL_NAMES_LENGTH (" +
                         GWMCrates.getInstance().getMaxVirtualNamesLength() + ")!");
             }
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
     public VirtualKey(Optional<String> id, boolean doNotWithdraw,
-                      Optional<BigDecimal> price, Optional<Currency> sellCurrency, boolean doNotAdd,
+                      GiveableData giveableData, boolean doNotAdd,
                       String virtualName) {
-        super(id, doNotWithdraw, price, sellCurrency, doNotAdd);
+        super(id, doNotWithdraw, giveableData, doNotAdd);
+        if (virtualName.length() > GWMCrates.getInstance().getMaxVirtualNamesLength()) {
+            throw new IllegalArgumentException("Virtual Name length is greater than MAX_VIRTUAL_NAMES_LENGTH (" +
+                    GWMCrates.getInstance().getMaxVirtualNamesLength() + ")!");
+        }
         this.virtualName = virtualName;
     }
 

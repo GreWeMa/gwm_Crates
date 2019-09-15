@@ -1,7 +1,7 @@
-package dev.gwm.spongeplugin.crates.superobject.keys;
+package dev.gwm.spongeplugin.crates.superobject.key;
 
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.superobject.Key;
+import dev.gwm.spongeplugin.crates.superobject.key.base.AbstractKey;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -12,9 +12,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public final class WorldTimeKey extends Key {
+public final class WorldTimeKey extends AbstractKey {
 
     public static final String TYPE = "WORLD-TIME";
+
+    private final static Map<String, Integer> PREDEFINED_TIME_VALUES;
+
+    static {
+        Map<String, Integer> predefinedTimeValues = new HashMap<>();
+        predefinedTimeValues.put("DAY", 1000);
+        predefinedTimeValues.put("NOON", 6000);
+        predefinedTimeValues.put("SUNSET", 12000);
+        predefinedTimeValues.put("NIGHT", 13000);
+        predefinedTimeValues.put("MIDNIGHT", 18000);
+        predefinedTimeValues.put("SUNRISE", 23000);
+        PREDEFINED_TIME_VALUES = Collections.unmodifiableMap(predefinedTimeValues);
+    }
 
     private final boolean whitelistMode;
     private final Map<Integer, Integer> timeValues;
@@ -32,22 +45,23 @@ public final class WorldTimeKey extends Key {
             whitelistMode = whitelistModeNode.getBoolean(true);
             Map<Integer, Integer> tempTimeValues = new HashMap<>();
             for (Map.Entry<Object, ? extends ConfigurationNode> entry : timeValuesNode.getChildrenMap().entrySet()) {
-                int key = Integer.parseInt(entry.getKey().toString());
-                int value = entry.getValue().getInt();
+                int key = parseTimeValue(entry.getKey().toString());
+                int value = parseTimeValue(entry.getValue().getString());
                 tempTimeValues.put(key, value);
             }
+            checkTimeValues(tempTimeValues);
             timeValues = Collections.unmodifiableMap(tempTimeValues);
             if (!worldNode.isVirtual()) {
                 String worldName = worldNode.getString();
                 world = Sponge.getServer().getWorld(worldName);
                 if (!world.isPresent()) {
-                    throw new IllegalArgumentException("WORLD \"" + worldNode + "\" does not exist!");
+                    throw new IllegalArgumentException("World \"" + worldNode + "\" is not found!");
                 }
             } else {
                 world = Optional.empty();
             }
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
@@ -55,8 +69,27 @@ public final class WorldTimeKey extends Key {
                         boolean whitelistMode, Map<Integer, Integer> timeValues, Optional<World> world) {
         super(id, doNotWithdraw);
         this.whitelistMode = whitelistMode;
-        this.timeValues = timeValues;
+        checkTimeValues(timeValues);
+        this.timeValues = Collections.unmodifiableMap(timeValues);
         this.world = world;
+    }
+
+    private int parseTimeValue(String string) {
+        if (PREDEFINED_TIME_VALUES.containsKey(string)) {
+            return PREDEFINED_TIME_VALUES.get(string);
+        }
+        return Integer.parseInt(string);
+    }
+
+    private void checkTimeValues(Map<Integer, Integer> timeValues) {
+        if (timeValues.isEmpty()) {
+            throw new IllegalArgumentException("No Time Values are configured! At least one Tie Value is required!");
+        }
+        timeValues.forEach((start, end) -> {
+            if (start >= end || start < 0 || end > 24000) {
+                throw new IllegalArgumentException("Time Value (" + start + " -> " + end + ") is illegal! Start should be less then End, Start should be greater than 0 and End should be less than 24000!");
+            }
+        });
     }
 
     @Override
@@ -70,7 +103,7 @@ public final class WorldTimeKey extends Key {
 
     @Override
     public int get(Player player) {
-        long time = world.orElse(player.getWorld()).getProperties().getWorldTime() % 2400;
+        long time = world.orElse(player.getWorld()).getProperties().getWorldTime() % 24_000;
         if (whitelistMode) {
             for (Map.Entry<Integer, Integer> entry : timeValues.entrySet()) {
                 if (entry.getKey() >= time && time <= entry.getValue()) {

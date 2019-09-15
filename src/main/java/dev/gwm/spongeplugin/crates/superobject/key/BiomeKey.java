@@ -1,8 +1,8 @@
-package dev.gwm.spongeplugin.crates.superobject.keys;
+package dev.gwm.spongeplugin.crates.superobject.key;
 
 import com.google.common.reflect.TypeToken;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.superobject.Key;
+import dev.gwm.spongeplugin.crates.superobject.key.base.AbstractKey;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.biome.BiomeType;
@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public final class BiomeKey extends Key {
+public final class BiomeKey extends AbstractKey {
 
     public static final String TYPE = "BIOME";
 
@@ -32,9 +32,12 @@ public final class BiomeKey extends Key {
             for (ConfigurationNode biomeNode : biomesNode.getChildrenList()) {
                 tempBiomes.add(biomeNode.getValue(TypeToken.of(BiomeType.class)));
             }
+            if (tempBiomes.isEmpty()) {
+                throw new IllegalArgumentException("No Biomes are configured! At least one Biome is required!");
+            }
             biomes = Collections.unmodifiableList(tempBiomes);
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
@@ -42,7 +45,10 @@ public final class BiomeKey extends Key {
                     boolean whitelistMode, List<BiomeType> biomes) {
         super(id, doNotWithdraw);
         this.whitelistMode = whitelistMode;
-        this.biomes = biomes;
+        if (biomes.isEmpty()) {
+            throw new IllegalArgumentException("No Biomes are configured! At least one Biome is required!");
+        }
+        this.biomes = Collections.unmodifiableList(biomes);
     }
 
     @Override

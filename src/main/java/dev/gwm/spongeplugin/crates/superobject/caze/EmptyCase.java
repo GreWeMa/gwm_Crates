@@ -1,12 +1,12 @@
-package dev.gwm.spongeplugin.crates.caze;
+package dev.gwm.spongeplugin.crates.superobject.caze;
 
-import dev.gwm.spongeplugin.crates.superobject.Case;
+import dev.gwm.spongeplugin.crates.superobject.caze.base.AbstractCase;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Optional;
 
-public final class EmptyCase extends Case {
+public final class EmptyCase extends AbstractCase {
 
     public static final String TYPE = "EMPTY";
 

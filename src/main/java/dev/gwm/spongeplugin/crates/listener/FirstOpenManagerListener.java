@@ -1,6 +1,6 @@
-package org.gwmdevelopments.sponge_plugin.crates.listener;
+package dev.gwm.spongeplugin.crates.listener;
 
-import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.FirstOpenManager;
+import dev.gwm.spongeplugin.crates.superobject.openmanager.FirstOpenManager;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;

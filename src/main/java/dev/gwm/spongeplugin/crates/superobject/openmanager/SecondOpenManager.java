@@ -1,15 +1,15 @@
-package dev.gwm.spongeplugin.crates.open_manager.open_managers;
+package dev.gwm.spongeplugin.crates.superobject.openmanager;
 
 import com.google.common.reflect.TypeToken;
 import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.crates.event.PlayerOpenCrateEvent;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.manager.Manager;
-import dev.gwm.spongeplugin.crates.open_manager.OpenManager;
-import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
+import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
+import dev.gwm.spongeplugin.crates.superobject.openmanager.base.AbstractOpenManager;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.utils.Pair;
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.living.player.Player;
@@ -23,13 +23,12 @@ import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public final class SecondOpenManager extends OpenManager {
+public final class SecondOpenManager extends AbstractOpenManager {
 
     public static final String TYPE = "SECOND";
 
@@ -62,7 +61,7 @@ public final class SecondOpenManager extends OpenManager {
             ConfigurationNode giveRandomOnCloseNode = node.getNode("GIVE_RANDOM_ON_CLOSE");
             ConfigurationNode clickSoundNode = node.getNode("CLICK_SOUND");
             if (!displayNameNode.isVirtual()) {
-                displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
+                displayName = Optional.of(displayNameNode.getValue(TypeToken.of(Text.class)));
             } else {
                 displayName = Optional.empty();
             }
@@ -90,7 +89,7 @@ public final class SecondOpenManager extends OpenManager {
                 clickSound = Optional.empty();
             }
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
@@ -103,9 +102,15 @@ public final class SecondOpenManager extends OpenManager {
         this.displayName = displayName;
         this.hiddenItem = hiddenItem;
         this.increaseHiddenItemQuantity = increaseHiddenItemQuantity;
+        if (rows < 1 || rows > 6) {
+            throw new RuntimeException("ROWS is greater than 6 or less than 1!");
+        }
         this.rows = rows;
         this.showOtherDrops = showOtherDrops;
         this.showOtherDropsDelay = showOtherDropsDelay;
+        if (closeDelay <= showOtherDropsDelay) {
+            throw new RuntimeException("SHOW_OTHER_DROPS_DELAY is greater than or equal to CLOSE DELAY!");
+        }
         this.closeDelay = closeDelay;
         this.forbidClose = forbidClose;
         this.giveRandomOnClose = giveRandomOnClose;

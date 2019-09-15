@@ -1,18 +1,19 @@
-package dev.gwm.spongeplugin.crates.open_manager.open_managers;
+package dev.gwm.spongeplugin.crates.superobject.openmanager;
 
-import dev.gwm.spongeplugin.crates.open_manager.OpenManager;
-import ninja.leaping.configurate.ConfigurationNode;
-import dev.gwm.spongeplugin.crates.superobject.Drop;
 import dev.gwm.spongeplugin.crates.event.PlayerOpenCrateEvent;
 import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEvent;
-import dev.gwm.spongeplugin.crates.manager.Manager;
+import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
+import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
+import dev.gwm.spongeplugin.crates.superobject.openmanager.base.AbstractOpenManager;
+import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.living.player.Player;
 
+import java.util.Collections;
 import java.util.Optional;
 
-public final class NoGuiOpenManager extends OpenManager {
+public final class NoGuiOpenManager extends AbstractOpenManager {
 
     public static final String TYPE = "NO-GUI";
 
@@ -36,10 +37,10 @@ public final class NoGuiOpenManager extends OpenManager {
         if (openEvent.isCancelled()) {
             return;
         }
-        Drop drop = manager.getRandomManager().choose(manager.getDrops(), player, false);
+        Drop drop = (Drop) manager.getRandomManager().choose(manager.getDrops(), player, false);
         drop.give(player, 1);
         getOpenSound().ifPresent(open_sound -> player.playSound(open_sound, player.getLocation().getPosition(), 1.));
-        PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, drop);
+        PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, Collections.singletonList(drop));
         Sponge.getEventManager().post(openedEvent);
     }
 }

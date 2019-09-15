@@ -1,19 +1,22 @@
-package dev.gwm.spongeplugin.crates.drop.drops;
+package dev.gwm.spongeplugin.crates.superobject.drop;
 
-import dev.gwm.spongeplugin.crates.drop.Drop;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.util.SuperObjectType;
+import dev.gwm.spongeplugin.crates.superobject.drop.base.AbstractDrop;
+import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.superobject.SuperObject;
+import dev.gwm.spongeplugin.library.utils.DefaultRandomableData;
+import dev.gwm.spongeplugin.library.utils.GiveableData;
+import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
 import ninja.leaping.configurate.ConfigurationNode;
-import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.service.economy.Currency;
 
-import java.math.BigDecimal;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
-public final class PermissionDrop extends Drop {
+public final class PermissionDrop extends AbstractDrop {
 
     public static final String TYPE = "PERMISSION";
 
@@ -37,19 +40,32 @@ public final class PermissionDrop extends Drop {
                 throw new IllegalArgumentException("DROP2 node does not exist!");
             }
             permission = permissionNode.getString();
-            drop1 = (Drop) GWMCratesUtils.createSuperObject(drop1Node, SuperObjectType.DROP);
-            drop2 = (Drop) GWMCratesUtils.createSuperObject(drop2Node, SuperObjectType.DROP);
+            drop1 = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                    create(GWMCratesSuperObjectCategories.DROP, drop1Node);
+            drop2 = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                    create(GWMCratesSuperObjectCategories.DROP, drop2Node);
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
-    public PermissionDrop(Optional<String> id, Optional<BigDecimal> price, Optional<Currency> sellCurrency, Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview, Optional<Integer> level, Optional<Integer> fakeLevel, Map<String, Integer> permissionLevels, Map<String, Integer> permissionFakeLevels, Optional<Long> weight, Optional<Long> fakeWeight, Map<String, Long> permissionWeights, Map<String, Long> permissionFakeWeights,
+    public PermissionDrop(Optional<String> id,
+                          GiveableData giveableData,
+                          Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview,
+                          DefaultRandomableData defaultRandomableData,
                           String permission, Drop drop1, Drop drop2) {
-        super(id, price, sellCurrency, dropItem, customName, showInPreview, level, fakeLevel, permissionLevels, permissionFakeLevels, weight, fakeWeight, permissionWeights, permissionFakeWeights);
+        super(id, giveableData, dropItem, customName, showInPreview, defaultRandomableData);
         this.permission = permission;
         this.drop1 = drop1;
         this.drop2 = drop2;
+    }
+
+    @Override
+    public Set<SuperObject> getInternalSuperObjects() {
+        Set<SuperObject> set = super.getInternalSuperObjects();
+        set.add(drop1);
+        set.add(drop2);
+        return set;
     }
 
     @Override

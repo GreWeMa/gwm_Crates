@@ -1,7 +1,7 @@
-package org.gwmdevelopments.sponge_plugin.crates.event;
+package dev.gwm.spongeplugin.crates.event;
 
-import org.gwmdevelopments.sponge_plugin.crates.GWMCrates;
-import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
+import dev.gwm.spongeplugin.crates.GWMCrates;
+import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.cause.Cause;

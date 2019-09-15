@@ -1,36 +1,39 @@
-package org.gwmdevelopments.sponge_plugin.crates;
+package dev.gwm.spongeplugin.crates;
 
 import com.flowpowered.math.vector.Vector3d;
+import dev.gwm.spongeplugin.crates.listener.*;
+import dev.gwm.spongeplugin.crates.superobject.caze.*;
+import dev.gwm.spongeplugin.crates.superobject.changemode.OrderedDecorativeItemsChangeMode;
+import dev.gwm.spongeplugin.crates.superobject.changemode.RandomDecorativeItemsChangeMode;
+import dev.gwm.spongeplugin.crates.superobject.drop.*;
+import dev.gwm.spongeplugin.crates.superobject.key.*;
+import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
+import dev.gwm.spongeplugin.crates.superobject.manager.ManagerImpl;
+import dev.gwm.spongeplugin.crates.superobject.openmanager.*;
+import dev.gwm.spongeplugin.crates.superobject.preview.FirstGuiPreview;
+import dev.gwm.spongeplugin.crates.superobject.preview.SecondGuiPreview;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesCommandUtils;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.library.event.*;
+import dev.gwm.spongeplugin.library.superobject.SuperObject;
+import dev.gwm.spongeplugin.library.utils.*;
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.crates.caze.*;
-import org.gwmdevelopments.sponge_plugin.crates.change_mode.OrderedChangeMode;
-import org.gwmdevelopments.sponge_plugin.crates.change_mode.RandomChangeMode;
-import org.gwmdevelopments.sponge_plugin.crates.command.GWMCratesCommandUtils;
-import org.gwmdevelopments.sponge_plugin.crates.drop.drops.*;
-import org.gwmdevelopments.sponge_plugin.crates.event.GWMCratesRegistrationEvent;
-import org.gwmdevelopments.sponge_plugin.crates.key.keys.*;
-import org.gwmdevelopments.sponge_plugin.crates.listener.*;
-import org.gwmdevelopments.sponge_plugin.crates.manager.Manager;
-import org.gwmdevelopments.sponge_plugin.crates.open_manager.open_managers.*;
-import org.gwmdevelopments.sponge_plugin.crates.preview.previews.FirstGuiPreview;
-import org.gwmdevelopments.sponge_plugin.crates.preview.previews.PermissionPreview;
-import org.gwmdevelopments.sponge_plugin.crates.preview.previews.SecondGuiPreview;
-import org.gwmdevelopments.sponge_plugin.crates.random_manager.RandomManager;
-import org.gwmdevelopments.sponge_plugin.crates.random_manager.random_managers.LevelRandomManager;
-import org.gwmdevelopments.sponge_plugin.crates.random_manager.random_managers.WeightRandomManager;
-import org.gwmdevelopments.sponge_plugin.crates.util.GWMCratesUtils;
-import org.gwmdevelopments.sponge_plugin.crates.util.SuperObject;
-import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectStorage;
-import org.gwmdevelopments.sponge_plugin.crates.util.SuperObjectType;
-import org.gwmdevelopments.sponge_plugin.library.utils.*;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.asset.AssetManager;
+import org.spongepowered.api.command.CommandManager;
+import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.game.GameReloadEvent;
-import org.spongepowered.api.event.game.state.*;
+import org.spongepowered.api.event.game.state.GameConstructionEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -42,13 +45,14 @@ import java.io.File;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "beta-4.0",
+        version = "4.0",
         description = "Universal crates plugin!",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -60,16 +64,21 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version("beta", 4, 0);
+    public static final Version VERSION = new Version(null,4, 0);
 
     private static GWMCrates instance = null;
 
     public static GWMCrates getInstance() {
         if (instance == null) {
-            throw new IllegalStateException("GWMCrates not initialized!");
+            throw new IllegalStateException("GWMCrates is not initialized!");
         }
         return instance;
     }
+
+    private static final DateTimeFormatter DEFAULT_LOG_FILE_DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter DEFAULT_LOG_FILE_TIME_FORMAT = DateTimeFormatter.ISO_LOCAL_TIME;
+    private static final Vector3d DEFAULT_HOLOGRAM_OFFSET = new Vector3d(0.5, 1, 0.5);
+    private static final String DEFAULT_RANDOM_MANAGER_ID = "default_random_manager";
 
     private Cause cause;
 
@@ -91,32 +100,28 @@ public final class GWMCrates extends SpongePlugin {
     private Config virtualKeysConfig;
     private Config timedCasesConfig;
     private Config timedKeysConfig;
-    private Config savedSuperObjectsConfig;
 
     private Language language;
 
-    private boolean checkUpdates = true;
-    private boolean logOpenedCrates = false;
-    private Vector3d hologramOffset = new Vector3d(0.5, 1, 0.5);
-    private double multilineHologramsDistance = 0.2;
-    private int maxVirtualNamesLength = 100;
-    private boolean useMySQLForVirtualCases = false;
-    private boolean useMySQLForVirtualKeys = false;
-    private boolean useMySQLForTimedCases = false;
-    private boolean useMySQLForTimedKeys = false;
-    private long crateOpenDelay = 10000;
-    private long managersLoadDelay = 20;
-    private RandomManager defaultRandomManager;
+    private boolean checkUpdates;
+    private boolean logLoadedManagers;
+    private boolean logOpenedManagers;
+    private DateTimeFormatter logFileDateFormat;
+    private DateTimeFormatter logFileTimeFormat;
+    private Vector3d hologramOffset;
+    private double multilineHologramsDistance;
+    private int maxVirtualNamesLength;
+    private boolean useMySQLForVirtualCases;
+    private boolean useMySQLForVirtualKeys;
+    private boolean useMySQLForTimedCases;
+    private boolean useMySQLForTimedKeys;
+    private long crateOpenDelay;
+    private boolean forceCrateCommandRegistration;
+    private String defaultRandomManagerId;
+
+    private DebugCrateListener debugCrateListener;
 
     private Optional<DataSource> dataSource = Optional.empty();
-
-    private Set<SuperObjectStorage> superObjects =
-            new HashSet<>();
-
-    private Map<Pair<SuperObjectType, String>, SuperObject> savedSuperObjects =
-            new HashMap<>();
-
-    private Set<Manager> createdManagers = new HashSet<>();
 
     private Map<UUID, Long> crateOpenDelays = new HashMap<>();
 
@@ -154,38 +159,20 @@ public final class GWMCrates extends SpongePlugin {
             }
         }
 
-        { //Backwards compatibility
-            File oldTimedCasesFile = new File(configDirectory, "timed_cases_delays.conf");
-            File oldTimedKeysFile = new File(configDirectory, "timed_keys_delays.conf");
-            File newTimedCasesFile = new File(configDirectory, "timed_cases.conf");
-            File newTimedKeysFile = new File(configDirectory, "timed_keys.conf");
-            if (oldTimedCasesFile.exists()) {
-                logger.warn("[BACKWARD COMPATIBILITY] Trying to rename file \"" + oldTimedCasesFile.getName() + "\" to \"" + newTimedCasesFile.getName() + "\"!");
-                if (oldTimedCasesFile.renameTo(newTimedCasesFile)) {
-                    logger.warn("[BACKWARD COMPATIBILITY] Successfully renamed!");
-                } else {
-                    logger.error("[BACKWARD COMPATIBILITY] Failed to rename!");
-                }
-            }
-            if (oldTimedKeysFile.exists()) {
-                logger.warn("[BACKWARD COMPATIBILITY] Trying to rename file \"" + oldTimedKeysFile.getName() + "\" to \"" + newTimedKeysFile.getName() + "\"!");
-                if (oldTimedKeysFile.renameTo(newTimedKeysFile)) {
-                    logger.warn("[BACKWARD COMPATIBILITY] Successfully renamed!");
-                } else {
-                    logger.error("[BACKWARD COMPATIBILITY] Failed to rename!");
-                }
-            }
-        }
-
         cause = Cause.of(EventContext.empty(), container);
-        config = new Config(this, "config.conf", false);
-        languageConfig = new Config(this, "language.conf", false);
-        savedSuperObjectsConfig = new Config(this, "saved_super_objects.conf", false);
-        virtualCasesConfig = new Config(this, "virtual_cases.conf", true);
-        virtualKeysConfig = new Config(this, "virtual_keys.conf", true);
-        timedCasesConfig = new Config(this, "timed_cases.conf", true);
-        timedKeysConfig = new Config(this, "timed_keys.conf", true);
-        register();
+        AssetManager assetManager = Sponge.getAssetManager();
+        config = new Config(this, new File(configDirectory, "config.conf"),
+                assetManager.getAsset(this, "config.conf"), true, false);
+        languageConfig = new Config(this, new File(configDirectory, "language.conf"),
+                assetManager.getAsset(this, "translations/en_us.conf"), true, false);
+        virtualCasesConfig = new Config(this, new File(configDirectory, "virtual_cases.conf"),
+                assetManager.getAsset(this, "virtual_cases.conf"), true, true);
+        virtualKeysConfig = new Config(this, new File(configDirectory, "virtual_keys.conf"),
+                assetManager.getAsset(this, "virtual_keys.conf"), true, true);
+        timedCasesConfig = new Config(this, new File(configDirectory, "timed_cases.conf"),
+                assetManager.getAsset(this, "timed_cases.conf"), true, true);
+        timedKeysConfig = new Config(this, new File(configDirectory, "timed_keys.conf"),
+                assetManager.getAsset(this, "timed_keys.conf"), true, true);
         loadConfigValues();
         if (connectMySQL()) {
             createMySQLTables();
@@ -194,49 +181,54 @@ public final class GWMCrates extends SpongePlugin {
         if (checkUpdates) {
             checkUpdates();
         }
-        logger.info("\"PreInitialization\" completed!");
+        registerListeners();
+        GWMCratesCommandUtils.registerCommands(this);
+        logger.info("PreInitialization completed!");
     }
 
     @Listener
-    public void onInitialization(GameInitializationEvent event) {
-        Sponge.getEventManager().registerListeners(this, new ItemCaseListener());
-        Sponge.getEventManager().registerListeners(this, new BlockCaseListener());
-        Sponge.getEventManager().registerListeners(this, new FirstOpenManagerListener());
-        Sponge.getEventManager().registerListeners(this, new SecondOpenManagerListener());
-        Sponge.getEventManager().registerListeners(this, new CasinoOpenManagerListener());
-        Sponge.getEventManager().registerListeners(this, new PreviewListener());
-        Sponge.getEventManager().registerListeners(this, new Animation1Listener());
-        Sponge.getEventManager().registerListeners(this, new EntityCaseListener());
-        Sponge.getEventManager().registerListeners(this, new DebugCrateListener());
-        GWMCratesCommandUtils.registerCommands();
-        logger.info("\"Initialization\" completed!");
+    public void onCategoriesRegistration(SuperObjectCategoriesRegistrationEvent event) {
+        GWMCratesSuperObjectCategories.CATEGORIES.forEach(event::register);
     }
 
     @Listener
-    public void onStarting(GameStartingServerEvent event) {
-        loadSavedSuperObjects();
-        Sponge.getScheduler().createTaskBuilder().
-                delayTicks(managersLoadDelay).
-                execute(this::loadManagers).
-                submit(this);
-        logger.info("\"GameStarting\" completed!");
+    public void onIdentifiersRegistration(SuperObjectIdentifiersRegistrationEvent event) {
+        getSuperObjects().forEach(event::register);
     }
 
     @Listener
-    public void onStopping(GameStoppingServerEvent event) {
-        Iterator<Manager> managerIterator = createdManagers.iterator();
-        while (managerIterator.hasNext()) {
-            managerIterator.next().shutdown();
-            managerIterator.remove();
+    public void onSuperObjectsRegistration(SuperObjectsRegistrationEvent event) {
+        loadManagers();
+    }
+
+    //https://github.com/codeHusky/HuskyCrates-Sponge/commit/8b20d0737bfeda8c4f1d3d912fb36635ed55ab8e
+    @Listener(order = Order.LATE)
+    public void fightForCrateCommand(GameStartedServerEvent event) {
+        if (forceCrateCommandRegistration) {
+            CommandManager manager = Sponge.getCommandManager();
+            CommandMapping mapping = manager.get("crate").get();
+            Optional<PluginContainer> optionalContainer = manager.getOwner(mapping);
+            if (optionalContainer.isPresent() && !optionalContainer.get().equals(container)) {
+                manager.removeMapping(mapping);
+                logger.warn("Evil command was removed!");
+                GWMCratesCommandUtils.registerCommands(this);
+                //This is a necessary measure, because HuskyCrates does the same,
+                //and it breaks ALL the commands ('/gwmcrates', '/gwmcrate', '/crates', 'crate') NOT only '/crate'.
+            }
         }
-        save();
-        logger.info("\"Stopping\" completed!");
     }
 
     @Listener
     public void reloadListener(GameReloadEvent event) {
         reload();
-        logger.info("\"Reload\" completed!");
+        logger.info("Reload completed!");
+    }
+
+    @Listener
+    public void onStopping(GameStoppingServerEvent event) {
+        unloadManagers();
+        save();
+        logger.info("Stopping completed!");
     }
 
     public void save() {
@@ -248,170 +240,128 @@ public final class GWMCrates extends SpongePlugin {
     }
 
     public void reload() {
-        Iterator<Manager> managerIterator = createdManagers.iterator();
-        while (managerIterator.hasNext()) {
-            managerIterator.next().shutdown();
-            managerIterator.remove();
-        }
-        cause = Cause.of(EventContext.empty(), container);
         config.reload();
         languageConfig.reload();
         virtualCasesConfig.reload();
         virtualKeysConfig.reload();
         timedCasesConfig.reload();
         timedKeysConfig.reload();
-        savedSuperObjectsConfig.reload();
-        superObjects.clear();
-        savedSuperObjects.clear();
-        register();
         loadConfigValues();
         if (connectMySQL()) {
             createMySQLTables();
         }
         language = new Language(this);
-        loadSavedSuperObjects();
-        loadManagers();
         if (checkUpdates) {
             checkUpdates();
         }
+        debugCrateListener.reschedule();
+        unloadManagers();
+        loadManagers();
         logger.info("Plugin has been reloaded.");
-    }
-
-    private void register() {
-        GWMCratesRegistrationEvent registrationEvent = new GWMCratesRegistrationEvent();
-        registrationEvent.register(SuperObjectType.RANDOM_MANAGER, LevelRandomManager.TYPE, LevelRandomManager.class);
-        registrationEvent.register(SuperObjectType.RANDOM_MANAGER, WeightRandomManager.TYPE, WeightRandomManager.class);
-        registrationEvent.register(SuperObjectType.CASE, ItemCase.TYPE, ItemCase.class);
-        registrationEvent.register(SuperObjectType.CASE, BlockCase.TYPE, BlockCase.class);
-        registrationEvent.register(SuperObjectType.CASE, EntityCase.TYPE, EntityCase.class);
-        registrationEvent.register(SuperObjectType.CASE, TimedCase.TYPE, TimedCase.class);
-        registrationEvent.register(SuperObjectType.CASE, VirtualCase.TYPE, VirtualCase.class);
-        registrationEvent.register(SuperObjectType.CASE, EmptyCase.TYPE, EmptyCase.class);
-        registrationEvent.register(SuperObjectType.KEY, ItemKey.TYPE, ItemKey.class);
-        registrationEvent.register(SuperObjectType.KEY, MultiKey.TYPE, MultiKey.class);
-        registrationEvent.register(SuperObjectType.KEY, MultipleAmountKey.TYPE, MultipleAmountKey.class);
-        registrationEvent.register(SuperObjectType.KEY, TimedKey.TYPE, TimedKey.class);
-        registrationEvent.register(SuperObjectType.KEY, VirtualKey.TYPE, VirtualKey.class);
-        registrationEvent.register(SuperObjectType.KEY, PermissionKey.TYPE, PermissionKey.class);
-        registrationEvent.register(SuperObjectType.KEY, CurrencyKey.TYPE, CurrencyKey.class);
-        registrationEvent.register(SuperObjectType.KEY, ExperienceKey.TYPE, ExperienceKey.class);
-        registrationEvent.register(SuperObjectType.KEY, ExperienceLevelKey.TYPE, ExperienceLevelKey.class);
-        registrationEvent.register(SuperObjectType.KEY, HealthKey.TYPE, HealthKey.class);
-        registrationEvent.register(SuperObjectType.KEY, FoodKey.TYPE, FoodKey.class);
-        registrationEvent.register(SuperObjectType.KEY, BiomeKey.TYPE, BiomeKey.class);
-        registrationEvent.register(SuperObjectType.KEY, WorldTimeKey.TYPE, WorldTimeKey.class);
-        registrationEvent.register(SuperObjectType.KEY, WorldWeatherKey.TYPE, WorldWeatherKey.class);
-        registrationEvent.register(SuperObjectType.KEY, BoundariesKey.TYPE, BoundariesKey.class);
-        registrationEvent.register(SuperObjectType.KEY, RadiusKey.TYPE, RadiusKey.class);
-        registrationEvent.register(SuperObjectType.KEY, EmptyKey.TYPE, EmptyKey.class);
-        registrationEvent.register(SuperObjectType.OPEN_MANAGER, NoGuiOpenManager.TYPE, NoGuiOpenManager.class);
-        registrationEvent.register(SuperObjectType.OPEN_MANAGER, FirstOpenManager.TYPE, FirstOpenManager.class);
-        registrationEvent.register(SuperObjectType.OPEN_MANAGER, SecondOpenManager.TYPE, SecondOpenManager.class);
-        registrationEvent.register(SuperObjectType.OPEN_MANAGER, Animation1OpenManager.TYPE, Animation1OpenManager.class);
-        registrationEvent.register(SuperObjectType.OPEN_MANAGER, PermissionOpenManager.TYPE, PermissionOpenManager.class);
-        registrationEvent.register(SuperObjectType.OPEN_MANAGER, CasinoOpenManager.TYPE, CasinoOpenManager.class);
-        registrationEvent.register(SuperObjectType.PREVIEW, FirstGuiPreview.TYPE, FirstGuiPreview.class);
-        registrationEvent.register(SuperObjectType.PREVIEW, SecondGuiPreview.TYPE, SecondGuiPreview.class);
-        registrationEvent.register(SuperObjectType.PREVIEW, PermissionPreview.TYPE, PermissionPreview.class);
-        registrationEvent.register(SuperObjectType.DROP, ItemDrop.TYPE, ItemDrop.class);
-        registrationEvent.register(SuperObjectType.DROP, CommandsDrop.TYPE, CommandsDrop.class);
-        registrationEvent.register(SuperObjectType.DROP, MultiDrop.TYPE, MultiDrop.class);
-        registrationEvent.register(SuperObjectType.DROP, DelayDrop.TYPE, DelayDrop.class);
-        registrationEvent.register(SuperObjectType.DROP, PermissionDrop.TYPE, PermissionDrop.class);
-        registrationEvent.register(SuperObjectType.DROP, EmptyDrop.TYPE, EmptyDrop.class);
-        registrationEvent.register(SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE, RandomChangeMode.TYPE, RandomChangeMode.class);
-        registrationEvent.register(SuperObjectType.DECORATIVE_ITEMS_CHANGE_MODE, OrderedChangeMode.TYPE, OrderedChangeMode.class);
-        Sponge.getEventManager().post(registrationEvent);
-        for (SuperObjectStorage superObjectStorage : registrationEvent.getSuperObjectStorage()) {
-            SuperObjectType superObjectType = superObjectStorage.getSuperObjectType();
-            String type = superObjectStorage.getType();
-            superObjects.add(superObjectStorage);
-            logger.info("Successfully added Super Object \"" + superObjectType + "\" with type \"" + type + "\"!");
-        }
-        logger.info("Registration completed!");
     }
 
     private void loadConfigValues() {
         try {
-            checkUpdates = config.getNode("CHECK_UPDATES").getBoolean(true);
-            logOpenedCrates = config.getNode("LOG_OPENED_CRATES").getBoolean(false);
-            hologramOffset = GWMLibraryUtils.parseVector3d(config.getNode("HOLOGRAM_OFFSET"), new Vector3d(0.5, 1, 0.5));
-            multilineHologramsDistance = config.getNode("MULTILINE_HOLOGRAMS_DISTANCE").getDouble(0.2);
-            maxVirtualNamesLength = config.getNode("MAX_VIRTUAL_NAMES_LENGTH").getInt(100);
-            useMySQLForVirtualCases = config.getNode("USE_MYSQL_FOR_VIRTUAL_CASES").getBoolean(false);
-            useMySQLForVirtualKeys = config.getNode("USE_MYSQL_FOR_VIRTUAL_KEYS").getBoolean(false);
-            useMySQLForTimedCases = config.getNode("USE_MYSQL_FOR_TIMED_CASES").getBoolean(false);
-            useMySQLForTimedKeys = config.getNode("USE_MYSQL_FOR_TIMED_KEYS").getBoolean(false);
-            crateOpenDelay = config.getNode("CRATE_OPEN_DELAY").getLong(10000);
-            managersLoadDelay = config.getNode("MANAGERS_LOAD_DELAY").getLong(20);
-            ConfigurationNode defaultRandomManagerNode = config.getNode("DEFAULT_RANDOM_MANAGER");
-            if (defaultRandomManagerNode.isVirtual()) {
-                defaultRandomManager = new LevelRandomManager(defaultRandomManagerNode);
+            ConfigurationNode checkUpdatesNode = config.getNode("CHECK_UPDATES");
+            ConfigurationNode logLoadedManagersNode = config.getNode("LOG_LOADED_MANAGERS");
+            ConfigurationNode logOpenedManagersNode = config.getNode("LOG_OPENED_MANAGERS");
+            ConfigurationNode logFileDateFormatNode = config.getNode("LOG_FILE_DATE_FORMAT");
+            ConfigurationNode logFileTimeFormatNode = config.getNode("LOG_FILE_TIME_FORMAT");
+            ConfigurationNode hologramOffsetNode = config.getNode("HOLOGRAM_OFFSET");
+            ConfigurationNode multilineHologramsDistanceNode = config.getNode("MULTILINE_HOLOGRAMS_DISTANCE");
+            ConfigurationNode maxVirtualNamesLengthNode = config.getNode("MAX_VIRTUAL_NAMES_LENGTH");
+            ConfigurationNode userMysqlForVirtualCasesNode = config.getNode("USE_MYSQL_FOR_VIRTUAL_CASES");
+            ConfigurationNode userMysqlForVirtualKeysNode = config.getNode("USE_MYSQL_FOR_VIRTUAL_KEYS");
+            ConfigurationNode userMysqlForTimedCasesNode = config.getNode("USE_MYSQL_FOR_TIMED_CASES");
+            ConfigurationNode userMysqlForTimedKeysNode = config.getNode("USE_MYSQL_FOR_TIMED_KEYS");
+            ConfigurationNode crateOpenDelayNode = config.getNode("CRATE_OPEN_DELAY");
+            ConfigurationNode forceCrateCommandRegistrationNode = config.getNode("FORCE_CRATE_COMMAND_REGISTRATION");
+            ConfigurationNode defaultRandomManagerIdNode = config.getNode("DEFAULT_RANDOM_MANAGER_ID");
+            checkUpdates = checkUpdatesNode.getBoolean(true);
+            logLoadedManagers = logLoadedManagersNode.getBoolean(true);
+            logOpenedManagers = logOpenedManagersNode.getBoolean(false);
+            if (!logFileDateFormatNode.isVirtual()) {
+                logFileDateFormat = DateTimeFormatter.ofPattern(logFileDateFormatNode.getString());
             } else {
-                defaultRandomManager = (RandomManager) GWMCratesUtils.createSuperObject(defaultRandomManagerNode, SuperObjectType.RANDOM_MANAGER);
+                logFileDateFormat = DEFAULT_LOG_FILE_DATE_FORMAT;
+            }
+            if (!logFileTimeFormatNode.isVirtual()) {
+                logFileTimeFormat = DateTimeFormatter.ofPattern(logFileTimeFormatNode.getString());
+            } else {
+                logFileTimeFormat = DEFAULT_LOG_FILE_TIME_FORMAT;
+            }
+            if (!hologramOffsetNode.isVirtual()) {
+                hologramOffset = GWMLibraryUtils.parseVector3d(hologramOffsetNode);
+            } else {
+                hologramOffset = DEFAULT_HOLOGRAM_OFFSET;
+            }
+            multilineHologramsDistance = multilineHologramsDistanceNode.getDouble(0.2);
+            if (multilineHologramsDistance < 0) {
+                logger.warn("Multiline Holograms Distance is less than 0!");
+                multilineHologramsDistance = 0;
+            }
+            maxVirtualNamesLength = maxVirtualNamesLengthNode.getInt(100);
+            if (maxVirtualNamesLength < 1) {
+                logger.warn("Max Virtual Names Length is less than 1!");
+                maxVirtualNamesLength = 1;
+            }
+            useMySQLForVirtualCases = userMysqlForVirtualCasesNode.getBoolean(false);
+            useMySQLForVirtualKeys = userMysqlForVirtualKeysNode.getBoolean(false);
+            useMySQLForTimedCases = userMysqlForTimedCasesNode.getBoolean(false);
+            useMySQLForTimedKeys = userMysqlForTimedKeysNode.getBoolean(false);
+            crateOpenDelay = crateOpenDelayNode.getLong(10000L);
+            if (crateOpenDelay < 0) {
+                logger.warn("Crate Open Delay is less than 0!");
+                maxVirtualNamesLength = 0;
+            }
+            forceCrateCommandRegistration = forceCrateCommandRegistrationNode.getBoolean(true);
+            if (!defaultRandomManagerIdNode.isVirtual()) {
+                defaultRandomManagerId = defaultRandomManagerIdNode.getString();
+            } else {
+                defaultRandomManagerId = DEFAULT_RANDOM_MANAGER_ID;
             }
         } catch (Exception e) {
-            logger.warn("Failed to load config values!", e);
+            logger.error("Failed to load config values!", e);
         }
     }
 
-    private void loadSavedSuperObjects() {
-        for (ConfigurationNode node : savedSuperObjectsConfig.getNode("SAVED_SUPER_OBJECTS").getChildrenList()) {
-            ConfigurationNode superObjectTypeNode = node.getNode("SUPER_OBJECT_TYPE");
-            ConfigurationNode savedIdNode = node.getNode("SAVED_ID");
-            ConfigurationNode idNode = node.getNode("ID");
-            String id = idNode.isVirtual() ? "Unknown ID" : idNode.getString();
-            if (superObjectTypeNode.isVirtual()) {
-                logger.warn("SUPER_OBJECT_TYPE node does not exist for Saved Super Object with id \"" + id + "\"!");
-                continue;
-            }
-            String superObjectTypeName = superObjectTypeNode.getString();
-            if (!SuperObjectType.SUPER_OBJECT_TYPES.containsKey(superObjectTypeName)) {
-                logger.warn("Super Object Type \"" + superObjectTypeName + "\" does not found!");
-                continue;
-            }
-            SuperObjectType superObjectType = SuperObjectType.SUPER_OBJECT_TYPES.get(superObjectTypeName);
-            if (savedIdNode.isVirtual()) {
-                logger.warn("SAVED_ID node does not exist for Saved Super Object \"" + superObjectType + "\" with id \"" + id + "\"!");
-                continue;
-            }
-            String savedId = savedIdNode.getString();
-            if (savedSuperObjects.keySet().stream().map(Pair::getValue).anyMatch(s -> s.equals(savedId))) {
-                logger.warn("Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\" and ID \"" + id + "\" is not loaded because its SAVED_ID is not unique!");
-                continue;
-            }
-            Pair<SuperObjectType, String> pair = new Pair<>(superObjectType, savedId);
-            if (savedSuperObjects.containsKey(pair)) {
-                logger.warn("Saved Super Objects already contains Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\"!");
-                continue;
-            }
-            try {
-                savedSuperObjects.put(pair, GWMCratesUtils.createSuperObject(node, superObjectType));
-                logger.info("Successfully loaded Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\" and ID \"" + id + "\"!");
-            } catch (Exception e) {
-                logger.warn("Failed to load Saved Super Object \"" + superObjectType + "\" with saved ID \"" + savedId + "\" and ID \"" + id + "\"!", e);
-            }
-        }
-        logger.info("All Saved Super Objects loaded!");
+    private void registerListeners() {
+        debugCrateListener = new DebugCrateListener(language, logFileDateFormat, logFileTimeFormat);
+        Sponge.getEventManager().registerListeners(this, debugCrateListener);
+        Sponge.getEventManager().registerListeners(this, new ItemCaseListener(language));
+        Sponge.getEventManager().registerListeners(this, new BlockCaseListener(language));
+        Sponge.getEventManager().registerListeners(this, new EntityCaseListener(language));
+        Sponge.getEventManager().registerListeners(this, new FirstOpenManagerListener());
+        Sponge.getEventManager().registerListeners(this, new SecondOpenManagerListener());
+        Sponge.getEventManager().registerListeners(this, new CasinoOpenManagerListener());
+        Sponge.getEventManager().registerListeners(this, new Animation1Listener());
+        Sponge.getEventManager().registerListeners(this, new PreviewListener());
     }
 
     private void loadManagers() {
         try {
             AtomicInteger loaded = new AtomicInteger();
+            AtomicInteger skipped = new AtomicInteger();
             AtomicInteger failed = new AtomicInteger();
-            Files.walk(managersDirectory.toPath()).forEach(path -> {
-                File managerFile = path.toFile();
-                if (!managerFile.isDirectory()) {
-                    try {
-                        GWMCratesUtils.loadManager(managerFile, false);
-                        loaded.incrementAndGet();
-                    } catch (Exception e) {
-                        logger.warn("Failed to load manager from file \"" + GWMCratesUtils.getManagerRelativePath(managerFile) + "\"!", e);
-                        failed.incrementAndGet();
-                    }
-                }
-            });
-            String message = "Successfully loaded " + loaded.get() + " managers. Failed to load " + failed.get() + " managers.";
+            Files.walk(managersDirectory.toPath()).
+                    filter(path -> path.getFileName().toString().endsWith(".conf")).
+                    forEach(path -> {
+                        File managerFile = path.toFile();
+                        if (managerFile.isFile()) {
+                            try {
+                                if (GWMCratesUtils.loadManager(managerFile, false)) {
+                                    loaded.incrementAndGet();
+                                } else {
+                                    skipped.incrementAndGet();
+                                }
+                            } catch (Exception e) {
+                                logger.warn("Failed to load manager from file \"" + GWMCratesUtils.getManagerRelativePath(managerFile) + "\"!", e);
+                                failed.incrementAndGet();
+                            }
+                        }
+                    });
+            String message = String.format("Managers load statistics (loaded/skipped/failed): %d/%d/%d",
+                    loaded.get(), skipped.get(), failed.get());
             if (loaded.get() > 0 && failed.get() == 0) {
                 logger.info(message);
             } else {
@@ -420,6 +370,58 @@ public final class GWMCrates extends SpongePlugin {
         } catch (Exception e) {
             logger.warn("Failed to load managers!", e);
         }
+    }
+
+    private void unloadManagers() {
+        Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                shutdownCreatedSuperObjects(superObject -> superObject instanceof Manager);
+    }
+
+    private Map<SuperObjectIdentifier, Class<? extends SuperObject>> getSuperObjects() {
+        Map<SuperObjectIdentifier, Class<? extends SuperObject>> map = new HashMap<>();
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.MANAGER, ManagerImpl.TYPE), ManagerImpl.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, ItemCase.TYPE), ItemCase.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, BlockCase.TYPE), BlockCase.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, EntityCase.TYPE), EntityCase.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, VirtualCase.TYPE), VirtualCase.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, TimedCase.TYPE), TimedCase.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, EmptyCase.TYPE), EmptyCase.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, ItemKey.TYPE), ItemKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, MultiKey.TYPE), MultiKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, MultipleAmountKey.TYPE), MultipleAmountKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, VirtualKey.TYPE), VirtualKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, TimedKey.TYPE), TimedKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, PermissionKey.TYPE), PermissionKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, CurrencyKey.TYPE), CurrencyKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, ExperienceKey.TYPE), ExperienceKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, ExperienceLevelKey.TYPE), ExperienceLevelKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, HealthKey.TYPE), HealthKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, FoodKey.TYPE), FoodKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, BiomeKey.TYPE), BiomeKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, WorldKey.TYPE), WorldKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, WorldTimeKey.TYPE), WorldTimeKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, WorldWeatherKey.TYPE), WorldWeatherKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, BoundariesKey.TYPE), BoundariesKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, RadiusKey.TYPE), RadiusKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, EmptyKey.TYPE), EmptyKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.OPEN_MANAGER, NoGuiOpenManager.TYPE), NoGuiOpenManager.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.OPEN_MANAGER, FirstOpenManager.TYPE), FirstOpenManager.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.OPEN_MANAGER, SecondOpenManager.TYPE), SecondOpenManager.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.OPEN_MANAGER, Animation1OpenManager.TYPE), Animation1OpenManager.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.OPEN_MANAGER, PermissionOpenManager.TYPE), PermissionOpenManager.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.OPEN_MANAGER, CasinoOpenManager.TYPE), CasinoOpenManager.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, ItemDrop.TYPE), ItemDrop.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, CommandDrop.TYPE), CommandDrop.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, MultiDrop.TYPE), MultiDrop.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, DelayDrop.TYPE), DelayDrop.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, PermissionDrop.TYPE), PermissionDrop.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, EmptyDrop.TYPE), EmptyDrop.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.PREVIEW, FirstGuiPreview.TYPE), FirstGuiPreview.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.PREVIEW, SecondGuiPreview.TYPE), SecondGuiPreview.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.PREVIEW, SecondGuiPreview.TYPE), SecondGuiPreview.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DECORATIVE_ITEMS_CHANGE_MODE, RandomDecorativeItemsChangeMode.TYPE), RandomDecorativeItemsChangeMode.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DECORATIVE_ITEMS_CHANGE_MODE, OrderedDecorativeItemsChangeMode.TYPE), OrderedDecorativeItemsChangeMode.class);
+        return map;
     }
 
     private boolean connectMySQL() {
@@ -465,12 +467,12 @@ public final class GWMCrates extends SpongePlugin {
             statement.execute("CREATE TABLE IF NOT EXISTS timed_cases (" +
                     "name VARCHAR(" + maxVirtualNamesLength + "), " +
                     "uuid VARCHAR(36), " +
-                    "delay BIGINT NOT NULL DEFAULT 0, " +
+                    "expire BIGINT NOT NULL DEFAULT 0, " +
                     "CONSTRAINT timed_cases_pk PRIMARY KEY (name, uuid));");
             statement.execute("CREATE TABLE IF NOT EXISTS timed_keys (" +
                     "name VARCHAR(" + maxVirtualNamesLength + "), " +
                     "uuid VARCHAR(36), " +
-                    "delay BIGINT NOT NULL DEFAULT 0, " +
+                    "expire BIGINT NOT NULL DEFAULT 0, " +
                     "CONSTRAINT timed_keys_pk PRIMARY KEY (name, uuid));");
         } catch (Exception e) {
             logger.warn("Failed to create MySQL tables!", e);
@@ -536,10 +538,6 @@ public final class GWMCrates extends SpongePlugin {
         return timedKeysConfig;
     }
 
-    public Config getSavedSuperObjectsConfig() {
-        return savedSuperObjectsConfig;
-    }
-
     @Override
     public Language getLanguage() {
         return language;
@@ -549,8 +547,20 @@ public final class GWMCrates extends SpongePlugin {
         return checkUpdates;
     }
 
-    public boolean isLogOpenedCrates() {
-        return logOpenedCrates;
+    public boolean isLogLoadedManagers() {
+        return logLoadedManagers;
+    }
+
+    public boolean isLogOpenedManagers() {
+        return logOpenedManagers;
+    }
+
+    public DateTimeFormatter getLogFileDateFormat() {
+        return logFileDateFormat;
+    }
+
+    public DateTimeFormatter getLogFileTimeFormat() {
+        return logFileTimeFormat;
     }
 
     public Vector3d getHologramOffset() {
@@ -585,28 +595,16 @@ public final class GWMCrates extends SpongePlugin {
         return crateOpenDelay;
     }
 
-    public long getManagersLoadDelay() {
-        return managersLoadDelay;
+    public boolean isForceCrateCommandRegistration() {
+        return forceCrateCommandRegistration;
     }
 
-    public RandomManager getDefaultRandomManager() {
-        return defaultRandomManager;
+    public String getDefaultRandomManagerId() {
+        return defaultRandomManagerId;
     }
 
     public Optional<DataSource> getDataSource() {
         return dataSource;
-    }
-
-    public Set<SuperObjectStorage> getSuperObjects() {
-        return superObjects;
-    }
-
-    public Map<Pair<SuperObjectType, String>, SuperObject> getSavedSuperObjects() {
-        return savedSuperObjects;
-    }
-
-    public Set<Manager> getCreatedManagers() {
-        return createdManagers;
     }
 
     public Map<UUID, Long> getCrateOpenDelays() {

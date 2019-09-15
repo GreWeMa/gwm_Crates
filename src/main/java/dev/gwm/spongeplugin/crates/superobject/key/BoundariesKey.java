@@ -1,10 +1,10 @@
-package dev.gwm.spongeplugin.crates.superobject.keys;
+package dev.gwm.spongeplugin.crates.superobject.key;
 
 import com.flowpowered.math.vector.Vector3d;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.superobject.Key;
+import dev.gwm.spongeplugin.crates.superobject.key.base.AbstractKey;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
 import ninja.leaping.configurate.ConfigurationNode;
-import org.gwmdevelopments.sponge_plugin.library.utils.GWMLibraryUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.util.AABB;
@@ -13,12 +13,12 @@ import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 
-public class BoundariesKey extends Key {
+public class BoundariesKey extends AbstractKey {
 
     public static final String TYPE = "BOUNDARIES";
 
-    private AABB aabb;
-    private Optional<World> world;
+    private final AABB aabb;
+    private final Optional<World> world;
 
     public BoundariesKey(ConfigurationNode node) {
         super(node);
@@ -34,18 +34,18 @@ public class BoundariesKey extends Key {
             }
             Vector3d firstCorner = GWMLibraryUtils.parseVector3d(firstCornerNode);
             Vector3d secondCorner = GWMLibraryUtils.parseVector3d(secondCornerNode);
-            this.aabb = new AABB(firstCorner, secondCorner);
+            aabb = new AABB(firstCorner, secondCorner);
             if (!worldNode.isVirtual()) {
                 String worldName = worldNode.getString();
                 world = Sponge.getServer().getWorld(worldName);
                 if (!world.isPresent()) {
-                    throw new IllegalArgumentException("WORLD \"" + worldNode + "\" does not exist!");
+                    throw new IllegalArgumentException("World \"" + worldNode + "\" is not found!");
                 }
             } else {
                 world = Optional.empty();
             }
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 

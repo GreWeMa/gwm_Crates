@@ -1,13 +1,14 @@
-package dev.gwm.spongeplugin.crates.superobject.previews;
+package dev.gwm.spongeplugin.crates.superobject.preview;
 
+import com.google.common.reflect.TypeToken;
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.superobject.Drop;
-import dev.gwm.spongeplugin.crates.exception.SSOCreationException;
-import dev.gwm.spongeplugin.crates.manager.Manager;
-import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
+import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
+import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
+import dev.gwm.spongeplugin.crates.superobject.preview.base.AbstractPreview;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
+import dev.gwm.spongeplugin.library.utils.Pair;
 import ninja.leaping.configurate.ConfigurationNode;
-import dev.gwm.spongeplugin.crates.superobject.Preview;
-import org.gwmdevelopments.sponge_plugin.library.utils.Pair;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -18,11 +19,10 @@ import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.*;
 
-public final class SecondGuiPreview extends Preview {
+public final class SecondGuiPreview extends AbstractPreview {
 
     public static final String TYPE = "SECOND";
 
@@ -35,12 +35,12 @@ public final class SecondGuiPreview extends Preview {
         try {
             ConfigurationNode displayNameNode = node.getNode("DISPLAY_NAME");
             if (!displayNameNode.isVirtual()) {
-                displayName = Optional.of(TextSerializers.FORMATTING_CODE.deserialize(displayNameNode.getString()));
+                displayName = Optional.of(displayNameNode.getValue(TypeToken.of(Text.class)));
             } else {
                 displayName = Optional.empty();
             }
         } catch (Exception e) {
-            throw new SSOCreationException(ssoType(), type(), e);
+            throw new SuperObjectConstructionException(category(), type(), e);
         }
     }
 
