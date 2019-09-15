@@ -1,6 +1,6 @@
 ![](https://gwm.dev/files/gwmcrates/logo-full.png)  
   
-## [Ore Page](https://ore.spongepowered.org/GWM/GWMCrates) | [Wiki](https://gitlab.com/GreWeMa/GWMCrates/wikis) || [Translations](https://gitlab.com/GreWeMa/GWMCrates/tree/master/src/main/resources/assets/gwm_crates/translations) | [Examples](https://gitlab.com/GreWeMa/gwmcrates-examples) | [Media](https://gitlab.com/GreWeMa/GWMCrates/wikis/Media)
+## [Ore Page](https://ore.spongepowered.org/GWM/GWMCrates) | [Wiki](https://gitlab.com/GreWeMa/GWMCrates/wikis) | [Translations](https://gitlab.com/GreWeMa/GWMCrates/tree/master/src/main/resources/assets/gwm_crates/translations) | [Examples](https://gitlab.com/GreWeMa/gwmcrates-examples) | [Media](https://gitlab.com/GreWeMa/GWMCrates/wikis/Media)
 
 **GWMCrates** - a plugin for minecraft servers that use Sponge or SpongeForge. With this plugin you are able to add as many crates as you want, and you can configure them as you like.  
 
