@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         id = "gwm_crates",
         name = "GWMCrates",
         version = "4.0",
-        description = "Universal crates plugin!",
+        description = "Universal crates plugin",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
                          * Telegram(@grewema),
