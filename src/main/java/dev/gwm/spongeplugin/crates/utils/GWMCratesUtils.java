@@ -57,16 +57,16 @@ public final class GWMCratesUtils {
                         create(GWMCratesSuperObjectCategories.MANAGER, managerConfig.getNode());
                 if (GWMCrates.getInstance().isLogLoadedManagers()) {
                     GWMCrates.getInstance().getLogger().
-                            info("Loaded the manager from the file \"" + getManagerRelativePath(file) + "\" with id \"" + manager.getId() + "\"!");
+                            info("Loaded the Manager from the file \"" + getManagerRelativePath(file) + "\" with id \"" + manager.getId() + "\"!");
                 }
                 return true;
             } else {
                 GWMCrates.getInstance().getLogger().
-                        info("Skipping the manager from the file \"" + getManagerRelativePath(file) + "\"!");
+                        info("Skipping the Manager from the file \"" + getManagerRelativePath(file) + "\"!");
                 return false;
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load the manager from the file \"" + getManagerRelativePath(file) + "\"!", e);
+            throw new RuntimeException("Failed to load the Manager from the file \"" + getManagerRelativePath(file) + "\"!", e);
         }
     }
 
