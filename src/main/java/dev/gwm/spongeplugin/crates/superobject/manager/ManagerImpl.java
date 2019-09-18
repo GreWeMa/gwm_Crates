@@ -35,7 +35,7 @@ public final class ManagerImpl extends AbstractSuperObject implements Manager {
         super(node);
         try {
             if (!id().isPresent()) {
-                throw new RuntimeException("The manager does not have an ID!");
+                throw new RuntimeException("The Manager does not have an ID!");
             }
             SuperObjectsService superObjectsService = Sponge.getServiceManager().provide(SuperObjectsService.class).get();
             ConfigurationNode nameNode = node.getNode("NAME");
@@ -90,7 +90,7 @@ public final class ManagerImpl extends AbstractSuperObject implements Manager {
                        Optional<Preview> preview, ManagerCustomMessageData customMessageData) {
         super(id);
         if (!id().isPresent()) {
-            throw new RuntimeException("The manager does not have an ID!");
+            throw new RuntimeException("The Manager does not have an ID!");
         }
         this.name = name;
         this.randomManager = randomManager;
