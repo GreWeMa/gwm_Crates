@@ -147,7 +147,7 @@ public final class GWMCrates extends SpongePlugin {
             if (managersDirectory.mkdirs()) {
                 logger.info("Managers directory successfully created!");
             } else {
-                logger.error("Failed to create managers config directory!");
+                logger.error("Failed to create Managers config directory!");
             }
         }
         if (!logsDirectory.exists()) {
@@ -355,7 +355,7 @@ public final class GWMCrates extends SpongePlugin {
                                     skipped.incrementAndGet();
                                 }
                             } catch (Exception e) {
-                                logger.warn("Failed to load manager from file \"" + GWMCratesUtils.getManagerRelativePath(managerFile) + "\"!", e);
+                                logger.warn("Failed to load Manager from file \"" + GWMCratesUtils.getManagerRelativePath(managerFile) + "\"!", e);
                                 failed.incrementAndGet();
                             }
                         }
@@ -368,7 +368,7 @@ public final class GWMCrates extends SpongePlugin {
                 logger.warn(message);
             }
         } catch (Exception e) {
-            logger.warn("Failed to load managers!", e);
+            logger.warn("Failed to load Managers!", e);
         }
     }
 
