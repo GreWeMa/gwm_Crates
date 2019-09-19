@@ -1,2 +1,6 @@
+VERSION 4.1
+* Update to GWMLibrary 2.1
+* Add Cosmetic Effects support to `BLOCK` Case
+
 VERSION 4.0
 * Release

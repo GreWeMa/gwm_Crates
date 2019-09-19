@@ -52,7 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "4.0",
+        version = "4.1",
         description = "Universal crates plugin",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -60,11 +60,12 @@ import java.util.concurrent.atomic.AtomicInteger;
                          * Discord(GWM#2192)*/},
         dependencies = {
                 @Dependency(id = "gwm_library"),
-                @Dependency(id = "holograms", optional = true)
+                @Dependency(id = "holograms", optional = true),
+                @Dependency(id = "cosmetics", optional = true)
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version(null,4, 0);
+    public static final Version VERSION = new Version(null,4, 1);
 
     private static GWMCrates instance = null;
 
@@ -164,7 +165,7 @@ public final class GWMCrates extends SpongePlugin {
         config = new Config(this, new File(configDirectory, "config.conf"),
                 assetManager.getAsset(this, "config.conf"), true, false);
         languageConfig = new Config(this, new File(configDirectory, "language.conf"),
-                assetManager.getAsset(this, "translations/en_us.conf"), true, false);
+                getDefaultTranslation(assetManager), true, false);
         virtualCasesConfig = new Config(this, new File(configDirectory, "virtual_cases.conf"),
                 assetManager.getAsset(this, "virtual_cases.conf"), true, true);
         virtualKeysConfig = new Config(this, new File(configDirectory, "virtual_keys.conf"),
