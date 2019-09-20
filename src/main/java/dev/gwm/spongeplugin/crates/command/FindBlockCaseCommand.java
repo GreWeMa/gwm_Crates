@@ -39,7 +39,7 @@ public class FindBlockCaseCommand implements CommandExecutor {
         }
         Player player = (Player) source;
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
-        String managerId = manager.getId();
+        String managerId = manager.id();
         Optional<Integer> optionalIndex = args.getOne("index");
         if (!player.hasPermission("gwm_crates.command.findblockcase." + managerId)) {
             player.sendMessages(language.getTranslation("HAVE_NOT_PERMISSION", player));
@@ -48,7 +48,7 @@ public class FindBlockCaseCommand implements CommandExecutor {
         Case caze = manager.getCase();
         if (!(caze instanceof BlockCase)) {
             player.sendMessages(language.getTranslation("CASE_IS_NOT_BLOCK", Arrays.asList(
-                    new Pair<>("MANAGER_ID", manager.getId()),
+                    new Pair<>("MANAGER_ID", manager.id()),
                     new Pair<>("MANAGER_NAME", manager.getName()),
                     new Pair<>("CASE_TYPE", manager.getCase().type())
             ), player));
@@ -60,7 +60,7 @@ public class FindBlockCaseCommand implements CommandExecutor {
             int teleportLocationIndex = optionalIndex.get();
             if (teleportLocationIndex < 0 || teleportLocationIndex >= locations.size()) {
                 player.sendMessages(language.getTranslation("WRONG_BLOCK_CASE_LOCATION_INDEX", Arrays.asList(
-                        new Pair<>("MANAGER_ID", manager.getId()),
+                        new Pair<>("MANAGER_ID", manager.id()),
                         new Pair<>("MANAGER_NAME", manager.getName()),
                         new Pair<>("USED_INDEX", teleportLocationIndex),
                         new Pair<>("MAX_INDEX", locations.size() - 1)
@@ -73,7 +73,7 @@ public class FindBlockCaseCommand implements CommandExecutor {
             new ParticleRunnable(location).run();
         }
         player.sendMessages(language.getTranslation("SUCCESSFULLY_HIGHLIGHTED_BLOCK_CASE", Arrays.asList(
-                new Pair<>("MANAGER_ID", manager.getId()),
+                new Pair<>("MANAGER_ID", manager.id()),
                 new Pair<>("MANAGER_NAME", manager.getName())
         ), player));
         return CommandResult.success();

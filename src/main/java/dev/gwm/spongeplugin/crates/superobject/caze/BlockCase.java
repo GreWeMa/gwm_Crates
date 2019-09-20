@@ -91,7 +91,7 @@ public final class BlockCase extends AbstractCase {
         }
     }
 
-    public BlockCase(Optional<String> id,
+    public BlockCase(String id,
                      List<Location<World>> locations, boolean startPreviewOnLeftClick,
                      Optional<HologramSettings> hologram, Optional<List<CosmeticEffect>> persistentCosmeticEffects) {
         super(id, true);

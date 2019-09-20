@@ -47,7 +47,7 @@ public final class DelayDrop extends AbstractDrop {
         }
     }
 
-    public DelayDrop(Optional<String> id,
+    public DelayDrop(String id,
                      GiveableData giveableData,
                      Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview,
                      DefaultRandomableData defaultRandomableData,

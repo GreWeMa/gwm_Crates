@@ -31,7 +31,7 @@ public final class HealthKey extends GiveableKey {
         }
     }
 
-    public HealthKey(Optional<String> id, boolean doNotWithdraw,
+    public HealthKey(String id, boolean doNotWithdraw,
                      GiveableData giveableData, boolean doNotAdd,
                      double health) {
         super(id, doNotWithdraw, giveableData, doNotAdd);

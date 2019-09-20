@@ -28,7 +28,7 @@ public class ProbabilityTestCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
-        String managerId = manager.getId();
+        String managerId = manager.id();
         int amount = args.<Integer>getOne(Text.of("amount")).get();
         Player player = args.<Player>getOne(Text.of("player")).get();
         boolean fake = args.hasAny("f");
@@ -52,7 +52,7 @@ public class ProbabilityTestCommand implements CommandExecutor {
             Drop drop = entry.getKey();
             int resultValue = entry.getValue();
             double resultPercentage = (resultValue / (amount * 1.0D)) * 100;
-            String id = drop.id().orElse("null");
+            String id = drop.id();
             String customName = drop.getCustomName().orElse(id);
             if (iterator.hasNext()) {
                 dropsBuilder.append(GWMLibraryUtils.joinString(language.getSimpleTranslation("PROBABILITY_TEST_LIST_FORMAT", Arrays.asList(
@@ -73,7 +73,7 @@ public class ProbabilityTestCommand implements CommandExecutor {
         source.sendMessages(language.getTranslation("PROBABILITY_TEST_MESSAGE", Arrays.asList(
                 new Pair<>("RESULTS", dropsBuilder.toString()),
                 new Pair<>("MANAGER_NAME", manager.getName()),
-                new Pair<>("MANAGER_ID", manager.getId()),
+                new Pair<>("MANAGER_ID", manager.id()),
                 new Pair<>("PLAYER_NAME", player.getName()),
                 new Pair<>("PLAYER_UUID", player.getName()),
                 new Pair<>("AMOUNT", amount),

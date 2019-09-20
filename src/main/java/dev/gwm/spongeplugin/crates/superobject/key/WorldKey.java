@@ -39,7 +39,7 @@ public final class WorldKey extends AbstractKey {
         }
     }
 
-    public WorldKey(Optional<String> id, boolean doNotWithdraw,
+    public WorldKey(String id, boolean doNotWithdraw,
                     List<World> worlds) {
         super(id, doNotWithdraw);
         if (worlds.isEmpty()) {

@@ -44,7 +44,7 @@ public final class MultipleAmountKey extends GiveableKey {
         }
     }
 
-    public MultipleAmountKey(Optional<String> id, boolean doNotWithdraw,
+    public MultipleAmountKey(String id, boolean doNotWithdraw,
                              GiveableData giveableData, boolean doNotAdd,
                              Key childKey, int amount) {
         super(id, doNotWithdraw, giveableData, doNotAdd);

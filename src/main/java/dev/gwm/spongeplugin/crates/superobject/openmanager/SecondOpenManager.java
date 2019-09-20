@@ -93,7 +93,7 @@ public final class SecondOpenManager extends AbstractOpenManager {
         }
     }
 
-    public SecondOpenManager(Optional<String> id, Optional<SoundType> openSound, Optional<Text> displayName,
+    public SecondOpenManager(String id, Optional<SoundType> openSound, Optional<Text> displayName,
                              ItemStack hiddenItem, boolean increaseHiddenItemQuantity,
                              int rows, boolean showOtherDrops, int showOtherDropsDelay, int closeDelay,
                              boolean forbidClose, boolean giveRandomOnClose,

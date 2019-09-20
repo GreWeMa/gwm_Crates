@@ -32,7 +32,7 @@ public class OpenCommand implements CommandExecutor {
         Player player = (Player) source;
         UUID uuid = player.getUniqueId();
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
-        String managerId = manager.getId();
+        String managerId = manager.id();
         Case caze = manager.getCase();
         Key key = manager.getKey();
         OpenManager openManager = manager.getOpenManager();

@@ -12,7 +12,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
@@ -53,7 +52,7 @@ public final class VirtualCase extends GiveableCase {
         }
     }
 
-    public VirtualCase(Optional<String> id, boolean doNotWithdraw,
+    public VirtualCase(String id, boolean doNotWithdraw,
                        GiveableData giveableData, boolean doNotAdd,
                        String virtualName) {
         super(id, doNotWithdraw, giveableData, doNotAdd);

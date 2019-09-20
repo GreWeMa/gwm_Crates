@@ -9,8 +9,6 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-import java.util.Optional;
-
 public final class ItemCase extends GiveableCase {
 
     public static final String TYPE = "ITEM";
@@ -33,7 +31,7 @@ public final class ItemCase extends GiveableCase {
         }
     }
 
-    public ItemCase(Optional<String> id, boolean doNotWithdraw,
+    public ItemCase(String id, boolean doNotWithdraw,
                     GiveableData giveableData, boolean doNotAdd,
                     ItemStack item, boolean startPreviewOnLeftClick) {
         super(id, doNotWithdraw, giveableData, doNotAdd);

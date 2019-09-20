@@ -26,7 +26,7 @@ public final class PermissionKey extends AbstractKey {
         }
     }
 
-    public PermissionKey(Optional<String> id,
+    public PermissionKey(String id,
                          String permission) {
         super(id, true);
         this.permission = permission;

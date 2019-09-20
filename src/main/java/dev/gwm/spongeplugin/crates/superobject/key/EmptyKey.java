@@ -14,7 +14,7 @@ public final class EmptyKey extends AbstractKey {
         super(node);
     }
 
-    public EmptyKey(Optional<String> id) {
+    public EmptyKey(String id) {
         super(id, true);
     }
 

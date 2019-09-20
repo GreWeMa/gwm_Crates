@@ -196,7 +196,7 @@ public final class CasinoOpenManager extends AbstractOpenManager {
         }
     }
 
-    public CasinoOpenManager(Optional<String> id, Optional<SoundType> openSound,
+    public CasinoOpenManager(String id, Optional<SoundType> openSound,
                              Optional<Text> displayName, List<ItemStack> decorativeItems, List<Integer> scrollDelays,
                              boolean clearDecorativeItems, boolean clearOtherDrops, int closeDelay, boolean forbidClose,
                              Drop loseDrop, Optional<SoundType> firstRowSound, Optional<SoundType> secondRowSound,
@@ -348,15 +348,8 @@ public final class CasinoOpenManager extends AbstractOpenManager {
                                 drop1 : drop2.equals(drop0) ?
                                 drop2 : null;
                         if (tempDrop != null) { //Player didn't win, give him a consolation drop (if it exist)
-                            Optional<String> optionalId = tempDrop.id();
-                            if (optionalId.isPresent()) {
-                                String id = optionalId.get();
-                                consolationDrops.getOrDefault(id, defaultConsolationDrop.orElseGet(() -> loseDrop)).give(player, 1);
-                            } else if (defaultConsolationDrop.isPresent()) {
-                                defaultConsolationDrop.get().give(player, 1);
-                            } else {
-                                loseDrop.give(player, 1);
-                            }
+                            String id = tempDrop.id();
+                            consolationDrops.getOrDefault(id, defaultConsolationDrop.orElse(loseDrop)).give(player, 1);
                             consolationSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
                         } else { //Player didn't win, give him the lose drop
                             loseDrop.give(player, 1);

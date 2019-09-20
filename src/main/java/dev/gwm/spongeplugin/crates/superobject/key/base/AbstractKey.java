@@ -22,7 +22,7 @@ public abstract class AbstractKey extends AbstractSuperObject implements Key {
         }
     }
 
-    public AbstractKey(Optional<String> id, boolean doNotWithdraw) {
+    public AbstractKey(String id, boolean doNotWithdraw) {
         super(id);
         this.doNotWithdraw = doNotWithdraw;
     }

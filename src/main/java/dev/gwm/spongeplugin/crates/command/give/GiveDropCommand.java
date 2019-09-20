@@ -25,7 +25,7 @@ public class GiveDropCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
-        String managerId = manager.getId();
+        String managerId = manager.id();
         String dropId = args.<String>getOne(Text.of("drop")).get();
         Player player = args.<Player>getOne(Text.of("player")).get();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
@@ -35,7 +35,7 @@ public class GiveDropCommand implements CommandExecutor {
             source.sendMessages(language.getTranslation("DROP_IS_NOT_FOUND", Arrays.asList(
                     new Pair<>("DROP_ID", dropId),
                     new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.getId())
+                    new Pair<>("MANAGER_ID", manager.id())
             ), source));
             return CommandResult.empty();
         }
@@ -58,14 +58,14 @@ public class GiveDropCommand implements CommandExecutor {
                     new Pair<>("DROP_ID", dropId),
                     new Pair<>("DROP_CUSTOM_NAME", dropCustomName),
                     new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.getId())
+                    new Pair<>("MANAGER_ID", manager.id())
             ), source));
         } else {
             source.sendMessages(language.getTranslation("SUCCESSFULLY_GAVE_DROP", Arrays.asList(
                     new Pair<>("DROP_ID", dropId),
                     new Pair<>("DROP_CUSTOM_NAME", dropCustomName),
                     new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.getId()),
+                    new Pair<>("MANAGER_ID", manager.id()),
                     new Pair<>("PLAYER_NAME", player.getName()),
                     new Pair<>("PLAYER_UUID", player.getUniqueId())
             ), source));

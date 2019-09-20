@@ -44,7 +44,7 @@ public final class SecondGuiPreview extends AbstractPreview {
         }
     }
 
-    public SecondGuiPreview(Optional<String> id, Optional<List<Drop>> customDrops,
+    public SecondGuiPreview(String id, Optional<List<Drop>> customDrops,
                             Optional<Text> displayName) {
         super(id, customDrops);
         this.displayName = displayName;

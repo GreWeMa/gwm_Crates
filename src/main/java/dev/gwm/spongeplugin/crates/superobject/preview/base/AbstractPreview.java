@@ -37,7 +37,7 @@ public abstract class AbstractPreview extends AbstractSuperObject implements Pre
         }
     }
 
-    public AbstractPreview(Optional<String> id, Optional<List<Drop>> customDrops) {
+    public AbstractPreview(String id, Optional<List<Drop>> customDrops) {
         super(id);
         this.customDrops = customDrops;
     }

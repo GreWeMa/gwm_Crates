@@ -37,7 +37,7 @@ public class EntityCaseListener {
                 ifPresent(manager -> {
                     event.setCancelled(true);
                     if (event instanceof InteractEntityEvent.Secondary.MainHand) {
-                        if (!player.hasPermission("gwm_crates.open." + manager.getId())) {
+                        if (!player.hasPermission("gwm_crates.open." + manager.id())) {
                             GWMCratesUtils.sendNoPermissionToOpenMessage(player, manager);
                             return;
                         }
@@ -66,14 +66,14 @@ public class EntityCaseListener {
                             return;
                         }
                         Preview preview = optionalPreview.get();
-                        if (!player.hasPermission("gwm_crates.preview." + manager.getId())) {
+                        if (!player.hasPermission("gwm_crates.preview." + manager.id())) {
                             GWMCratesUtils.sendNoPermissionToPreviewMessage(player, manager);
                             return;
                         }
                         preview.preview(player, manager);
                         player.sendMessages(language.getTranslation("PREVIEW_STARTED", Arrays.asList(
                                 new Pair<>("MANAGER_NAME", manager.getName()),
-                                new Pair<>("MANAGER_ID", manager.getId())
+                                new Pair<>("MANAGER_ID", manager.id())
                         ), player));
                     }
                 });

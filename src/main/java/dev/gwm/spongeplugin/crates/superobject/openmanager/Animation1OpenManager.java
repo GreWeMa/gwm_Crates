@@ -10,6 +10,7 @@ import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.AbstractOpenManager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.OpenManager;
 import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
 import dev.gwm.spongeplugin.library.utils.CreatedHologram;
@@ -81,7 +82,7 @@ public final class Animation1OpenManager extends AbstractOpenManager {
                 openManager = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
                         create(GWMCratesSuperObjectCategories.OPEN_MANAGER, openManagerNode);
             } else {
-                openManager = new NoGuiOpenManager(Optional.empty(), Optional.empty());
+                openManager = GWMCratesUtils.DEFAULT_OPEN_MANAGER;
             }
             if (!hologramNode.isVirtual()) {
                 hologram = Optional.of(GWMLibraryUtils.parseHologramSettings(hologramNode,
@@ -96,7 +97,7 @@ public final class Animation1OpenManager extends AbstractOpenManager {
         }
     }
 
-    public Animation1OpenManager(Optional<String> id,
+    public Animation1OpenManager(String id,
                                  Optional<SoundType> openSound,
                                  BlockState floorBlock, BlockState fenceBlock, BlockState crateBlock,
                                  OpenManager openManager, Optional<HologramSettings> hologram, int closeDelay) {

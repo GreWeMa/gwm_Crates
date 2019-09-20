@@ -52,7 +52,7 @@ public final class RadiusKey extends AbstractKey {
         }
     }
 
-    public RadiusKey(Optional<String> id, boolean doNotWithdraw,
+    public RadiusKey(String id, boolean doNotWithdraw,
                      double radius, Vector3d center, Optional<World> world) {
         super(id, doNotWithdraw);
         //The radius is allowed to be zero, in case the users wants a players to be in some exact location.

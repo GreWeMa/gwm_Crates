@@ -23,7 +23,7 @@ public class CheckCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
-        String managerId = manager.getId();
+        String managerId = manager.id();
         Player player = args.<Player>getOne(Text.of("player")).get();
         boolean self = source.equals(player);
         if (self) {
@@ -43,7 +43,7 @@ public class CheckCommand implements CommandExecutor {
                 new Pair<>("PLAYER_NAME", player.getName()),
                 new Pair<>("PLAYER_UUID", player.getUniqueId()),
                 new Pair<>("MANAGER_NAME", manager.getName()),
-                new Pair<>("MANAGER_ID", manager.getId()),
+                new Pair<>("MANAGER_ID", manager.id()),
                 new Pair<>("CASE_AMOUNT", caseAmount),
                 new Pair<>("KEY_AMOUNT", keyAmount)
         ), source));

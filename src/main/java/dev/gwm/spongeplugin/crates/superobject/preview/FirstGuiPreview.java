@@ -85,7 +85,7 @@ public final class FirstGuiPreview extends AbstractPreview {
         }
     }
 
-    public FirstGuiPreview(Optional<String> id, Optional<List<Drop>> customDrops,
+    public FirstGuiPreview(String id, Optional<List<Drop>> customDrops,
                            Optional<Text> displayName, List<ItemStack> decorativeItems,
                            int scrollDelay, Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode) {
         super(id, customDrops);

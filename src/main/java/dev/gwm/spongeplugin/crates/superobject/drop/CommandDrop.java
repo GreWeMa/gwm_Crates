@@ -44,7 +44,7 @@ public final class CommandDrop extends AbstractDrop {
         }
     }
 
-    public CommandDrop(Optional<String> id,
+    public CommandDrop(String id,
                        GiveableData giveableData,
                        Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview,
                        DefaultRandomableData defaultRandomableData,

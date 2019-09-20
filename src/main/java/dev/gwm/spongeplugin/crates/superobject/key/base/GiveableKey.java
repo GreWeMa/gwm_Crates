@@ -28,7 +28,7 @@ public abstract class GiveableKey extends AbstractKey implements Giveable {
         }
     }
 
-    public GiveableKey(Optional<String> id, boolean doNotWithdraw,
+    public GiveableKey(String id, boolean doNotWithdraw,
                        GiveableData giveableData, boolean doNotAdd) {
         super(id, doNotWithdraw);
         this.saleCurrency = giveableData.getSaleCurrency();

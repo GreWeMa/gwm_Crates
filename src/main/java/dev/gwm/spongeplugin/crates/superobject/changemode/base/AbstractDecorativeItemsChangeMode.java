@@ -37,7 +37,7 @@ public abstract class AbstractDecorativeItemsChangeMode extends AbstractSuperObj
         }
     }
 
-    public AbstractDecorativeItemsChangeMode(Optional<String> id, int changeDelay, List<Integer> ignoredIndices) {
+    public AbstractDecorativeItemsChangeMode(String id, int changeDelay, List<Integer> ignoredIndices) {
         super(id);
         if (changeDelay <= 0) {
             throw new IllegalArgumentException("Change Delay is equal to or less than 0!");

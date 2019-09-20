@@ -62,7 +62,7 @@ public final class MultiDrop extends AbstractDrop {
         }
     }
 
-    public MultiDrop(Optional<String> id,
+    public MultiDrop(String id,
                      GiveableData giveableData,
                      Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview,
                      DefaultRandomableData defaultRandomableData,

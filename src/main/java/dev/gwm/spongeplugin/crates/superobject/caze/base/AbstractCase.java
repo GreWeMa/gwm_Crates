@@ -6,8 +6,6 @@ import dev.gwm.spongeplugin.library.superobject.AbstractSuperObject;
 import dev.gwm.spongeplugin.library.utils.SuperObjectCategory;
 import ninja.leaping.configurate.ConfigurationNode;
 
-import java.util.Optional;
-
 public abstract class AbstractCase extends AbstractSuperObject implements Case {
 
     private final boolean doNotWithdraw;
@@ -22,7 +20,7 @@ public abstract class AbstractCase extends AbstractSuperObject implements Case {
         }
     }
 
-    public AbstractCase(Optional<String> id, boolean doNotWithdraw) {
+    public AbstractCase(String id, boolean doNotWithdraw) {
         super(id);
         this.doNotWithdraw = doNotWithdraw;
     }

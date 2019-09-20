@@ -28,7 +28,7 @@ public abstract class GiveableCase extends AbstractCase implements Giveable {
         }
     }
 
-    public GiveableCase(Optional<String> id, boolean doNotWithdraw,
+    public GiveableCase(String id, boolean doNotWithdraw,
                         GiveableData giveableData, boolean doNotAdd) {
         super(id, doNotWithdraw);
         this.saleCurrency = giveableData.getSaleCurrency();

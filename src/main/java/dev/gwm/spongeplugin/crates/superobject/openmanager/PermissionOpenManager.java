@@ -48,7 +48,7 @@ public final class PermissionOpenManager extends AbstractOpenManager {
         }
     }
 
-    public PermissionOpenManager(Optional<String> id, Optional<SoundType> openSound,
+    public PermissionOpenManager(String id, Optional<SoundType> openSound,
                                  String permission, OpenManager openManager1, OpenManager openManager2) {
         super(id, openSound);
         this.permission = permission;

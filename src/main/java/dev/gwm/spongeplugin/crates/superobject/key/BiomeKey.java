@@ -41,7 +41,7 @@ public final class BiomeKey extends AbstractKey {
         }
     }
 
-    public BiomeKey(Optional<String> id, boolean doNotWithdraw,
+    public BiomeKey(String id, boolean doNotWithdraw,
                     boolean whitelistMode, List<BiomeType> biomes) {
         super(id, doNotWithdraw);
         this.whitelistMode = whitelistMode;

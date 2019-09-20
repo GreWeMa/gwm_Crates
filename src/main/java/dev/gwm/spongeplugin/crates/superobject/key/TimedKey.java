@@ -62,7 +62,7 @@ public final class TimedKey extends GiveableKey {
         }
     }
 
-    public TimedKey(Optional<String> id, boolean doNotWithdraw,
+    public TimedKey(String id, boolean doNotWithdraw,
                     GiveableData giveableData, boolean doNotAdd,
                     String virtualName, long delay) {
         super(id, doNotWithdraw, giveableData, doNotAdd);

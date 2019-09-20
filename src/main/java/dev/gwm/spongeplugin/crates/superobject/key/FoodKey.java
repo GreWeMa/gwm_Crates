@@ -31,7 +31,7 @@ public final class FoodKey extends GiveableKey {
         }
     }
 
-    public FoodKey(Optional<String> id, boolean doNotWithdraw,
+    public FoodKey(String id, boolean doNotWithdraw,
                    GiveableData giveableData, boolean doNotAdd,
                    int food) {
         super(id, doNotWithdraw, giveableData, doNotAdd);

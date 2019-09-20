@@ -49,7 +49,7 @@ public final class PermissionDrop extends AbstractDrop {
         }
     }
 
-    public PermissionDrop(Optional<String> id,
+    public PermissionDrop(String id,
                           GiveableData giveableData,
                           Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview,
                           DefaultRandomableData defaultRandomableData,

@@ -44,7 +44,7 @@ public final class MultiKey extends GiveableKey {
         }
     }
 
-    public MultiKey(Optional<String> id, boolean doNotWithdraw,
+    public MultiKey(String id, boolean doNotWithdraw,
                     GiveableData giveableData, boolean doNotAdd,
                     List<Key> keys, boolean allKeysNeeded) {
         super(id, doNotWithdraw, giveableData, doNotAdd);

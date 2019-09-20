@@ -39,7 +39,7 @@ public class BuyDropCommand implements CommandExecutor {
         Player player = (Player) source;
         UUID uuid = player.getUniqueId();
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
-        String managerId = manager.getId();
+        String managerId = manager.id();
         String dropId = args.<String>getOne(Text.of("drop")).get();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
         Optional<Drop> optionalDrop = manager.getDropById(dropId);
@@ -47,7 +47,7 @@ public class BuyDropCommand implements CommandExecutor {
             player.sendMessages(language.getTranslation("DROP_IS_NOT_FOUND", Arrays.asList(
                     new Pair<>("DROP_ID", dropId),
                     new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.getId())
+                    new Pair<>("MANAGER_ID", manager.id())
             ), player));
             return CommandResult.empty();
         }
@@ -75,7 +75,7 @@ public class BuyDropCommand implements CommandExecutor {
                     new Pair<>("DROP_ID", dropId),
                     new Pair<>("DROP_CUSTOM_NAME", dropCustomName),
                     new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.getId())
+                    new Pair<>("MANAGER_ID", manager.id())
             ), player));
             return CommandResult.empty();
         }
@@ -101,7 +101,7 @@ public class BuyDropCommand implements CommandExecutor {
                 new Pair<>("DROP_ID", dropId),
                 new Pair<>("DROP_CUSTOM_NAME", dropCustomName),
                 new Pair<>("MANAGER_NAME", manager.getName()),
-                new Pair<>("MANAGER_ID", manager.getId())
+                new Pair<>("MANAGER_ID", manager.id())
         ), player));
         return CommandResult.success();
     }

@@ -24,7 +24,7 @@ public final class OrderedDecorativeItemsChangeMode extends AbstractDecorativeIt
         }
     }
 
-    public OrderedDecorativeItemsChangeMode(Optional<String> id, int changeDelay, List<Integer> ignoredIndices,
+    public OrderedDecorativeItemsChangeMode(String id, int changeDelay, List<Integer> ignoredIndices,
                              boolean right) {
         super(id, changeDelay, ignoredIndices);
         this.right = right;

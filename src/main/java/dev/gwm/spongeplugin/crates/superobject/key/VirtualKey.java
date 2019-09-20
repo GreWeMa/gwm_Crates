@@ -53,7 +53,7 @@ public final class VirtualKey extends GiveableKey {
         }
     }
 
-    public VirtualKey(Optional<String> id, boolean doNotWithdraw,
+    public VirtualKey(String id, boolean doNotWithdraw,
                       GiveableData giveableData, boolean doNotAdd,
                       String virtualName) {
         super(id, doNotWithdraw, giveableData, doNotAdd);

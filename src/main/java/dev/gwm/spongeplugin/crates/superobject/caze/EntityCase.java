@@ -39,7 +39,7 @@ public final class EntityCase extends AbstractCase {
         }
     }
 
-    public EntityCase(Optional<String> id,
+    public EntityCase(String id,
                       List<UUID> entityUuids, boolean startPreviewOnLeftClick) {
         super(id, true);
         if (entityUuids.isEmpty()) {

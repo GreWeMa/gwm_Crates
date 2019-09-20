@@ -31,7 +31,7 @@ public final class ItemDrop extends AbstractDrop {
         }
     }
 
-    public ItemDrop(Optional<String> id,
+    public ItemDrop(String id,
                     GiveableData giveableData,
                     Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview,
                     DefaultRandomableData defaultRandomableData,

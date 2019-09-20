@@ -18,15 +18,15 @@ public final class EmptyDrop extends AbstractDrop {
         super(node);
     }
 
-    public EmptyDrop(Optional<String> id,
+    public EmptyDrop(String id,
                      GiveableData giveableDataice,
                      Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview,
                      DefaultRandomableData defaultRandomableData) {
         super(id, giveableDataice, dropItem, customName, showInPreview, defaultRandomableData);
     }
 
-    public EmptyDrop() {
-        super(Optional.empty(),
+    public EmptyDrop(String id) {
+        super(id,
                 new GiveableData(Optional.empty(), Optional.empty()),
                 Optional.empty(), Optional.empty(), false,
                 new DefaultRandomableData(1, Optional.empty(),

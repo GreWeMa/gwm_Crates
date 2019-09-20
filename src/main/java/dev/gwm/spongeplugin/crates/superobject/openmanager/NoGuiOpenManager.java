@@ -21,7 +21,7 @@ public final class NoGuiOpenManager extends AbstractOpenManager {
         super(node);
     }
 
-    public NoGuiOpenManager(Optional<String> id, Optional<SoundType> openSound) {
+    public NoGuiOpenManager(String id, Optional<SoundType> openSound) {
         super(id, openSound);
     }
 

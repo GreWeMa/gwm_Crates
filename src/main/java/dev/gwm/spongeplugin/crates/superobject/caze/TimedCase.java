@@ -12,7 +12,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
@@ -62,7 +61,7 @@ public final class TimedCase extends GiveableCase {
         }
     }
 
-    public TimedCase(Optional<String> id, boolean doNotWithdraw,
+    public TimedCase(String id, boolean doNotWithdraw,
                      GiveableData giveableData, boolean doNotAdd,
                      String virtualName, long delay) {
         super(id, doNotWithdraw, giveableData, doNotAdd);

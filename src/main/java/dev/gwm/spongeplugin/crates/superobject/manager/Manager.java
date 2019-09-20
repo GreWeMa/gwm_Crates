@@ -33,10 +33,6 @@ public interface Manager extends SuperObject {
         return getDrops().stream().filter(new SuperObjectIdEqualsPredicate(id)).findFirst();
     }
 
-    default String getId() {
-        return id().get();
-    }
-
     String getName();
 
     RandomManager getRandomManager();

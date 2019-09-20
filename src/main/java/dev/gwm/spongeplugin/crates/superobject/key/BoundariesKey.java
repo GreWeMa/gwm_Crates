@@ -49,7 +49,7 @@ public class BoundariesKey extends AbstractKey {
         }
     }
 
-    public BoundariesKey(Optional<String> id, boolean doNotWithdraw,
+    public BoundariesKey(String id, boolean doNotWithdraw,
                          AABB aabb, Optional<World> world) {
         super(id, doNotWithdraw);
         this.aabb = aabb;

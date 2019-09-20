@@ -60,7 +60,7 @@ public class DebugCrateListener {
                 player.sendMessages(language.getTranslation("SUCCESSFULLY_OPENED_MANAGER", Arrays.asList(
                         new Pair<>("DROPS", formattedDrops),
                         new Pair<>("MANAGER_NAME", manager.getName()),
-                        new Pair<>("MANAGER_ID", manager.getId())
+                        new Pair<>("MANAGER_ID", manager.id())
                 ), player));
             }
         }
@@ -69,7 +69,7 @@ public class DebugCrateListener {
             String playerName = player.getName();
             String playerUuid = player.getUniqueId().toString();
             String managerName = manager.getName();
-            String managerId = manager.getId();
+            String managerId = manager.id();
             String formattedLocation = GWMCratesUtils.formatLocation(player.getLocation());
             try (OutputStream outputStream = new FileOutputStream(logFile, true)) {
                 outputStream.write(GWMLibraryUtils.joinString(GWMCrates.getInstance().getLanguage().

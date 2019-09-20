@@ -53,7 +53,7 @@ public final class CurrencyKey extends GiveableKey {
         }
     }
 
-    public CurrencyKey(Optional<String> id, boolean doNotWithdraw,
+    public CurrencyKey(String id, boolean doNotWithdraw,
                        GiveableData giveableData, boolean doNotAdd,
                        Optional<Currency> currency, BigDecimal amount) {
         super(id, doNotWithdraw, giveableData, doNotAdd);

@@ -31,7 +31,7 @@ public final class ExperienceLevelKey extends GiveableKey {
         }
     }
 
-    public ExperienceLevelKey(Optional<String> id, boolean doNotWithdraw,
+    public ExperienceLevelKey(String id, boolean doNotWithdraw,
                               GiveableData giveableData, boolean doNotAdd,
                               int experienceLevel) {
         super(id, doNotWithdraw, giveableData, doNotAdd);

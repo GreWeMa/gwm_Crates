@@ -40,7 +40,7 @@ public class BuyCaseCommand implements CommandExecutor {
         Player player = (Player) source;
         UUID uuid = player.getUniqueId();
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
-        String managerId = manager.getId();
+        String managerId = manager.id();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
         if (!player.hasPermission("gwm_crates.command.buy." + managerId + ".case")) {
             player.sendMessages(language.getTranslation("HAVE_NOT_PERMISSION", player));
@@ -50,7 +50,7 @@ public class BuyCaseCommand implements CommandExecutor {
         if (!(caze instanceof Giveable)) {
             player.sendMessages(language.getTranslation("CASE_IS_NOT_GIVEABLE", Arrays.asList(
                     new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.getId())
+                    new Pair<>("MANAGER_ID", manager.id())
             ), player));
             return CommandResult.empty();
         }
@@ -71,7 +71,7 @@ public class BuyCaseCommand implements CommandExecutor {
         if (!optionalPrice.isPresent()) {
             player.sendMessages(language.getTranslation("CASE_IS_NOT_FOR_SALE", Arrays.asList(
                     new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.getId())
+                    new Pair<>("MANAGER_ID", manager.id())
             ), player));
             return CommandResult.empty();
         }
@@ -95,7 +95,7 @@ public class BuyCaseCommand implements CommandExecutor {
         giveable.give(player, amount, false);
         player.sendMessages(language.getTranslation("SUCCESSFULLY_BOUGHT_CASE", Arrays.asList(
                 new Pair<>("MANAGER_NAME", manager.getName()),
-                new Pair<>("MANAGER_ID", manager.getId())
+                new Pair<>("MANAGER_ID", manager.id())
         ), player));
         return CommandResult.success();
     }

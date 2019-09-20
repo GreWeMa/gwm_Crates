@@ -5,6 +5,8 @@ import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.crates.superobject.drop.EmptyDrop;
 import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
+import dev.gwm.spongeplugin.crates.superobject.openmanager.NoGuiOpenManager;
+import dev.gwm.spongeplugin.crates.superobject.openmanager.base.OpenManager;
 import dev.gwm.spongeplugin.library.superobject.randommanager.LevelRandomManager;
 import dev.gwm.spongeplugin.library.superobject.randommanager.RandomManager;
 import dev.gwm.spongeplugin.library.utils.Config;
@@ -42,8 +44,9 @@ public final class GWMCratesUtils {
     }
 
     public static final ItemStack EMPTY_ITEM = ItemStack.of(ItemTypes.NONE, 0);
-    public static final Drop EMPTY_DROP = new EmptyDrop();
-    public static final RandomManager FALLBACK_RANDOM_MANAGER = new LevelRandomManager(Optional.empty());
+    public static final Drop EMPTY_DROP = new EmptyDrop("gwmcrates_default_drop");
+    public static final RandomManager FALLBACK_RANDOM_MANAGER = new LevelRandomManager("gwmcrates_fallback_random_manager");
+    public static final OpenManager DEFAULT_OPEN_MANAGER = new NoGuiOpenManager("gwmcrates_default_open_manager", Optional.empty());
 
     public static boolean loadManager(File file, boolean force) {
         try {
@@ -57,7 +60,7 @@ public final class GWMCratesUtils {
                         create(GWMCratesSuperObjectCategories.MANAGER, managerConfig.getNode());
                 if (GWMCrates.getInstance().isLogLoadedManagers()) {
                     GWMCrates.getInstance().getLogger().
-                            info("Loaded the Manager from the file \"" + getManagerRelativePath(file) + "\" with id \"" + manager.getId() + "\"!");
+                            info("Loaded the Manager from the file \"" + getManagerRelativePath(file) + "\" with id \"" + manager.id() + "\"!");
                 }
                 return true;
             } else {
@@ -500,7 +503,7 @@ public final class GWMCratesUtils {
                     orElse(GWMCrates.getInstance().getLanguage().
                             getTranslation("HAVE_NOT_CASE", Arrays.asList(
                                     new Pair<>("MANAGER_NAME", manager.getName()),
-                                    new Pair<>("MANAGER_ID", manager.getId())
+                                    new Pair<>("MANAGER_ID", manager.id())
                             ), source)));
         }
     }
@@ -511,7 +514,7 @@ public final class GWMCratesUtils {
                     orElse(GWMCrates.getInstance().getLanguage().
                             getTranslation("HAVE_NOT_KEY", Arrays.asList(
                                     new Pair<>("MANAGER_NAME", manager.getName()),
-                                    new Pair<>("MANAGER_ID", manager.getId())
+                                    new Pair<>("MANAGER_ID", manager.id())
                             ), source)));
         }
     }
@@ -522,7 +525,7 @@ public final class GWMCratesUtils {
                     orElse(GWMCrates.getInstance().getLanguage().
                             getTranslation("PREVIEW_IS_NOT_AVAILABLE", Arrays.asList(
                                     new Pair<>("MANAGER_NAME", manager.getName()),
-                                    new Pair<>("MANAGER_ID", manager.getId())
+                                    new Pair<>("MANAGER_ID", manager.id())
                             ), source)));
         }
     }
@@ -548,7 +551,7 @@ public final class GWMCratesUtils {
                             getTranslation("CRATE_OPEN_DELAY", Arrays.asList(
                                     new Pair<>("TIME", GWMCratesUtils.millisToString(delay)),
                                     new Pair<>("MANAGER_NAME", manager.getName()),
-                                    new Pair<>("MANAGER_ID", manager.getId())
+                                    new Pair<>("MANAGER_ID", manager.id())
                             ), source)));
         }
     }
@@ -559,7 +562,7 @@ public final class GWMCratesUtils {
                     orElse(GWMCrates.getInstance().getLanguage().
                             getTranslation("CANNOT_OPEN_MANAGER", Arrays.asList(
                                     new Pair<>("MANAGER_NAME", manager.getName()),
-                                    new Pair<>("MANAGER_ID", manager.getId())
+                                    new Pair<>("MANAGER_ID", manager.id())
                             ), source)));
         }
     }
@@ -569,7 +572,7 @@ public final class GWMCratesUtils {
         final int managersSize = managers.size();
         for (int i = 0; i < managersSize; i++) {
             Manager manager = managers.get(i);
-            String id = manager.getId();
+            String id = manager.id();
             String name = manager.getName();
             List<Map.Entry<String, ?>> entries = Arrays.asList(
                     new Pair<>("MANAGER_ID", id),
@@ -593,7 +596,7 @@ public final class GWMCratesUtils {
         final int dropsSize = drops.size();
         for (int i = 0; i < dropsSize; i++) {
             Drop drop = drops.get(i);
-            String id = drop.id().orElse("null");
+            String id = drop.id();
             String customName = drop.getCustomName().orElse(id);
             List<Map.Entry<String, ?>> entries = Arrays.asList(
                     new Pair<>("DROP_ID", id),

@@ -54,7 +54,7 @@ public final class WorldWeatherKey extends AbstractKey {
         }
     }
 
-    public WorldWeatherKey(Optional<String> id, boolean doNotWithdraw,
+    public WorldWeatherKey(String id, boolean doNotWithdraw,
                            boolean whitelistMode, List<Weather> weathers, Optional<World> world) {
         super(id, doNotWithdraw);
         this.whitelistMode = whitelistMode;

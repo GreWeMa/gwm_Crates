@@ -25,7 +25,7 @@ public class GiveCaseCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
-        String managerId = manager.getId();
+        String managerId = manager.id();
         Player player = args.<Player>getOne(Text.of("player")).get();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
         boolean force = args.hasAny("f");
@@ -45,7 +45,7 @@ public class GiveCaseCommand implements CommandExecutor {
         if (!(caze instanceof Giveable)) {
             source.sendMessages(language.getTranslation("CASE_IS_NOT_GIVEABLE", Arrays.asList(
                     new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.getId())
+                    new Pair<>("MANAGER_ID", manager.id())
             ), source));
             return CommandResult.empty();
         }
@@ -53,12 +53,12 @@ public class GiveCaseCommand implements CommandExecutor {
         if (self) {
             source.sendMessages(language.getTranslation("SUCCESSFULLY_GOT_CASE", Arrays.asList(
                     new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.getId())
+                    new Pair<>("MANAGER_ID", manager.id())
             ), source));
         } else {
             source.sendMessages(language.getTranslation("SUCCESSFULLY_GAVE_CASE", Arrays.asList(
                     new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.getId()),
+                    new Pair<>("MANAGER_ID", manager.id()),
                     new Pair<>("PLAYER_NAME", player.getName()),
                     new Pair<>("PLAYER_UUID", player.getUniqueId())
             ), source));

@@ -72,7 +72,7 @@ public abstract class AbstractDrop extends AbstractSuperObject implements Drop,
         }
     }
 
-    public AbstractDrop(Optional<String> id,
+    public AbstractDrop(String id,
                         GiveableData giveableData,
                         Optional<ItemStack> dropItem, Optional<String> customName, boolean showInPreview,
                         DefaultRandomableData defaultRandomableData) {

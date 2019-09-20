@@ -4,8 +4,6 @@ import dev.gwm.spongeplugin.crates.superobject.caze.base.AbstractCase;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
 
-import java.util.Optional;
-
 public final class EmptyCase extends AbstractCase {
 
     public static final String TYPE = "EMPTY";
@@ -14,7 +12,7 @@ public final class EmptyCase extends AbstractCase {
         super(node);
     }
 
-    public EmptyCase(Optional<String> id) {
+    public EmptyCase(String id) {
         super(id, true);
     }
 

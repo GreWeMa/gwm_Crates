@@ -26,7 +26,7 @@ public class InfoCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
-        String managerId = manager.getId();
+        String managerId = manager.id();
         if (!source.hasPermission("gwm_crates.command.info." + managerId)) {
             source.sendMessages(language.getTranslation("HAVE_NOT_PERMISSION", source));
             return CommandResult.empty();
@@ -38,7 +38,7 @@ public class InfoCommand implements CommandExecutor {
         }
         String formattedDrops = GWMCratesUtils.formatDrops(manager.getDrops());
         source.sendMessages(language.getTranslation("MANAGER_INFO", Arrays.asList(
-                new Pair<>("MANAGER_ID", manager.getId()),
+                new Pair<>("MANAGER_ID", manager.id()),
                 new Pair<>("MANAGER_NAME", manager.getName()),
                 new Pair<>("CASE_TYPE", manager.getCase().type()),
                 new Pair<>("KEY_TYPE", manager.getKey().type()),

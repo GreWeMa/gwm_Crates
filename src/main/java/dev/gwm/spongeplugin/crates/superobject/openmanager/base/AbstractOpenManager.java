@@ -28,7 +28,7 @@ public abstract class AbstractOpenManager extends AbstractSuperObject implements
         }
     }
 
-    public AbstractOpenManager(Optional<String> id, Optional<SoundType> openSound) {
+    public AbstractOpenManager(String id, Optional<SoundType> openSound) {
         super(id);
         this.openSound = openSound;
     }

@@ -128,7 +128,7 @@ public final class FirstOpenManager extends AbstractOpenManager {
         }
     }
 
-    public FirstOpenManager(Optional<String> id, Optional<SoundType> openSound, Optional<Text> displayName,
+    public FirstOpenManager(String id, Optional<SoundType> openSound, Optional<Text> displayName,
                             List<ItemStack> decorativeItems, List<Integer> scrollDelays,
                             boolean clearDecorativeItems, boolean clearOtherDrops,
                             int closeDelay, boolean forbidClose, Optional<SoundType> scrollSound,

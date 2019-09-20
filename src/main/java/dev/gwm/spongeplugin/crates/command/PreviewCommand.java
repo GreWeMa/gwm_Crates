@@ -26,7 +26,7 @@ public class PreviewCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
-        String managerId = manager.getId();
+        String managerId = manager.id();
         Player player = args.<Player>getOne(Text.of("player")).get();
         boolean self = source.equals(player);
         if (self) {
@@ -54,12 +54,12 @@ public class PreviewCommand implements CommandExecutor {
         if (self) {
             source.sendMessages(language.getTranslation("PREVIEW_STARTED", Arrays.asList(
                     new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.getId())
+                    new Pair<>("MANAGER_ID", manager.id())
             ), source));
         } else {
             source.sendMessages(language.getTranslation("PREVIEW_STARTED_FOR_PLAYER", Arrays.asList(
                     new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.getId()),
+                    new Pair<>("MANAGER_ID", manager.id()),
                     new Pair<>("PLAYER_NAME", player.getName()),
                     new Pair<>("PLAYER_UUID", player.getUniqueId())
             ), source));

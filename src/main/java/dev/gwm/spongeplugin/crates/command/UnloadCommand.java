@@ -25,7 +25,7 @@ public class UnloadCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource source, CommandContext args) {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
-        String managerId = manager.getId();
+        String managerId = manager.id();
         if (!source.hasPermission("gwm_crates.command.unload." + managerId)) {
             source.sendMessages(language.getTranslation("HAVE_NOT_PERMISSION", source));
             return CommandResult.empty();

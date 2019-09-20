@@ -65,7 +65,7 @@ public final class WorldTimeKey extends AbstractKey {
         }
     }
 
-    public WorldTimeKey(Optional<String> id, boolean doNotWithdraw,
+    public WorldTimeKey(String id, boolean doNotWithdraw,
                         boolean whitelistMode, Map<Integer, Integer> timeValues, Optional<World> world) {
         super(id, doNotWithdraw);
         this.whitelistMode = whitelistMode;

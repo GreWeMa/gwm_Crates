@@ -16,7 +16,7 @@ public final class RandomDecorativeItemsChangeMode extends AbstractDecorativeIte
         super(node);
     }
 
-    public RandomDecorativeItemsChangeMode(Optional<String> id, int changeDelay, List<Integer> ignoredIndices) {
+    public RandomDecorativeItemsChangeMode(String id, int changeDelay, List<Integer> ignoredIndices) {
         super(id, changeDelay, ignoredIndices);
     }
 

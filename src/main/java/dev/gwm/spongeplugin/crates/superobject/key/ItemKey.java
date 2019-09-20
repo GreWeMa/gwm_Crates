@@ -30,7 +30,7 @@ public final class ItemKey extends GiveableKey {
         }
     }
 
-    public ItemKey(Optional<String> id, boolean doNotWithdraw,
+    public ItemKey(String id, boolean doNotWithdraw,
                    GiveableData giveableData, boolean doNotAdd,
                    ItemStack item) {
         super(id, doNotWithdraw, giveableData, doNotAdd);

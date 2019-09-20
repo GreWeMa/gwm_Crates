@@ -34,9 +34,6 @@ public final class ManagerImpl extends AbstractSuperObject implements Manager {
     public ManagerImpl(ConfigurationNode node) {
         super(node);
         try {
-            if (!id().isPresent()) {
-                throw new RuntimeException("The Manager does not have an ID!");
-            }
             SuperObjectsService superObjectsService = Sponge.getServiceManager().provide(SuperObjectsService.class).get();
             ConfigurationNode nameNode = node.getNode("NAME");
             ConfigurationNode randomManagerNode = node.getNode("RANDOM_MANAGER");
@@ -57,7 +54,7 @@ public final class ManagerImpl extends AbstractSuperObject implements Manager {
             if (dropsNode.isVirtual()) {
                 throw new IllegalArgumentException("DROPS node does not exist!");
             }
-            name = nameNode.isVirtual() ? id().get() : nameNode.getString();
+            name = nameNode.isVirtual() ? id() : nameNode.getString();
             if (randomManagerNode.isVirtual()) {
                 randomManager = GWMCratesUtils.getDefaultRandomManager();
             } else {
@@ -85,13 +82,10 @@ public final class ManagerImpl extends AbstractSuperObject implements Manager {
         }
     }
 
-    public ManagerImpl(Optional<String> id, String name, RandomManager randomManager,
+    public ManagerImpl(String id, String name, RandomManager randomManager,
                        Case caze, Key key, OpenManager openManager, List<Drop> drops,
                        Optional<Preview> preview, ManagerCustomMessageData customMessageData) {
         super(id);
-        if (!id().isPresent()) {
-            throw new RuntimeException("The Manager does not have an ID!");
-        }
         this.name = name;
         this.randomManager = randomManager;
         this.caze = caze;
