@@ -15,7 +15,9 @@ import dev.gwm.spongeplugin.crates.superobject.preview.SecondGuiPreview;
 import dev.gwm.spongeplugin.crates.utils.GWMCratesCommandUtils;
 import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
 import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
-import dev.gwm.spongeplugin.library.event.*;
+import dev.gwm.spongeplugin.library.event.SuperObjectCategoriesRegistrationEvent;
+import dev.gwm.spongeplugin.library.event.SuperObjectIdentifiersRegistrationEvent;
+import dev.gwm.spongeplugin.library.event.SuperObjectsRegistrationEvent;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
 import dev.gwm.spongeplugin.library.utils.*;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -46,13 +48,16 @@ import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "4.2",
+        version = "4.2.1",
         description = "Universal crates plugin",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -65,7 +70,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version(null,4, 2);
+    public static final Version VERSION = new Version(null,4, 2, 1);
 
     private static GWMCrates instance = null;
 
@@ -104,7 +109,6 @@ public final class GWMCrates extends SpongePlugin {
 
     private Language language;
 
-    private boolean checkUpdates;
     private boolean logLoadedManagers;
     private boolean logOpenedManagers;
     private DateTimeFormatter logFileDateFormat;
@@ -179,9 +183,6 @@ public final class GWMCrates extends SpongePlugin {
             createMySQLTables();
         }
         language = new Language(this);
-        if (checkUpdates) {
-            checkUpdates();
-        }
         registerListeners();
         GWMCratesCommandUtils.registerCommands(this);
         logger.info("PreInitialization completed!");
@@ -252,9 +253,6 @@ public final class GWMCrates extends SpongePlugin {
             createMySQLTables();
         }
         language = new Language(this);
-        if (checkUpdates) {
-            checkUpdates();
-        }
         debugCrateListener.reschedule();
         unloadManagers();
         loadManagers();
@@ -263,7 +261,6 @@ public final class GWMCrates extends SpongePlugin {
 
     private void loadConfigValues() {
         try {
-            ConfigurationNode checkUpdatesNode = config.getNode("CHECK_UPDATES");
             ConfigurationNode logLoadedManagersNode = config.getNode("LOG_LOADED_MANAGERS");
             ConfigurationNode logOpenedManagersNode = config.getNode("LOG_OPENED_MANAGERS");
             ConfigurationNode logFileDateFormatNode = config.getNode("LOG_FILE_DATE_FORMAT");
@@ -278,7 +275,6 @@ public final class GWMCrates extends SpongePlugin {
             ConfigurationNode crateOpenDelayNode = config.getNode("CRATE_OPEN_DELAY");
             ConfigurationNode forceCrateCommandRegistrationNode = config.getNode("FORCE_CRATE_COMMAND_REGISTRATION");
             ConfigurationNode defaultRandomManagerIdNode = config.getNode("DEFAULT_RANDOM_MANAGER_ID");
-            checkUpdates = checkUpdatesNode.getBoolean(true);
             logLoadedManagers = logLoadedManagersNode.getBoolean(true);
             logOpenedManagers = logOpenedManagersNode.getBoolean(false);
             if (!logFileDateFormatNode.isVirtual()) {
@@ -542,10 +538,6 @@ public final class GWMCrates extends SpongePlugin {
     @Override
     public Language getLanguage() {
         return language;
-    }
-
-    public boolean isCheckUpdates() {
-        return checkUpdates;
     }
 
     public boolean isLogLoadedManagers() {
