@@ -10,7 +10,6 @@ import dev.gwm.spongeplugin.library.utils.Pair;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.text.Text;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,8 +21,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -52,18 +49,7 @@ public class DebugCrateListener {
         Player player = event.getTargetEntity();
         Manager manager = event.getManager();
         String formattedDrops = GWMCratesUtils.formatDrops(event.getDrops());
-        if (manager.getCustomMessageData().isSendOpenMessage()) {
-            Optional<List<Text>> optionalCustomOpenMessage = manager.getCustomMessageData().getCustomOpenMessage();
-            if (optionalCustomOpenMessage.isPresent()) {
-                player.sendMessages(optionalCustomOpenMessage.get());
-            } else {
-                player.sendMessages(language.getTranslation("SUCCESSFULLY_OPENED_MANAGER", Arrays.asList(
-                        new Pair<>("DROPS", formattedDrops),
-                        new Pair<>("MANAGER_NAME", manager.getName()),
-                        new Pair<>("MANAGER_ID", manager.id())
-                ), player));
-            }
-        }
+        GWMCratesUtils.sendOpenMessage(player, manager, formattedDrops);
         if (GWMCrates.getInstance().isLogOpenedManagers()) {
             String time = LocalTime.now().withNano(0).format(timeFormatter);
             String playerName = player.getName();

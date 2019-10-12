@@ -7,6 +7,7 @@ import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.NoGuiOpenManager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.OpenManager;
+import dev.gwm.spongeplugin.library.superobject.SuperObject;
 import dev.gwm.spongeplugin.library.superobject.randommanager.LevelRandomManager;
 import dev.gwm.spongeplugin.library.superobject.randommanager.RandomManager;
 import dev.gwm.spongeplugin.library.utils.Config;
@@ -497,73 +498,93 @@ public final class GWMCratesUtils {
                 Optional.of(node.getList(token));
     }
 
+    public static void sendInfoMessage(CommandSource source, Manager manager) {
+        source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomInfo(),
+                GWMCrates.getInstance().getLanguage(), "MANAGER_INFO", Arrays.asList(
+                        new Pair<>("MANAGER_ID", manager.id()),
+                        new Pair<>("MANAGER_NAME", manager.getName()),
+                        new Pair<>("CASE_TYPE", manager.getCase().type()),
+                        new Pair<>("KEY_TYPE", manager.getKey().type()),
+                        new Pair<>("OPEN_MANAGER_TYPE", manager.getOpenManager().type()),
+                        new Pair<>("PREVIEW_TYPE", manager.getPreview().
+                                map(SuperObject::type).orElse("No preview")),
+                        new Pair<>("DROPS", GWMCratesUtils.formatDrops(manager.getDrops()))
+                )));
+    }
+
+    public static void sendOpenMessage(CommandSource source, Manager manager, String formattedDrops) {
+        if (manager.getCustomMessageData().isSendOpenMessage()) {
+            source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomOpenMessage(),
+                    GWMCrates.getInstance().getLanguage(), "SUCCESSFULLY_OPENED_MANAGER", Arrays.asList(
+                            new Pair<>("DROPS", formattedDrops),
+                            new Pair<>("MANAGER_NAME", manager.getName()),
+                            new Pair<>("MANAGER_ID", manager.id())
+                    )));
+        }
+    }
+
     public static void sendCaseMissingMessage(CommandSource source, Manager manager) {
         if (manager.getCustomMessageData().isSendCaseMissingMessage()) {
-            source.sendMessages(manager.getCustomMessageData().getCustomCaseMissingMessage().
-                    orElse(GWMCrates.getInstance().getLanguage().
-                            getTranslation("HAVE_NOT_CASE", Arrays.asList(
-                                    new Pair<>("MANAGER_NAME", manager.getName()),
-                                    new Pair<>("MANAGER_ID", manager.id())
-                            ), source)));
+            source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomCaseMissingMessage(),
+                    GWMCrates.getInstance().getLanguage(), "HAVE_NOT_CASE", Arrays.asList(
+                            new Pair<>("MANAGER_NAME", manager.getName()),
+                            new Pair<>("MANAGER_ID", manager.id())
+                    )));
         }
     }
 
     public static void sendKeyMissingMessage(CommandSource source, Manager manager) {
         if (manager.getCustomMessageData().isSendKeyMissingMessage()) {
-            source.sendMessages(manager.getCustomMessageData().getCustomKeyMissingMessage().
-                    orElse(GWMCrates.getInstance().getLanguage().
-                            getTranslation("HAVE_NOT_KEY", Arrays.asList(
-                                    new Pair<>("MANAGER_NAME", manager.getName()),
-                                    new Pair<>("MANAGER_ID", manager.id())
-                            ), source)));
+            source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomKeyMissingMessage(),
+                    GWMCrates.getInstance().getLanguage(), "HAVE_NOT_KEY", Arrays.asList(
+                            new Pair<>("MANAGER_NAME", manager.getName()),
+                            new Pair<>("MANAGER_ID", manager.id())
+                    )));
         }
     }
 
     public static void sendPreviewNotAvailableMessage(CommandSource source, Manager manager) {
         if (manager.getCustomMessageData().isSendPreviewIsNotAvailableMessage()) {
-            source.sendMessages(manager.getCustomMessageData().getCustomPreviewIsNotAvailableMessage().
-                    orElse(GWMCrates.getInstance().getLanguage().
-                            getTranslation("PREVIEW_IS_NOT_AVAILABLE", Arrays.asList(
-                                    new Pair<>("MANAGER_NAME", manager.getName()),
-                                    new Pair<>("MANAGER_ID", manager.id())
-                            ), source)));
+            source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomPreviewIsNotAvailableMessage(),
+                    GWMCrates.getInstance().getLanguage(), "PREVIEW_IS_NOT_AVAILABLE", Arrays.asList(
+                            new Pair<>("MANAGER_NAME", manager.getName()),
+                            new Pair<>("MANAGER_ID", manager.id())
+                    )));
         }
     }
 
     public static void sendNoPermissionToOpenMessage(CommandSource source, Manager manager) {
         if (manager.getCustomMessageData().isSendNoPermissionToOpenMessage()) {
-            source.sendMessages(manager.getCustomMessageData().getCustomNoPermissionToOpenMessage().
-                    orElse(GWMCrates.getInstance().getLanguage().getTranslation("HAVE_NOT_PERMISSION", source)));
+            source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomNoPermissionToOpenMessage(),
+                    GWMCrates.getInstance().getLanguage(), "HAVE_NOT_PERMISSION", Collections.emptyList()));
         }
     }
 
     public static void sendNoPermissionToPreviewMessage(CommandSource source, Manager manager) {
         if (manager.getCustomMessageData().isSendNoPermissionToPreviewMessage()) {
-            source.sendMessages(manager.getCustomMessageData().getCustomNoPermissionToPreviewMessage().
-                    orElse(GWMCrates.getInstance().getLanguage().getTranslation("HAVE_NOT_PERMISSION", source)));
+            source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomNoPermissionToPreviewMessage(),
+                    GWMCrates.getInstance().getLanguage(), "HAVE_NOT_PERMISSION", Collections.emptyList()));
         }
     }
 
     public static void sendCrateDelayMessage(CommandSource source, Manager manager, long delay) {
         if (manager.getCustomMessageData().isSendCrateDelayMessage()) {
-            source.sendMessages(manager.getCustomMessageData().getCustomCrateDelayMessage().
-                    orElse(GWMCrates.getInstance().getLanguage().
-                            getTranslation("CRATE_OPEN_DELAY", Arrays.asList(
-                                    new Pair<>("TIME", GWMCratesUtils.millisToString(delay)),
-                                    new Pair<>("MANAGER_NAME", manager.getName()),
-                                    new Pair<>("MANAGER_ID", manager.id())
-                            ), source)));
+            source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomCrateDelayMessage(),
+                    GWMCrates.getInstance().getLanguage(), "CRATE_OPEN_DELAY", Arrays.asList(
+                            new Pair<>("TIME", GWMCratesUtils.millisToString(delay)),
+                            new Pair<>("MANAGER_NAME", manager.getName()),
+                            new Pair<>("MANAGER_ID", manager.id())
+                    )));
         }
     }
 
     public static void sendCannotOpenMessage(CommandSource source, Manager manager) {
         if (manager.getCustomMessageData().isSendCannotOpenManagerMessage()) {
-            source.sendMessages(manager.getCustomMessageData().getCustomCannotOpenManagerMessage().
-                    orElse(GWMCrates.getInstance().getLanguage().
-                            getTranslation("CANNOT_OPEN_MANAGER", Arrays.asList(
-                                    new Pair<>("MANAGER_NAME", manager.getName()),
-                                    new Pair<>("MANAGER_ID", manager.id())
-                            ), source)));
+            source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomCannotOpenManagerMessage(),
+                    GWMCrates.getInstance().getLanguage(), "CANNOT_OPEN_MANAGER", Arrays.asList(
+                            new Pair<>("MANAGER_NAME", manager.getName()),
+                            new Pair<>("MANAGER_ID", manager.id())
+                    )));
         }
     }
 

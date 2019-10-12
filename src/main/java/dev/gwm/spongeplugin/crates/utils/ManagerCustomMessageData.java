@@ -3,30 +3,29 @@ package dev.gwm.spongeplugin.crates.utils;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.spongepowered.api.text.Text;
 
 import java.util.List;
 import java.util.Optional;
 
 public class ManagerCustomMessageData {
 
-    private final Optional<List<Text>> customInfo;
+    private final Optional<List<String>> customInfo;
     private final boolean sendOpenMessage;
-    private final Optional<List<Text>> customOpenMessage;
+    private final Optional<List<String>> customOpenMessage;
     private final boolean sendCaseMissingMessage;
-    private final Optional<List<Text>> customCaseMissingMessage;
+    private final Optional<List<String>> customCaseMissingMessage;
     private final boolean sendKeyMissingMessage;
-    private final Optional<List<Text>> customKeyMissingMessage;
+    private final Optional<List<String>> customKeyMissingMessage;
     private final boolean sendPreviewIsNotAvailableMessage;
-    private final Optional<List<Text>> customPreviewIsNotAvailableMessage;
+    private final Optional<List<String>> customPreviewIsNotAvailableMessage;
     private final boolean sendNoPermissionToOpenMessage;
-    private final Optional<List<Text>> customNoPermissionToOpenMessage;
+    private final Optional<List<String>> customNoPermissionToOpenMessage;
     private final boolean sendNoPermissionToPreviewMessage;
-    private final Optional<List<Text>> customNoPermissionToPreviewMessage;
+    private final Optional<List<String>> customNoPermissionToPreviewMessage;
     private final boolean sendCrateDelayMessage;
-    private final Optional<List<Text>> customCrateDelayMessage;
+    private final Optional<List<String>> customCrateDelayMessage;
     private final boolean sendCannotOpenManagerMessage;
-    private final Optional<List<Text>> customCannotOpenManagerMessage;
+    private final Optional<List<String>> customCannotOpenManagerMessage;
 
     public ManagerCustomMessageData(ConfigurationNode node) throws ObjectMappingException {
         ConfigurationNode customInfoNode = node.getNode("CUSTOM_INFO");
@@ -46,34 +45,34 @@ public class ManagerCustomMessageData {
         ConfigurationNode customCrateDelayMessageNode = node.getNode("CUSTOM_CRATE_DELAY_MESSAGE");
         ConfigurationNode sendCannotOpenMessageNode = node.getNode("SEND_CANNOT_OPEN_MANAGER_MESSAGE");
         ConfigurationNode customCannotOpenMessageNode = node.getNode("CUSTOM_CANNOT_OPEN_MANAGER_MESSAGE");
-        customInfo = GWMCratesUtils.parseOptionalList(customInfoNode, TypeToken.of(Text.class));
+        customInfo = GWMCratesUtils.parseOptionalList(customInfoNode, TypeToken.of(String.class));
         sendOpenMessage = sendOpenMessageNode.getBoolean(true);
-        customOpenMessage = GWMCratesUtils.parseOptionalList(customOpenMessageNode, TypeToken.of(Text.class));
+        customOpenMessage = GWMCratesUtils.parseOptionalList(customOpenMessageNode, TypeToken.of(String.class));
         sendCaseMissingMessage = sendCaseMissingMessageNode.getBoolean(true);
-        customCaseMissingMessage = GWMCratesUtils.parseOptionalList(customCaseMissingMessageNode, TypeToken.of(Text.class));
+        customCaseMissingMessage = GWMCratesUtils.parseOptionalList(customCaseMissingMessageNode, TypeToken.of(String.class));
         sendKeyMissingMessage = sendKeyMissingMessageNode.getBoolean(true);
-        customKeyMissingMessage = GWMCratesUtils.parseOptionalList(customKeyMissingMessageNode, TypeToken.of(Text.class));
+        customKeyMissingMessage = GWMCratesUtils.parseOptionalList(customKeyMissingMessageNode, TypeToken.of(String.class));
         sendPreviewIsNotAvailableMessage = sendPreviewIsNotAvailableMessageNode.getBoolean(true);
-        customPreviewIsNotAvailableMessage = GWMCratesUtils.parseOptionalList(customPreviewIsNotAvailableMessageNode, TypeToken.of(Text.class));
+        customPreviewIsNotAvailableMessage = GWMCratesUtils.parseOptionalList(customPreviewIsNotAvailableMessageNode, TypeToken.of(String.class));
         sendNoPermissionToOpenMessage = sendNoPermissionToOpenMessageNode.getBoolean(true);
-        customNoPermissionToOpenMessage = GWMCratesUtils.parseOptionalList(customNoPermissionToOpenMessageNode, TypeToken.of(Text.class));
+        customNoPermissionToOpenMessage = GWMCratesUtils.parseOptionalList(customNoPermissionToOpenMessageNode, TypeToken.of(String.class));
         sendNoPermissionToPreviewMessage = sendNoPermissionToPreviewMessageNode.getBoolean(true);
-        customNoPermissionToPreviewMessage = GWMCratesUtils.parseOptionalList(customNoPermissionToPreviewMessageNode, TypeToken.of(Text.class));
+        customNoPermissionToPreviewMessage = GWMCratesUtils.parseOptionalList(customNoPermissionToPreviewMessageNode, TypeToken.of(String.class));
         sendCrateDelayMessage = sendCrateDelayMessageNode.getBoolean(true);
-        customCrateDelayMessage = GWMCratesUtils.parseOptionalList(customCrateDelayMessageNode, TypeToken.of(Text.class));
+        customCrateDelayMessage = GWMCratesUtils.parseOptionalList(customCrateDelayMessageNode, TypeToken.of(String.class));
         sendCannotOpenManagerMessage = sendCannotOpenMessageNode.getBoolean(true);
-        customCannotOpenManagerMessage = GWMCratesUtils.parseOptionalList(customCannotOpenMessageNode, TypeToken.of(Text.class));
+        customCannotOpenManagerMessage = GWMCratesUtils.parseOptionalList(customCannotOpenMessageNode, TypeToken.of(String.class));
     }
 
-    public ManagerCustomMessageData(Optional<List<Text>> customInfo,
-                                    boolean sendOpenMessage, Optional<List<Text>> customOpenMessage,
-                                    boolean sendCaseMissingMessage, Optional<List<Text>> customCaseMissingMessage,
-                                    boolean sendKeyMissingMessage, Optional<List<Text>> customKeyMissingMessage,
-                                    boolean sendPreviewIsNotAvailableMessage, Optional<List<Text>> customPreviewIsNotAvailableMessage,
-                                    boolean sendNoPermissionToOpenMessage, Optional<List<Text>> customNoPermissionToOpenMessage,
-                                    boolean sendNoPermissionToPreviewMessage, Optional<List<Text>> customNoPermissionToPreviewMessage,
-                                    boolean sendCrateDelayMessage, Optional<List<Text>> customCrateDelayMessage,
-                                    boolean sendCannotOpenManagerMessage, Optional<List<Text>> customCannotOpenManagerMessage) {
+    public ManagerCustomMessageData(Optional<List<String>> customInfo,
+                                    boolean sendOpenMessage, Optional<List<String>> customOpenMessage,
+                                    boolean sendCaseMissingMessage, Optional<List<String>> customCaseMissingMessage,
+                                    boolean sendKeyMissingMessage, Optional<List<String>> customKeyMissingMessage,
+                                    boolean sendPreviewIsNotAvailableMessage, Optional<List<String>> customPreviewIsNotAvailableMessage,
+                                    boolean sendNoPermissionToOpenMessage, Optional<List<String>> customNoPermissionToOpenMessage,
+                                    boolean sendNoPermissionToPreviewMessage, Optional<List<String>> customNoPermissionToPreviewMessage,
+                                    boolean sendCrateDelayMessage, Optional<List<String>> customCrateDelayMessage,
+                                    boolean sendCannotOpenManagerMessage, Optional<List<String>> customCannotOpenManagerMessage) {
         this.customInfo = customInfo;
         this.sendOpenMessage = sendOpenMessage;
         this.customOpenMessage = customOpenMessage;
@@ -93,7 +92,7 @@ public class ManagerCustomMessageData {
         this.customCannotOpenManagerMessage = customCannotOpenManagerMessage;
     }
 
-    public Optional<List<Text>> getCustomInfo() {
+    public Optional<List<String>> getCustomInfo() {
         return customInfo;
     }
 
@@ -101,7 +100,7 @@ public class ManagerCustomMessageData {
         return sendOpenMessage;
     }
 
-    public Optional<List<Text>> getCustomOpenMessage() {
+    public Optional<List<String>> getCustomOpenMessage() {
         return customOpenMessage;
     }
 
@@ -109,7 +108,7 @@ public class ManagerCustomMessageData {
         return sendCaseMissingMessage;
     }
 
-    public Optional<List<Text>> getCustomCaseMissingMessage() {
+    public Optional<List<String>> getCustomCaseMissingMessage() {
         return customCaseMissingMessage;
     }
 
@@ -117,7 +116,7 @@ public class ManagerCustomMessageData {
         return sendKeyMissingMessage;
     }
 
-    public Optional<List<Text>> getCustomKeyMissingMessage() {
+    public Optional<List<String>> getCustomKeyMissingMessage() {
         return customKeyMissingMessage;
     }
 
@@ -125,7 +124,7 @@ public class ManagerCustomMessageData {
         return sendPreviewIsNotAvailableMessage;
     }
 
-    public Optional<List<Text>> getCustomPreviewIsNotAvailableMessage() {
+    public Optional<List<String>> getCustomPreviewIsNotAvailableMessage() {
         return customPreviewIsNotAvailableMessage;
     }
 
@@ -133,7 +132,7 @@ public class ManagerCustomMessageData {
         return sendNoPermissionToOpenMessage;
     }
 
-    public Optional<List<Text>> getCustomNoPermissionToOpenMessage() {
+    public Optional<List<String>> getCustomNoPermissionToOpenMessage() {
         return customNoPermissionToOpenMessage;
     }
 
@@ -141,7 +140,7 @@ public class ManagerCustomMessageData {
         return sendNoPermissionToPreviewMessage;
     }
 
-    public Optional<List<Text>> getCustomNoPermissionToPreviewMessage() {
+    public Optional<List<String>> getCustomNoPermissionToPreviewMessage() {
         return customNoPermissionToPreviewMessage;
     }
 
@@ -149,7 +148,7 @@ public class ManagerCustomMessageData {
         return sendCrateDelayMessage;
     }
 
-    public Optional<List<Text>> getCustomCrateDelayMessage() {
+    public Optional<List<String>> getCustomCrateDelayMessage() {
         return customCrateDelayMessage;
     }
 
@@ -157,7 +156,7 @@ public class ManagerCustomMessageData {
         return sendCannotOpenManagerMessage;
     }
 
-    public Optional<List<Text>> getCustomCannotOpenManagerMessage() {
+    public Optional<List<String>> getCustomCannotOpenManagerMessage() {
         return customCannotOpenManagerMessage;
     }
 }
