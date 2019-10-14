@@ -14,7 +14,7 @@ public interface DecorativeItemsChangeMode extends SuperObject {
         return GWMCratesSuperObjectCategories.DECORATIVE_ITEMS_CHANGE_MODE;
     }
 
-    List<ItemStack> shuffle(List<ItemStack> decorativeItems);
+    List<ItemStack> change(List<ItemStack> decorativeItems);
 
     int getChangeDelay();
 

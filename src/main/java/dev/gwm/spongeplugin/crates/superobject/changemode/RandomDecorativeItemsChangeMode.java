@@ -6,7 +6,6 @@ import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public final class RandomDecorativeItemsChangeMode extends AbstractDecorativeItemsChangeMode {
 
@@ -26,7 +25,7 @@ public final class RandomDecorativeItemsChangeMode extends AbstractDecorativeIte
     }
 
     @Override
-    public List<ItemStack> shuffle(List<ItemStack> decorativeItems) {
+    public List<ItemStack> change(List<ItemStack> decorativeItems) {
         List<Integer> indicesToShuffle = getIndicesToShuffle(decorativeItems);
         Collections.shuffle(indicesToShuffle);
         for (int i = 0; i + 1 < indicesToShuffle.size(); i += 2) {

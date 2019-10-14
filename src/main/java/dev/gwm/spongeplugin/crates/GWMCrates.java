@@ -3,6 +3,7 @@ package dev.gwm.spongeplugin.crates;
 import com.flowpowered.math.vector.Vector3d;
 import dev.gwm.spongeplugin.crates.listener.*;
 import dev.gwm.spongeplugin.crates.superobject.caze.*;
+import dev.gwm.spongeplugin.crates.superobject.changemode.NashornDecorativeItemsChangeMode;
 import dev.gwm.spongeplugin.crates.superobject.changemode.OrderedDecorativeItemsChangeMode;
 import dev.gwm.spongeplugin.crates.superobject.changemode.RandomDecorativeItemsChangeMode;
 import dev.gwm.spongeplugin.crates.superobject.drop.*;
@@ -57,7 +58,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "4.2.2",
+        version = "4.3",
         description = "Universal crates plugin",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -70,7 +71,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version(null,4, 2, 2);
+    public static final Version VERSION = new Version(null,4, 3);
 
     private static GWMCrates instance = null;
 
@@ -93,6 +94,7 @@ public final class GWMCrates extends SpongePlugin {
     private File configDirectory;
     private File managersDirectory;
     private File logsDirectory;
+    private File scriptsDirectory;
 
     @Inject
     private Logger logger;
@@ -139,6 +141,7 @@ public final class GWMCrates extends SpongePlugin {
     public void onPreInitialization(GamePreInitializationEvent event) {
         managersDirectory = new File(configDirectory, "managers");
         logsDirectory = new File(configDirectory, "logs");
+        scriptsDirectory = new File(configDirectory, "scripts");
         if (!configDirectory.exists()) {
             logger.info("Config directory does not exist! Trying to create it...");
             if (configDirectory.mkdirs()) {
@@ -152,7 +155,7 @@ public final class GWMCrates extends SpongePlugin {
             if (managersDirectory.mkdirs()) {
                 logger.info("Managers directory successfully created!");
             } else {
-                logger.error("Failed to create Managers config directory!");
+                logger.error("Failed to create Managers directory!");
             }
         }
         if (!logsDirectory.exists()) {
@@ -160,7 +163,15 @@ public final class GWMCrates extends SpongePlugin {
             if (logsDirectory.mkdirs()) {
                 logger.info("Logs directory successfully created!");
             } else {
-                logger.error("Failed to create logs config directory!");
+                logger.error("Failed to create logs directory!");
+            }
+        }
+        if (!scriptsDirectory.exists()) {
+            logger.info("Scripts directory does not exist! Trying to create it...");
+            if (scriptsDirectory.mkdirs()) {
+                logger.info("Scripts directory successfully created!");
+            } else {
+                logger.error("Failed to create scripts directory!");
             }
         }
 
@@ -376,12 +387,13 @@ public final class GWMCrates extends SpongePlugin {
 
     private Map<SuperObjectIdentifier, Class<? extends SuperObject>> getSuperObjects() {
         Map<SuperObjectIdentifier, Class<? extends SuperObject>> map = new HashMap<>();
-        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.MANAGER, ManagerImpl.TYPE), ManagerImpl.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.MANAGER, Manager.TYPE), ManagerImpl.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, ItemCase.TYPE), ItemCase.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, BlockCase.TYPE), BlockCase.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, EntityCase.TYPE), EntityCase.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, VirtualCase.TYPE), VirtualCase.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, TimedCase.TYPE), TimedCase.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, NashornCase.TYPE), NashornCase.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, EmptyCase.TYPE), EmptyCase.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, ItemKey.TYPE), ItemKey.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, MultiKey.TYPE), MultiKey.class);
@@ -400,6 +412,7 @@ public final class GWMCrates extends SpongePlugin {
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, WorldWeatherKey.TYPE), WorldWeatherKey.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, BoundariesKey.TYPE), BoundariesKey.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, RadiusKey.TYPE), RadiusKey.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, NashornKey.TYPE), NashornKey.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.KEY, EmptyKey.TYPE), EmptyKey.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.OPEN_MANAGER, NoGuiOpenManager.TYPE), NoGuiOpenManager.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.OPEN_MANAGER, FirstOpenManager.TYPE), FirstOpenManager.class);
@@ -412,12 +425,14 @@ public final class GWMCrates extends SpongePlugin {
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, MultiDrop.TYPE), MultiDrop.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, DelayDrop.TYPE), DelayDrop.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, PermissionDrop.TYPE), PermissionDrop.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, NashornDrop.TYPE), NashornDrop.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, EmptyDrop.TYPE), EmptyDrop.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.PREVIEW, FirstGuiPreview.TYPE), FirstGuiPreview.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.PREVIEW, SecondGuiPreview.TYPE), SecondGuiPreview.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.PREVIEW, SecondGuiPreview.TYPE), SecondGuiPreview.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DECORATIVE_ITEMS_CHANGE_MODE, RandomDecorativeItemsChangeMode.TYPE), RandomDecorativeItemsChangeMode.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DECORATIVE_ITEMS_CHANGE_MODE, OrderedDecorativeItemsChangeMode.TYPE), OrderedDecorativeItemsChangeMode.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DECORATIVE_ITEMS_CHANGE_MODE, NashornDecorativeItemsChangeMode.TYPE), NashornDecorativeItemsChangeMode.class);
         return map;
     }
 
@@ -433,7 +448,7 @@ public final class GWMCrates extends SpongePlugin {
             ConfigurationNode dbNode = mysqlNode.getNode("DB");
             ConfigurationNode userNode = mysqlNode.getNode("USER");
             ConfigurationNode passwordNode = mysqlNode.getNode("PASSWORD");
-            String ip = ipNode.getString();
+            String ip = ipNode.getString("localhost");
             int port = portNode.getInt(3306);
             String db = dbNode.getString();
             String user = userNode.getString();
@@ -497,6 +512,10 @@ public final class GWMCrates extends SpongePlugin {
 
     public File getLogsDirectory() {
         return logsDirectory;
+    }
+
+    public File getScriptsDirectory() {
+        return scriptsDirectory;
     }
 
     @Override

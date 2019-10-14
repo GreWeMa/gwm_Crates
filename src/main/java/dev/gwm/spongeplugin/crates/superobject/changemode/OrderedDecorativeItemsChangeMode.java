@@ -6,7 +6,6 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.List;
-import java.util.Optional;
 
 public final class OrderedDecorativeItemsChangeMode extends AbstractDecorativeItemsChangeMode {
 
@@ -36,7 +35,7 @@ public final class OrderedDecorativeItemsChangeMode extends AbstractDecorativeIt
     }
 
     @Override
-    public List<ItemStack> shuffle(List<ItemStack> decorativeItems) {
+    public List<ItemStack> change(List<ItemStack> decorativeItems) {
         List<Integer> indicesToShuffle = getIndicesToShuffle(decorativeItems);
         if (right) {
             ItemStack previous = decorativeItems.get(0);

@@ -40,7 +40,7 @@ public class DecorativeItemsChangeRunnable implements Runnable {
     public void run() {
         Optional<Container> openInventory = player.getOpenInventory();
         if (openInventory.isPresent() && openInventory.get().equals(container)) {
-            decorativeItems = decorativeItemsChangeMode.shuffle(decorativeItems);
+            decorativeItems = decorativeItemsChangeMode.change(decorativeItems);
             int index = 0;
             for (int i = 0; i < decorativeItemsIndices.size(); i++, index++) {
                 if (index == decorativeItems.size()) {

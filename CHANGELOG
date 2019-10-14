@@ -1,3 +1,10 @@
+VERSION 4.3
+* Use "localhost" as a default value for "MYSQL.IP" parameter
+* Add 'NASHORN' Case
+* Add 'NASHORN' Key
+* Add 'NASHORN' Drop
+* Add 'NASHORN' Decorative Items Change Mode
+
 VERSION 4.2.2
 * Update to GWMLibrary 2.5
 
