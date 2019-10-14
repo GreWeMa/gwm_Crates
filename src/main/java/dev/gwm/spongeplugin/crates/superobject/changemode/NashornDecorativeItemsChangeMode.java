@@ -15,7 +15,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.List;
 
-public class NashornDecorativeItemsChangeMode extends AbstractDecorativeItemsChangeMode implements Nashornable {
+public final class NashornDecorativeItemsChangeMode extends AbstractDecorativeItemsChangeMode implements Nashornable {
 
     public static final String TYPE = "NASHORN";
 

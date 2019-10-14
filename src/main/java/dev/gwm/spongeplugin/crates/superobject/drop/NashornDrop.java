@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Optional;
 
-public class NashornDrop extends AbstractDrop implements Nashornable {
+public final class NashornDrop extends AbstractDrop implements Nashornable {
 
     public static final String TYPE = "NASHORN";
 
