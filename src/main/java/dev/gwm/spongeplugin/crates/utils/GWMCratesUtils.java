@@ -54,9 +54,6 @@ public final class GWMCratesUtils {
             Config managerConfig = new Config(GWMCrates.getInstance(), file);
             ConfigurationNode loadNode = managerConfig.getNode("LOAD");
             if (force || loadNode.getBoolean(true)) {
-                ConfigurationNode typeNode = managerConfig.getNode("TYPE");
-                //This is required in order to not force users to write 'TYPE: "MANAGER"' in each manager
-                typeNode.setValue(GWMCratesSuperObjectCategories.MANAGER.getName());
                 Manager manager = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
                         create(GWMCratesSuperObjectCategories.MANAGER, managerConfig.getNode());
                 if (GWMCrates.getInstance().isLogLoadedManagers()) {
