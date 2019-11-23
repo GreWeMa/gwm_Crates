@@ -5,12 +5,12 @@ import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
 import dev.gwm.spongeplugin.crates.superobject.key.base.Key;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.OpenManager;
 import dev.gwm.spongeplugin.crates.superobject.preview.base.Preview;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
-import dev.gwm.spongeplugin.crates.utils.ManagerCustomMessageData;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.ManagerCustomMessageData;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
 import dev.gwm.spongeplugin.library.superobject.randommanager.RandomManager;
-import dev.gwm.spongeplugin.library.utils.SuperObjectCategory;
-import dev.gwm.spongeplugin.library.utils.SuperObjectIdEqualsPredicate;
+import dev.gwm.spongeplugin.library.util.SuperObjectCategory;
+import dev.gwm.spongeplugin.library.util.SuperObjectIdEqualsPredicate;
 
 import java.util.List;
 import java.util.Optional;

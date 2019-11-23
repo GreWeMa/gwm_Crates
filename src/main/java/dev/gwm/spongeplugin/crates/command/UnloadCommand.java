@@ -2,9 +2,9 @@ package dev.gwm.spongeplugin.crates.command;
 
 import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
-import dev.gwm.spongeplugin.library.utils.Language;
-import dev.gwm.spongeplugin.library.utils.Pair;
-import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import dev.gwm.spongeplugin.library.util.Language;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -31,18 +31,18 @@ public class UnloadCommand implements CommandExecutor {
             return CommandResult.empty();
         }
         try {
-            Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+            Sponge.getServiceManager().provide(SuperObjectService.class).get().
                     shutdownCreatedSuperObject(manager);
             source.sendMessages(language.getTranslation("MANAGER_UNLOADED", Arrays.asList(
-                    new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", managerId)
+                    new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                    new ImmutablePair<>("MANAGER_ID", managerId)
             ), source));
             return CommandResult.success();
         } catch (Exception e) {
             GWMCrates.getInstance().getLogger().error("Failed to unload a manager!", e);
             source.sendMessages(language.getTranslation("MANAGER_UNLOAD_FAILED", Arrays.asList(
-                    new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", managerId)
+                    new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                    new ImmutablePair<>("MANAGER_ID", managerId)
             ), source));
             return CommandResult.empty();
         }

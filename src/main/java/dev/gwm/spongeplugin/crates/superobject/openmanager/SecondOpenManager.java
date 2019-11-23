@@ -5,11 +5,12 @@ import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.crates.event.PlayerOpenCrateEvent;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.AbstractOpenManager;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
-import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
-import dev.gwm.spongeplugin.library.utils.Pair;
+import dev.gwm.spongeplugin.library.util.GWMLibraryUtils;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.living.player.Player;
@@ -145,7 +146,7 @@ public final class SecondOpenManager extends AbstractOpenManager {
         }
         Container container = player.openInventory(inventory).get();
         getOpenSound().ifPresent(openSound -> player.playSound(openSound, player.getLocation().getPosition(), 1.));
-        SECOND_GUI_INVENTORIES.put(container, new Pair<>(this, manager));
+        SECOND_GUI_INVENTORIES.put(container, new ImmutablePair<>(this, manager));
     }
 
     public Optional<Text> getDisplayName() {

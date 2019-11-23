@@ -1,4 +1,4 @@
-package dev.gwm.spongeplugin.crates.utils;
+package dev.gwm.spongeplugin.crates.util;
 
 import dev.gwm.spongeplugin.crates.superobject.changemode.base.DecorativeItemsChangeMode;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.OpenManager;
@@ -7,7 +7,7 @@ import dev.gwm.spongeplugin.crates.superobject.caze.base.Case;
 import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
 import dev.gwm.spongeplugin.crates.superobject.key.base.Key;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
-import dev.gwm.spongeplugin.library.utils.SuperObjectCategory;
+import dev.gwm.spongeplugin.library.util.SuperObjectCategory;
 
 import java.util.Arrays;
 import java.util.List;

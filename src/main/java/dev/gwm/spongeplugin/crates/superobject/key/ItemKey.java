@@ -1,15 +1,13 @@
 package dev.gwm.spongeplugin.crates.superobject.key;
 
 import dev.gwm.spongeplugin.crates.superobject.key.base.GiveableKey;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
-import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
-import dev.gwm.spongeplugin.library.utils.GiveableData;
+import dev.gwm.spongeplugin.library.util.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.util.GiveableData;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
-
-import java.util.Optional;
 
 public final class ItemKey extends GiveableKey {
 

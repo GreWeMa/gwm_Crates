@@ -5,10 +5,11 @@ import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.superobject.preview.base.AbstractPreview;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
-import dev.gwm.spongeplugin.library.utils.Pair;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -80,7 +81,7 @@ public final class SecondGuiPreview extends AbstractPreview {
             i++;
         }
         Container container = player.openInventory(inventory).get();
-        SECOND_GUI_CONTAINERS.put(container, new Pair<>(this, manager));
+        SECOND_GUI_CONTAINERS.put(container, new ImmutablePair<>(this, manager));
     }
 
     public Optional<Text> getDisplayName() {

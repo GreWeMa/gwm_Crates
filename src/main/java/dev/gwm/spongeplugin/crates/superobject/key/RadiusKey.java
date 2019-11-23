@@ -3,7 +3,7 @@ package dev.gwm.spongeplugin.crates.superobject.key;
 import com.flowpowered.math.vector.Vector3d;
 import dev.gwm.spongeplugin.crates.superobject.key.base.AbstractKey;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
-import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.util.GWMLibraryUtils;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;

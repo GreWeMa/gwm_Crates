@@ -1,13 +1,13 @@
 package dev.gwm.spongeplugin.crates.superobject.drop.base;
 
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.AbstractSuperObject;
 import dev.gwm.spongeplugin.library.superobject.randommanager.IDefaultRandombles;
-import dev.gwm.spongeplugin.library.utils.DefaultRandomableData;
-import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
-import dev.gwm.spongeplugin.library.utils.GiveableData;
-import dev.gwm.spongeplugin.library.utils.SuperObjectCategory;
+import dev.gwm.spongeplugin.library.util.DefaultRandomableData;
+import dev.gwm.spongeplugin.library.util.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.util.GiveableData;
+import dev.gwm.spongeplugin.library.util.SuperObjectCategory;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;

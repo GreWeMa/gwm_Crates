@@ -1,11 +1,11 @@
 package dev.gwm.spongeplugin.crates.superobject.preview.base;
 
 import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.AbstractSuperObject;
-import dev.gwm.spongeplugin.library.utils.SuperObjectCategory;
-import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import dev.gwm.spongeplugin.library.util.SuperObjectCategory;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 
@@ -25,7 +25,7 @@ public abstract class AbstractPreview extends AbstractSuperObject implements Pre
             if (!customDropsNode.isVirtual()) {
                 List<Drop> tempCustomDrops = new ArrayList<>();
                 for (ConfigurationNode customDropNode : customDropsNode.getChildrenList()) {
-                    tempCustomDrops.add(Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                    tempCustomDrops.add(Sponge.getServiceManager().provide(SuperObjectService.class).get().
                             create(GWMCratesSuperObjectCategories.DROP, customDropNode));
                 }
                 customDrops = Optional.of(Collections.unmodifiableList(tempCustomDrops));

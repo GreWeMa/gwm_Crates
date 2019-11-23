@@ -1,4 +1,4 @@
-package dev.gwm.spongeplugin.crates.utils;
+package dev.gwm.spongeplugin.crates.util;
 
 import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.library.GWMLibrary;

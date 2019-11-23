@@ -2,7 +2,7 @@ package dev.gwm.spongeplugin.crates.superobject.key.base;
 
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.Giveable;
-import dev.gwm.spongeplugin.library.utils.GiveableData;
+import dev.gwm.spongeplugin.library.util.GiveableData;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.service.economy.Currency;
 

@@ -5,8 +5,8 @@ import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.crates.superobject.caze.BlockCase;
 import dev.gwm.spongeplugin.crates.superobject.caze.base.Case;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
-import dev.gwm.spongeplugin.library.utils.Language;
-import dev.gwm.spongeplugin.library.utils.Pair;
+import dev.gwm.spongeplugin.library.util.Language;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -48,9 +48,9 @@ public class FindBlockCaseCommand implements CommandExecutor {
         Case caze = manager.getCase();
         if (!(caze instanceof BlockCase)) {
             player.sendMessages(language.getTranslation("CASE_IS_NOT_BLOCK", Arrays.asList(
-                    new Pair<>("MANAGER_ID", manager.id()),
-                    new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("CASE_TYPE", manager.getCase().type())
+                    new ImmutablePair<>("MANAGER_ID", manager.id()),
+                    new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                    new ImmutablePair<>("CASE_TYPE", manager.getCase().type())
             ), player));
             return CommandResult.empty();
         }
@@ -60,10 +60,10 @@ public class FindBlockCaseCommand implements CommandExecutor {
             int teleportLocationIndex = optionalIndex.get();
             if (teleportLocationIndex < 0 || teleportLocationIndex >= locations.size()) {
                 player.sendMessages(language.getTranslation("WRONG_BLOCK_CASE_LOCATION_INDEX", Arrays.asList(
-                        new Pair<>("MANAGER_ID", manager.id()),
-                        new Pair<>("MANAGER_NAME", manager.getName()),
-                        new Pair<>("USED_INDEX", teleportLocationIndex),
-                        new Pair<>("MAX_INDEX", locations.size() - 1)
+                        new ImmutablePair<>("MANAGER_ID", manager.id()),
+                        new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                        new ImmutablePair<>("USED_INDEX", teleportLocationIndex),
+                        new ImmutablePair<>("MAX_INDEX", locations.size() - 1)
                 ), player));
                 return CommandResult.empty();
             }
@@ -73,8 +73,8 @@ public class FindBlockCaseCommand implements CommandExecutor {
             new ParticleRunnable(location).run();
         }
         player.sendMessages(language.getTranslation("SUCCESSFULLY_HIGHLIGHTED_BLOCK_CASE", Arrays.asList(
-                new Pair<>("MANAGER_ID", manager.id()),
-                new Pair<>("MANAGER_NAME", manager.getName())
+                new ImmutablePair<>("MANAGER_ID", manager.id()),
+                new ImmutablePair<>("MANAGER_NAME", manager.getName())
         ), player));
         return CommandResult.success();
     }

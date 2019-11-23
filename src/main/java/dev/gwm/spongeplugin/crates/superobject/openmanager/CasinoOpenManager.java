@@ -8,15 +8,16 @@ import dev.gwm.spongeplugin.crates.superobject.changemode.base.DecorativeItemsCh
 import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.AbstractOpenManager;
-import dev.gwm.spongeplugin.crates.utils.DecorativeItemsChangeRunnable;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.crates.util.DecorativeItemsChangeRunnable;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
-import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
-import dev.gwm.spongeplugin.library.utils.Pair;
-import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import dev.gwm.spongeplugin.library.util.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.living.player.Player;
@@ -100,7 +101,7 @@ public final class CasinoOpenManager extends AbstractOpenManager {
     public CasinoOpenManager(ConfigurationNode node) {
         super(node);
         try {
-            SuperObjectsService superObjectsService = Sponge.getServiceManager().provide(SuperObjectsService.class).get();
+            SuperObjectService superObjectService = Sponge.getServiceManager().provide(SuperObjectService.class).get();
             ConfigurationNode displayNameNode = node.getNode("DISPLAY_NAME");
             ConfigurationNode decorativeItemsNode = node.getNode("DECORATIVE_ITEMS");
             ConfigurationNode scrollDelaysNode = node.getNode("SCROLL_DELAYS");
@@ -140,7 +141,7 @@ public final class CasinoOpenManager extends AbstractOpenManager {
             closeDelay = closeDelayNode.getInt(60);
             forbidClose = forbidCloseNode.getBoolean(true);
             if (!loseDropNode.isVirtual()) {
-                loseDrop = superObjectsService.create(GWMCratesSuperObjectCategories.DROP, loseDropNode);
+                loseDrop = superObjectService.create(GWMCratesSuperObjectCategories.DROP, loseDropNode);
             } else {
                 loseDrop = GWMCratesUtils.EMPTY_DROP;
             }
@@ -175,19 +176,19 @@ public final class CasinoOpenManager extends AbstractOpenManager {
                 loseSound = Optional.empty();
             }
             if (!decorativeItemsChangeModeNode.isVirtual()) {
-                decorativeItemsChangeMode = Optional.of(superObjectsService.create(GWMCratesSuperObjectCategories.DECORATIVE_ITEMS_CHANGE_MODE, decorativeItemsChangeModeNode));
+                decorativeItemsChangeMode = Optional.of(superObjectService.create(GWMCratesSuperObjectCategories.DECORATIVE_ITEMS_CHANGE_MODE, decorativeItemsChangeModeNode));
             } else {
                 decorativeItemsChangeMode = Optional.empty();
             }
             if (!defaultConsolationDropNode.isVirtual()) {
-                defaultConsolationDrop = Optional.of(superObjectsService.create(GWMCratesSuperObjectCategories.DROP, defaultConsolationDropNode));
+                defaultConsolationDrop = Optional.of(superObjectService.create(GWMCratesSuperObjectCategories.DROP, defaultConsolationDropNode));
             } else {
                 defaultConsolationDrop = Optional.empty();
             }
             Map<String, Drop> tempConsolationDrops = new HashMap<>();
             if (!consolationDropsNode.isVirtual()) {
                 for (Map.Entry<Object, ? extends ConfigurationNode> entry : consolationDropsNode.getChildrenMap().entrySet()) {
-                    tempConsolationDrops.put(entry.getKey().toString(), superObjectsService.create(GWMCratesSuperObjectCategories.DROP, entry.getValue()));
+                    tempConsolationDrops.put(entry.getKey().toString(), superObjectService.create(GWMCratesSuperObjectCategories.DROP, entry.getValue()));
                 }
             }
             consolationDrops = Collections.unmodifiableMap(tempConsolationDrops);
@@ -271,7 +272,7 @@ public final class CasinoOpenManager extends AbstractOpenManager {
                                         getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM))));
         Container container = player.openInventory(inventory).get();
         getOpenSound().ifPresent(open_sound -> player.playSound(open_sound, player.getLocation().getPosition(), 1.));
-        CASINO_GUI_CONTAINERS.put(container, new Pair<>(this, manager));
+        CASINO_GUI_CONTAINERS.put(container, new ImmutablePair<>(this, manager));
         if (!decorativeItems.isEmpty()) {
             decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
                     createTaskBuilder().delayTicks(mode.getChangeDelay()).

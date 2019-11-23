@@ -4,10 +4,10 @@ import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.superobject.preview.base.AbstractPreview;
 import dev.gwm.spongeplugin.crates.superobject.preview.base.Preview;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
-import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -40,9 +40,9 @@ public final class PermissionPreview extends AbstractPreview {
                 throw new IllegalArgumentException("PREVIEW2 node does not exist!");
             }
             permission = permissionNode.getString();
-            preview1 = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+            preview1 = Sponge.getServiceManager().provide(SuperObjectService.class).get().
                     create(GWMCratesSuperObjectCategories.PREVIEW, preview1Node);
-            preview2 = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+            preview2 = Sponge.getServiceManager().provide(SuperObjectService.class).get().
                     create(GWMCratesSuperObjectCategories.PREVIEW, preview2Node);
         } catch (Exception e) {
             throw new SuperObjectConstructionException(category(), type(), e);

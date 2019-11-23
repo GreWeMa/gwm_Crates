@@ -1,12 +1,10 @@
 package dev.gwm.spongeplugin.crates.superobject.key.base;
 
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.AbstractSuperObject;
-import dev.gwm.spongeplugin.library.utils.SuperObjectCategory;
+import dev.gwm.spongeplugin.library.util.SuperObjectCategory;
 import ninja.leaping.configurate.ConfigurationNode;
-
-import java.util.Optional;
 
 public abstract class AbstractKey extends AbstractSuperObject implements Key {
 

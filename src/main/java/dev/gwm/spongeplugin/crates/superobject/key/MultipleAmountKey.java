@@ -2,17 +2,16 @@ package dev.gwm.spongeplugin.crates.superobject.key;
 
 import dev.gwm.spongeplugin.crates.superobject.key.base.GiveableKey;
 import dev.gwm.spongeplugin.crates.superobject.key.base.Key;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.Giveable;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
-import dev.gwm.spongeplugin.library.utils.GiveableData;
-import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import dev.gwm.spongeplugin.library.util.GiveableData;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
-import java.util.Optional;
 import java.util.Set;
 
 public final class MultipleAmountKey extends GiveableKey {
@@ -33,7 +32,7 @@ public final class MultipleAmountKey extends GiveableKey {
             if (amountNode.isVirtual()) {
                 throw new IllegalArgumentException("AMOUNT node does not exist!");
             }
-            childKey = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+            childKey = Sponge.getServiceManager().provide(SuperObjectService.class).get().
                     create(GWMCratesSuperObjectCategories.KEY, childKeyNode);
             amount = amountNode.getInt();
             if (amount <= 0) {

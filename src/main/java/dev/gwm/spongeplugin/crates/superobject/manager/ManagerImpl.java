@@ -5,16 +5,16 @@ import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
 import dev.gwm.spongeplugin.crates.superobject.key.base.Key;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.OpenManager;
 import dev.gwm.spongeplugin.crates.superobject.preview.base.Preview;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
-import dev.gwm.spongeplugin.crates.utils.ManagerCustomMessageData;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
+import dev.gwm.spongeplugin.crates.util.ManagerCustomMessageData;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.AbstractSuperObject;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
 import dev.gwm.spongeplugin.library.superobject.randommanager.RandomManager;
-import dev.gwm.spongeplugin.library.utils.GWMLibrarySuperObjectCategories;
-import dev.gwm.spongeplugin.library.utils.SuperObjectCategory;
-import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import dev.gwm.spongeplugin.library.util.GWMLibrarySuperObjectCategories;
+import dev.gwm.spongeplugin.library.util.SuperObjectCategory;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 
@@ -34,7 +34,7 @@ public final class ManagerImpl extends AbstractSuperObject implements Manager {
     public ManagerImpl(ConfigurationNode node) {
         super(node);
         try {
-            SuperObjectsService superObjectsService = Sponge.getServiceManager().provide(SuperObjectsService.class).get();
+            SuperObjectService superObjectService = Sponge.getServiceManager().provide(SuperObjectService.class).get();
             ConfigurationNode nameNode = node.getNode("NAME");
             ConfigurationNode randomManagerNode = node.getNode("RANDOM_MANAGER");
             ConfigurationNode caseNode = node.getNode("CASE");
@@ -58,21 +58,21 @@ public final class ManagerImpl extends AbstractSuperObject implements Manager {
             if (randomManagerNode.isVirtual()) {
                 randomManager = GWMCratesUtils.getDefaultRandomManager();
             } else {
-                randomManager = superObjectsService.create(GWMLibrarySuperObjectCategories.RANDOM_MANAGER, randomManagerNode);
+                randomManager = superObjectService.create(GWMLibrarySuperObjectCategories.RANDOM_MANAGER, randomManagerNode);
             }
-            caze = superObjectsService.create(GWMCratesSuperObjectCategories.CASE, caseNode);
-            key = superObjectsService.create(GWMCratesSuperObjectCategories.KEY, keyNode);
-            openManager = superObjectsService.create(GWMCratesSuperObjectCategories.OPEN_MANAGER, openManagerNode);
+            caze = superObjectService.create(GWMCratesSuperObjectCategories.CASE, caseNode);
+            key = superObjectService.create(GWMCratesSuperObjectCategories.KEY, keyNode);
+            openManager = superObjectService.create(GWMCratesSuperObjectCategories.OPEN_MANAGER, openManagerNode);
             List<Drop> tempDrops = new ArrayList<>();
             for (ConfigurationNode dropNode : dropsNode.getChildrenList()) {
-                tempDrops.add(superObjectsService.create(GWMCratesSuperObjectCategories.DROP, dropNode));
+                tempDrops.add(superObjectService.create(GWMCratesSuperObjectCategories.DROP, dropNode));
             }
             if (tempDrops.isEmpty()) {
                 throw new IllegalArgumentException("No Drops are configured! At least one Drop is required!");
             }
             drops = Collections.unmodifiableList(tempDrops);
             if (!previewNode.isVirtual()) {
-                preview = Optional.of(superObjectsService.create(GWMCratesSuperObjectCategories.PREVIEW, previewNode));
+                preview = Optional.of(superObjectService.create(GWMCratesSuperObjectCategories.PREVIEW, previewNode));
             } else {
                 preview = Optional.empty();
             }

@@ -1,8 +1,8 @@
 package dev.gwm.spongeplugin.crates.command;
 
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
-import dev.gwm.spongeplugin.library.utils.Language;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
+import dev.gwm.spongeplugin.library.util.Language;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;

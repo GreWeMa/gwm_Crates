@@ -1,8 +1,8 @@
 package dev.gwm.spongeplugin.crates.superobject.drop;
 
 import dev.gwm.spongeplugin.crates.superobject.drop.base.AbstractDrop;
-import dev.gwm.spongeplugin.library.utils.DefaultRandomableData;
-import dev.gwm.spongeplugin.library.utils.GiveableData;
+import dev.gwm.spongeplugin.library.util.DefaultRandomableData;
+import dev.gwm.spongeplugin.library.util.GiveableData;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;

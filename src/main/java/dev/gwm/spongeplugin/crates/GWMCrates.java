@@ -13,14 +13,15 @@ import dev.gwm.spongeplugin.crates.superobject.manager.ManagerImpl;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.*;
 import dev.gwm.spongeplugin.crates.superobject.preview.FirstGuiPreview;
 import dev.gwm.spongeplugin.crates.superobject.preview.SecondGuiPreview;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesCommandUtils;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.crates.util.GWMCratesCommandUtils;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import dev.gwm.spongeplugin.library.event.SuperObjectCategoriesRegistrationEvent;
 import dev.gwm.spongeplugin.library.event.SuperObjectIdentifiersRegistrationEvent;
 import dev.gwm.spongeplugin.library.event.SuperObjectsRegistrationEvent;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
-import dev.gwm.spongeplugin.library.utils.*;
+import dev.gwm.spongeplugin.library.util.*;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -58,7 +59,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "4.3.1",
+        version = "4.3.2",
         description = "Universal crates plugin",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -71,7 +72,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version(null,4, 3, 1);
+    public static final Version VERSION = new Version(4, 3, 2);
 
     private static GWMCrates instance = null;
 
@@ -381,7 +382,7 @@ public final class GWMCrates extends SpongePlugin {
     }
 
     private void unloadManagers() {
-        Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+        Sponge.getServiceManager().provide(SuperObjectService.class).get().
                 shutdownCreatedSuperObjects(superObject -> superObject instanceof Manager);
     }
 

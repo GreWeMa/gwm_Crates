@@ -2,12 +2,10 @@ package dev.gwm.spongeplugin.crates.superobject.key;
 
 import dev.gwm.spongeplugin.crates.superobject.key.base.GiveableKey;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
-import dev.gwm.spongeplugin.library.utils.GiveableData;
+import dev.gwm.spongeplugin.library.util.GiveableData;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
-
-import java.util.Optional;
 
 public final class HealthKey extends GiveableKey {
 

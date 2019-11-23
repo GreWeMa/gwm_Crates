@@ -2,12 +2,12 @@ package dev.gwm.spongeplugin.crates.superobject.drop;
 
 import dev.gwm.spongeplugin.crates.superobject.drop.base.AbstractDrop;
 import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
-import dev.gwm.spongeplugin.library.utils.DefaultRandomableData;
-import dev.gwm.spongeplugin.library.utils.GiveableData;
-import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import dev.gwm.spongeplugin.library.util.DefaultRandomableData;
+import dev.gwm.spongeplugin.library.util.GiveableData;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -40,9 +40,9 @@ public final class PermissionDrop extends AbstractDrop {
                 throw new IllegalArgumentException("DROP2 node does not exist!");
             }
             permission = permissionNode.getString();
-            drop1 = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+            drop1 = Sponge.getServiceManager().provide(SuperObjectService.class).get().
                     create(GWMCratesSuperObjectCategories.DROP, drop1Node);
-            drop2 = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+            drop2 = Sponge.getServiceManager().provide(SuperObjectService.class).get().
                     create(GWMCratesSuperObjectCategories.DROP, drop2Node);
         } catch (Exception e) {
             throw new SuperObjectConstructionException(category(), type(), e);

@@ -1,9 +1,13 @@
-package dev.gwm.spongeplugin.crates.utils;
+package dev.gwm.spongeplugin.crates.util;
 
 import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
-import dev.gwm.spongeplugin.library.utils.*;
+import dev.gwm.spongeplugin.library.util.AbstractSuperObjectCommandElement;
+import dev.gwm.spongeplugin.library.util.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.util.Language;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -28,19 +32,19 @@ public class ManagerCommandElement extends AbstractSuperObjectCommandElement {
     @Override
     protected Manager parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         String superObjectId = args.next();
-        SuperObject superObject = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+        SuperObject superObject = Sponge.getServiceManager().provide(SuperObjectService.class).get().
                 getCreatedSuperObjectById(superObjectId).
                 orElseThrow(() ->
                         new ArgumentParseException(GWMLibraryUtils.joinText(language.
                                 getTranslation("MANAGER_IS_NOT_FOUND",
-                                        new Pair<>("MANAGER_ID", superObjectId),
+                                        new ImmutablePair<>("MANAGER_ID", superObjectId),
                                         source)), superObjectId, 0));
         if (!(superObject instanceof Manager)) {
             throw new ArgumentParseException(GWMLibraryUtils.joinText(language.
                     getTranslation("SUPER_OBJECT_IS_NOT_MANAGER", Arrays.asList(
-                            new Pair<>("SUPER_OBJECT_ID", superObjectId),
-                            new Pair<>("SUPER_OBJECT_CATEGORY", superObject.category().getName()),
-                            new Pair<>("SUPER_OBJECT_TYPE", superObject.type())
+                            new ImmutablePair<>("SUPER_OBJECT_ID", superObjectId),
+                            new ImmutablePair<>("SUPER_OBJECT_CATEGORY", superObject.category().getName()),
+                            new ImmutablePair<>("SUPER_OBJECT_TYPE", superObject.type())
                     ), source)), superObjectId, 0);
         }
         return (Manager) superObject;
@@ -48,7 +52,7 @@ public class ManagerCommandElement extends AbstractSuperObjectCommandElement {
 
     @Override
     protected Collection<SuperObject> getSuperObjects() {
-        return Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+        return Sponge.getServiceManager().provide(SuperObjectService.class).get().
                 getCreatedSuperObjects().
                 stream().
                 filter(categoryFilter()).

@@ -2,9 +2,9 @@ package dev.gwm.spongeplugin.crates.command;
 
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.OpenManager;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
-import dev.gwm.spongeplugin.library.utils.Language;
-import dev.gwm.spongeplugin.library.utils.Pair;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
+import dev.gwm.spongeplugin.library.util.Language;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -46,10 +46,10 @@ public class ForceCommand implements CommandExecutor {
                 return CommandResult.empty();
             } else {
                 source.sendMessages(language.getTranslation("PLAYER_CANNOT_OPEN_MANAGER", Arrays.asList(
-                        new Pair<>("MANAGER_NAME", manager.getName()),
-                        new Pair<>("MANAGER_ID", manager.id()),
-                        new Pair<>("PLAYER_NAME", player.getName()),
-                        new Pair<>("PLAYER_UUID", player.getUniqueId())
+                        new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                        new ImmutablePair<>("MANAGER_ID", manager.id()),
+                        new ImmutablePair<>("PLAYER_NAME", player.getName()),
+                        new ImmutablePair<>("PLAYER_UUID", player.getUniqueId())
                 ), source));
                 return CommandResult.empty();
             }
@@ -57,15 +57,15 @@ public class ForceCommand implements CommandExecutor {
         openManager.open(player, manager);
         if (self) {
             source.sendMessages(language.getTranslation("CRATE_FORCE_OPENED", Arrays.asList(
-                    new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.id())
+                    new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                    new ImmutablePair<>("MANAGER_ID", manager.id())
             ), source));
         } else  {
             source.sendMessages(language.getTranslation("CRATE_FORCE_OPENED_FOR_PLAYER", Arrays.asList(
-                    new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.id()),
-                    new Pair<>("PLAYER_NAME", player.getName()),
-                    new Pair<>("PLAYER_UUID", player.getUniqueId())
+                    new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                    new ImmutablePair<>("MANAGER_ID", manager.id()),
+                    new ImmutablePair<>("PLAYER_NAME", player.getName()),
+                    new ImmutablePair<>("PLAYER_UUID", player.getUniqueId())
             ), source));
         }
         return CommandResult.success();

@@ -1,9 +1,9 @@
 package dev.gwm.spongeplugin.crates.command;
 
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
-import dev.gwm.spongeplugin.library.utils.Language;
-import dev.gwm.spongeplugin.library.utils.Pair;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
+import dev.gwm.spongeplugin.library.util.Language;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -26,20 +26,20 @@ public class LoadCommand implements CommandExecutor {
         File file = new File(GWMCrates.getInstance().getManagersDirectory(), path);
         if (!file.exists()) {
             source.sendMessages(language.getTranslation("FILE_IS_NOT_FOUND",
-                    new Pair<>("PATH", GWMCratesUtils.getManagerRelativePath(file)),
+                    new ImmutablePair<>("PATH", GWMCratesUtils.getManagerRelativePath(file)),
                     source));
             return CommandResult.empty();
         }
         try {
             GWMCratesUtils.loadManager(file, true);
             source.sendMessages(language.getTranslation("MANAGER_LOADED",
-                    new Pair<>("PATH", GWMCratesUtils.getManagerRelativePath(file)),
+                    new ImmutablePair<>("PATH", GWMCratesUtils.getManagerRelativePath(file)),
                     source));
             return CommandResult.success();
         } catch (Exception e) {
             GWMCrates.getInstance().getLogger().error("Failed to load a manager!", e);
             source.sendMessages(language.getTranslation("MANAGER_LOAD_FAILED",
-                    new Pair<>("PATH", file.getAbsolutePath()),
+                    new ImmutablePair<>("PATH", file.getAbsolutePath()),
                     source));
             return CommandResult.empty();
         }

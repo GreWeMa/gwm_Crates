@@ -5,8 +5,8 @@ import dev.gwm.spongeplugin.crates.superobject.caze.base.Case;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.library.GWMLibrary;
 import dev.gwm.spongeplugin.library.superobject.Giveable;
-import dev.gwm.spongeplugin.library.utils.Language;
-import dev.gwm.spongeplugin.library.utils.Pair;
+import dev.gwm.spongeplugin.library.util.Language;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -49,8 +49,8 @@ public class BuyCaseCommand implements CommandExecutor {
         Case caze = manager.getCase();
         if (!(caze instanceof Giveable)) {
             player.sendMessages(language.getTranslation("CASE_IS_NOT_GIVEABLE", Arrays.asList(
-                    new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.id())
+                    new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                    new ImmutablePair<>("MANAGER_ID", manager.id())
             ), player));
             return CommandResult.empty();
         }
@@ -70,8 +70,8 @@ public class BuyCaseCommand implements CommandExecutor {
         Optional<BigDecimal> optionalPrice = giveable.getPrice();
         if (!optionalPrice.isPresent()) {
             player.sendMessages(language.getTranslation("CASE_IS_NOT_FOR_SALE", Arrays.asList(
-                    new Pair<>("MANAGER_NAME", manager.getName()),
-                    new Pair<>("MANAGER_ID", manager.id())
+                    new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                    new ImmutablePair<>("MANAGER_ID", manager.id())
             ), player));
             return CommandResult.empty();
         }
@@ -81,21 +81,21 @@ public class BuyCaseCommand implements CommandExecutor {
         BigDecimal balance = playerAccount.getBalance(currency);
         if (balance.compareTo(totalPrice) < 0) {
             player.sendMessages(language.getTranslation("HAVE_NOT_ENOUGH_MONEY", Arrays.asList(
-                    new Pair<>("CURRENCY_ID", currency.getId()),
-                    new Pair<>("CURRENCY_NAME", currency.getName()),
-                    new Pair<>("CURRENCY_DISPLAY_NAME", TextSerializers.FORMATTING_CODE.serialize(currency.getDisplayName())),
-                    new Pair<>("CURRENCY_SYMBOL", TextSerializers.FORMATTING_CODE.serialize(currency.getSymbol())),
-                    new Pair<>("REQUIRED_AMOUNT", totalPrice),
-                    new Pair<>("BALANCE", balance),
-                    new Pair<>("DIFFERENCE", totalPrice.subtract(balance))
+                    new ImmutablePair<>("CURRENCY_ID", currency.getId()),
+                    new ImmutablePair<>("CURRENCY_NAME", currency.getName()),
+                    new ImmutablePair<>("CURRENCY_DISPLAY_NAME", TextSerializers.FORMATTING_CODE.serialize(currency.getDisplayName())),
+                    new ImmutablePair<>("CURRENCY_SYMBOL", TextSerializers.FORMATTING_CODE.serialize(currency.getSymbol())),
+                    new ImmutablePair<>("REQUIRED_AMOUNT", totalPrice),
+                    new ImmutablePair<>("BALANCE", balance),
+                    new ImmutablePair<>("DIFFERENCE", totalPrice.subtract(balance))
             ), player));
             return CommandResult.empty();
         }
         playerAccount.withdraw(currency, totalPrice, GWMCrates.getInstance().getCause());
         giveable.give(player, amount, false);
         player.sendMessages(language.getTranslation("SUCCESSFULLY_BOUGHT_CASE", Arrays.asList(
-                new Pair<>("MANAGER_NAME", manager.getName()),
-                new Pair<>("MANAGER_ID", manager.id())
+                new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                new ImmutablePair<>("MANAGER_ID", manager.id())
         ), player));
         return CommandResult.success();
     }

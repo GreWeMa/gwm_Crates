@@ -1,4 +1,4 @@
-package dev.gwm.spongeplugin.crates.utils;
+package dev.gwm.spongeplugin.crates.util;
 
 import com.google.common.reflect.TypeToken;
 import dev.gwm.spongeplugin.crates.GWMCrates;
@@ -10,12 +10,12 @@ import dev.gwm.spongeplugin.crates.superobject.openmanager.base.OpenManager;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
 import dev.gwm.spongeplugin.library.superobject.randommanager.LevelRandomManager;
 import dev.gwm.spongeplugin.library.superobject.randommanager.RandomManager;
-import dev.gwm.spongeplugin.library.utils.Config;
-import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
-import dev.gwm.spongeplugin.library.utils.Pair;
-import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import dev.gwm.spongeplugin.library.util.Config;
+import dev.gwm.spongeplugin.library.util.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.ConsoleSource;
@@ -54,7 +54,7 @@ public final class GWMCratesUtils {
             Config managerConfig = new Config(GWMCrates.getInstance(), file);
             ConfigurationNode loadNode = managerConfig.getNode("LOAD");
             if (force || loadNode.getBoolean(true)) {
-                Manager manager = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                Manager manager = Sponge.getServiceManager().provide(SuperObjectService.class).get().
                         create(GWMCratesSuperObjectCategories.MANAGER, managerConfig.getNode());
                 if (GWMCrates.getInstance().isLogLoadedManagers()) {
                     GWMCrates.getInstance().getLogger().
@@ -73,7 +73,7 @@ public final class GWMCratesUtils {
 
     public static RandomManager getDefaultRandomManager() {
         String defaultRandomManagerId = GWMCrates.getInstance().getDefaultRandomManagerId();
-        return Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+        return Sponge.getServiceManager().provide(SuperObjectService.class).get().
                 getSavedSuperObjectById(defaultRandomManagerId).
                 map(superObject -> {
                     try {
@@ -85,7 +85,7 @@ public final class GWMCratesUtils {
     }
 
     public static Stream<Manager> getManagersStream() {
-        return Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+        return Sponge.getServiceManager().provide(SuperObjectService.class).get().
                 getCreatedSuperObjects().
                 stream().
                 filter(superObject -> superObject instanceof Manager).
@@ -100,7 +100,7 @@ public final class GWMCratesUtils {
                 Sponge.getScheduler().createTaskBuilder().execute(() ->
                         console.sendMessages(GWMCrates.getInstance().getLanguage().
                                 getTranslation("IMPORT_TO_MYSQL_SUCCESSFUL",
-                                        new Pair<>("TIME", millisToString(time)),
+                                        new ImmutablePair<>("TIME", millisToString(time)),
                                         console))).
                         submit(GWMCrates.getInstance());
             } catch (SQLException e) {
@@ -278,7 +278,7 @@ public final class GWMCratesUtils {
                 Sponge.getScheduler().createTaskBuilder().execute(() ->
                         console.sendMessages(GWMCrates.getInstance().getLanguage().
                                 getTranslation("IMPORT_FROM_MYSQL_SUCCESSFUL",
-                                        new Pair<>("TIME", millisToString(time)),
+                                        new ImmutablePair<>("TIME", millisToString(time)),
                                         console))).
                         submit(GWMCrates.getInstance());
             } catch (SQLException e) {
@@ -498,14 +498,14 @@ public final class GWMCratesUtils {
     public static void sendInfoMessage(CommandSource source, Manager manager) {
         source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomInfo(),
                 GWMCrates.getInstance().getLanguage(), "MANAGER_INFO", Arrays.asList(
-                        new Pair<>("MANAGER_ID", manager.id()),
-                        new Pair<>("MANAGER_NAME", manager.getName()),
-                        new Pair<>("CASE_TYPE", manager.getCase().type()),
-                        new Pair<>("KEY_TYPE", manager.getKey().type()),
-                        new Pair<>("OPEN_MANAGER_TYPE", manager.getOpenManager().type()),
-                        new Pair<>("PREVIEW_TYPE", manager.getPreview().
+                        new ImmutablePair<>("MANAGER_ID", manager.id()),
+                        new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                        new ImmutablePair<>("CASE_TYPE", manager.getCase().type()),
+                        new ImmutablePair<>("KEY_TYPE", manager.getKey().type()),
+                        new ImmutablePair<>("OPEN_MANAGER_TYPE", manager.getOpenManager().type()),
+                        new ImmutablePair<>("PREVIEW_TYPE", manager.getPreview().
                                 map(SuperObject::type).orElse("No preview")),
-                        new Pair<>("DROPS", GWMCratesUtils.formatDrops(manager.getDrops()))
+                        new ImmutablePair<>("DROPS", GWMCratesUtils.formatDrops(manager.getDrops()))
                 )));
     }
 
@@ -513,9 +513,9 @@ public final class GWMCratesUtils {
         if (manager.getCustomMessageData().isSendOpenMessage()) {
             source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomOpenMessage(),
                     GWMCrates.getInstance().getLanguage(), "SUCCESSFULLY_OPENED_MANAGER", Arrays.asList(
-                            new Pair<>("DROPS", formattedDrops),
-                            new Pair<>("MANAGER_NAME", manager.getName()),
-                            new Pair<>("MANAGER_ID", manager.id())
+                            new ImmutablePair<>("DROPS", formattedDrops),
+                            new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                            new ImmutablePair<>("MANAGER_ID", manager.id())
                     )));
         }
     }
@@ -524,8 +524,8 @@ public final class GWMCratesUtils {
         if (manager.getCustomMessageData().isSendCaseMissingMessage()) {
             source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomCaseMissingMessage(),
                     GWMCrates.getInstance().getLanguage(), "HAVE_NOT_CASE", Arrays.asList(
-                            new Pair<>("MANAGER_NAME", manager.getName()),
-                            new Pair<>("MANAGER_ID", manager.id())
+                            new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                            new ImmutablePair<>("MANAGER_ID", manager.id())
                     )));
         }
     }
@@ -534,8 +534,8 @@ public final class GWMCratesUtils {
         if (manager.getCustomMessageData().isSendKeyMissingMessage()) {
             source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomKeyMissingMessage(),
                     GWMCrates.getInstance().getLanguage(), "HAVE_NOT_KEY", Arrays.asList(
-                            new Pair<>("MANAGER_NAME", manager.getName()),
-                            new Pair<>("MANAGER_ID", manager.id())
+                            new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                            new ImmutablePair<>("MANAGER_ID", manager.id())
                     )));
         }
     }
@@ -544,8 +544,8 @@ public final class GWMCratesUtils {
         if (manager.getCustomMessageData().isSendPreviewIsNotAvailableMessage()) {
             source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomPreviewIsNotAvailableMessage(),
                     GWMCrates.getInstance().getLanguage(), "PREVIEW_IS_NOT_AVAILABLE", Arrays.asList(
-                            new Pair<>("MANAGER_NAME", manager.getName()),
-                            new Pair<>("MANAGER_ID", manager.id())
+                            new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                            new ImmutablePair<>("MANAGER_ID", manager.id())
                     )));
         }
     }
@@ -568,9 +568,9 @@ public final class GWMCratesUtils {
         if (manager.getCustomMessageData().isSendCrateDelayMessage()) {
             source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomCrateDelayMessage(),
                     GWMCrates.getInstance().getLanguage(), "CRATE_OPEN_DELAY", Arrays.asList(
-                            new Pair<>("TIME", GWMCratesUtils.millisToString(delay)),
-                            new Pair<>("MANAGER_NAME", manager.getName()),
-                            new Pair<>("MANAGER_ID", manager.id())
+                            new ImmutablePair<>("TIME", GWMCratesUtils.millisToString(delay)),
+                            new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                            new ImmutablePair<>("MANAGER_ID", manager.id())
                     )));
         }
     }
@@ -579,8 +579,8 @@ public final class GWMCratesUtils {
         if (manager.getCustomMessageData().isSendCannotOpenManagerMessage()) {
             source.sendMessages(GWMLibraryUtils.getMessage(source, manager.getCustomMessageData().getCustomCannotOpenManagerMessage(),
                     GWMCrates.getInstance().getLanguage(), "CANNOT_OPEN_MANAGER", Arrays.asList(
-                            new Pair<>("MANAGER_NAME", manager.getName()),
-                            new Pair<>("MANAGER_ID", manager.id())
+                            new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                            new ImmutablePair<>("MANAGER_ID", manager.id())
                     )));
         }
     }
@@ -593,8 +593,8 @@ public final class GWMCratesUtils {
             String id = manager.id();
             String name = manager.getName();
             List<Map.Entry<String, ?>> entries = Arrays.asList(
-                    new Pair<>("MANAGER_ID", id),
-                    new Pair<>("MANAGER_NAME", name)
+                    new ImmutablePair<>("MANAGER_ID", id),
+                    new ImmutablePair<>("MANAGER_NAME", name)
             );
             if (i != managersSize - 1) {
                 builder.append(GWMLibraryUtils.joinString(GWMCrates.getInstance().getLanguage().
@@ -617,8 +617,8 @@ public final class GWMCratesUtils {
             String id = drop.id();
             String customName = drop.getCustomName().orElse(id);
             List<Map.Entry<String, ?>> entries = Arrays.asList(
-                    new Pair<>("DROP_ID", id),
-                    new Pair<>("DROP_CUSTOM_NAME", customName)
+                    new ImmutablePair<>("DROP_ID", id),
+                    new ImmutablePair<>("DROP_CUSTOM_NAME", customName)
             );
             if (i != dropsSize - 1) {
                 builder.append(GWMLibraryUtils.joinString(GWMCrates.getInstance().getLanguage().
@@ -635,11 +635,11 @@ public final class GWMCratesUtils {
 
     public static String formatLocation(Location<World> location) {
         return GWMLibraryUtils.joinString(GWMCrates.getInstance().getLanguage().getSimpleTranslation("LOCATION_FORMAT", Arrays.asList(
-                new Pair<>("WORLD_NAME", location.getExtent().getName()),
-                new Pair<>("WORLD_UUID", location.getExtent().getUniqueId().toString()),
-                new Pair<>("X", String.format("%.2f", location.getX())),
-                new Pair<>("Y", String.format("%.2f", location.getY())),
-                new Pair<>("Z", String.format("%.2f", location.getZ()))
+                new ImmutablePair<>("WORLD_NAME", location.getExtent().getName()),
+                new ImmutablePair<>("WORLD_UUID", location.getExtent().getUniqueId().toString()),
+                new ImmutablePair<>("X", String.format("%.2f", location.getX())),
+                new ImmutablePair<>("Y", String.format("%.2f", location.getY())),
+                new ImmutablePair<>("Z", String.format("%.2f", location.getZ()))
         )));
     }
 }

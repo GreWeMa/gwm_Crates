@@ -5,7 +5,7 @@ import de.randombyte.holograms.api.HologramsService;
 import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEvent;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.Animation1OpenManager;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.Entity;

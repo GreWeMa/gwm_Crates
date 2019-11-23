@@ -3,10 +3,10 @@ package dev.gwm.spongeplugin.crates.superobject.openmanager;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.AbstractOpenManager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.OpenManager;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
-import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
@@ -39,9 +39,9 @@ public final class PermissionOpenManager extends AbstractOpenManager {
                 throw new IllegalArgumentException("OPEN_MANAGER2 node does not exist!");
             }
             permission = permissionNode.getString();
-            openManager1 = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+            openManager1 = Sponge.getServiceManager().provide(SuperObjectService.class).get().
                     create(GWMCratesSuperObjectCategories.OPEN_MANAGER, openManager1Node);
-            openManager2 = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+            openManager2 = Sponge.getServiceManager().provide(SuperObjectService.class).get().
                     create(GWMCratesSuperObjectCategories.OPEN_MANAGER, openManager2Node);
         } catch (Exception e) {
             throw new SuperObjectConstructionException(category(), type(), e);

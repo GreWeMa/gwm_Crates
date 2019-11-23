@@ -3,10 +3,10 @@ package dev.gwm.spongeplugin.crates.listener;
 import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEvent;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
-import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
-import dev.gwm.spongeplugin.library.utils.Language;
-import dev.gwm.spongeplugin.library.utils.Pair;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
+import dev.gwm.spongeplugin.library.util.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.util.Language;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -60,13 +60,13 @@ public class DebugCrateListener {
             try (OutputStream outputStream = new FileOutputStream(logFile, true)) {
                 outputStream.write(GWMLibraryUtils.joinString(GWMCrates.getInstance().getLanguage().
                         getSimpleTranslation("OPENED_MANAGER_LOG_MESSAGE", Arrays.asList(
-                                new Pair<>("TIME", time),
-                                new Pair<>("PLAYER_NAME", playerName),
-                                new Pair<>("PLAYER_UUID", playerUuid),
-                                new Pair<>("MANAGER_NAME", managerName),
-                                new Pair<>("MANAGER_ID", managerId),
-                                new Pair<>("DROPS", formattedDrops),
-                                new Pair<>("LOCATION", formattedLocation)
+                                new ImmutablePair<>("TIME", time),
+                                new ImmutablePair<>("PLAYER_NAME", playerName),
+                                new ImmutablePair<>("PLAYER_UUID", playerUuid),
+                                new ImmutablePair<>("MANAGER_NAME", managerName),
+                                new ImmutablePair<>("MANAGER_ID", managerId),
+                                new ImmutablePair<>("DROPS", formattedDrops),
+                                new ImmutablePair<>("LOCATION", formattedLocation)
                         ))).getBytes(StandardCharsets.UTF_8));
                 outputStream.write(System.getProperty("line.separator").getBytes(StandardCharsets.UTF_8));
             } catch (Exception e) {

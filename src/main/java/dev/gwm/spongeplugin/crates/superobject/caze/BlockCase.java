@@ -2,15 +2,15 @@ package dev.gwm.spongeplugin.crates.superobject.caze;
 
 import de.randombyte.holograms.api.HologramsService;
 import dev.gwm.spongeplugin.cosmetics.superobject.effect.base.CosmeticEffect;
-import dev.gwm.spongeplugin.cosmetics.utils.CosmeticsSuperObjectCategories;
+import dev.gwm.spongeplugin.cosmetics.util.CosmeticsSuperObjectCategories;
 import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.crates.superobject.caze.base.AbstractCase;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
-import dev.gwm.spongeplugin.library.utils.CreatedHologram;
-import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
-import dev.gwm.spongeplugin.library.utils.HologramSettings;
-import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import dev.gwm.spongeplugin.library.util.CreatedHologram;
+import dev.gwm.spongeplugin.library.util.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.util.HologramSettings;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -62,7 +62,7 @@ public final class BlockCase extends AbstractCase {
             if (!persistentCosmeticEffectsNode.isVirtual()) {
                 List<CosmeticEffect> tempPersistentCosmeticEffects = new ArrayList<>();
                 for (ConfigurationNode persistentCosmeticEffectNode : persistentCosmeticEffectsNode.getChildrenList()) {
-                    tempPersistentCosmeticEffects.add(Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                    tempPersistentCosmeticEffects.add(Sponge.getServiceManager().provide(SuperObjectService.class).get().
                             create(CosmeticsSuperObjectCategories.COSMETIC_EFFECT, persistentCosmeticEffectNode));
                 }
                 persistentCosmeticEffects = Optional.of(Collections.unmodifiableList(tempPersistentCosmeticEffects));

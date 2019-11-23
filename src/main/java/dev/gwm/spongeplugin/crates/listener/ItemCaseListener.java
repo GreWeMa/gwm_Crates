@@ -4,9 +4,9 @@ import dev.gwm.spongeplugin.crates.superobject.caze.ItemCase;
 import dev.gwm.spongeplugin.crates.superobject.key.base.Key;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.OpenManager;
 import dev.gwm.spongeplugin.crates.superobject.preview.base.Preview;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
-import dev.gwm.spongeplugin.library.utils.Language;
-import dev.gwm.spongeplugin.library.utils.Pair;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
+import dev.gwm.spongeplugin.library.util.Language;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Listener;
@@ -109,8 +109,8 @@ public class ItemCaseListener {
                     }
                     preview.preview(player, manager);
                     player.sendMessages(language.getTranslation("PREVIEW_STARTED", Arrays.asList(
-                            new Pair<>("MANAGER_NAME", manager.getName()),
-                            new Pair<>("MANAGER_ID", manager.id())
+                            new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                            new ImmutablePair<>("MANAGER_ID", manager.id())
                     ), player));
                 });
     }

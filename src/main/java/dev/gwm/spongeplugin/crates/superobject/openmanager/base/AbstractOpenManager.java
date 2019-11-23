@@ -1,10 +1,10 @@
 package dev.gwm.spongeplugin.crates.superobject.openmanager.base;
 
 import com.google.common.reflect.TypeToken;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.AbstractSuperObject;
-import dev.gwm.spongeplugin.library.utils.SuperObjectCategory;
+import dev.gwm.spongeplugin.library.util.SuperObjectCategory;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.effect.sound.SoundType;
 

@@ -1,8 +1,8 @@
 package dev.gwm.spongeplugin.crates.superobject.changemode.base;
 
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
-import dev.gwm.spongeplugin.library.utils.SuperObjectCategory;
+import dev.gwm.spongeplugin.library.util.SuperObjectCategory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.List;

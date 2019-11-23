@@ -1,4 +1,4 @@
-package dev.gwm.spongeplugin.crates.utils;
+package dev.gwm.spongeplugin.crates.util;
 
 import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.crates.command.*;
@@ -8,7 +8,7 @@ import dev.gwm.spongeplugin.crates.command.buy.BuyKeyCommand;
 import dev.gwm.spongeplugin.crates.command.give.*;
 import dev.gwm.spongeplugin.crates.command.withdraw.WithdrawCaseCommand;
 import dev.gwm.spongeplugin.crates.command.withdraw.WithdrawKeyCommand;
-import dev.gwm.spongeplugin.library.utils.Language;
+import dev.gwm.spongeplugin.library.util.Language;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;

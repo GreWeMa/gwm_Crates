@@ -1,8 +1,8 @@
 package dev.gwm.spongeplugin.crates.command;
 
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
-import dev.gwm.spongeplugin.library.utils.Language;
-import dev.gwm.spongeplugin.library.utils.Pair;
+import dev.gwm.spongeplugin.library.util.Language;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -40,12 +40,12 @@ public class CheckCommand implements CommandExecutor {
         int caseAmount = manager.getCase().get(player);
         int keyAmount = manager.getKey().get(player);
         source.sendMessages(language.getTranslation("CHECK_MANAGER_INFORMATION", Arrays.asList(
-                new Pair<>("PLAYER_NAME", player.getName()),
-                new Pair<>("PLAYER_UUID", player.getUniqueId()),
-                new Pair<>("MANAGER_NAME", manager.getName()),
-                new Pair<>("MANAGER_ID", manager.id()),
-                new Pair<>("CASE_AMOUNT", caseAmount),
-                new Pair<>("KEY_AMOUNT", keyAmount)
+                new ImmutablePair<>("PLAYER_NAME", player.getName()),
+                new ImmutablePair<>("PLAYER_UUID", player.getUniqueId()),
+                new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                new ImmutablePair<>("MANAGER_ID", manager.id()),
+                new ImmutablePair<>("CASE_AMOUNT", caseAmount),
+                new ImmutablePair<>("KEY_AMOUNT", keyAmount)
         ), source));
         return CommandResult.success();
     }

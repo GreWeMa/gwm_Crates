@@ -2,17 +2,20 @@ package dev.gwm.spongeplugin.crates.superobject.key;
 
 import dev.gwm.spongeplugin.crates.superobject.key.base.GiveableKey;
 import dev.gwm.spongeplugin.crates.superobject.key.base.Key;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.Giveable;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
-import dev.gwm.spongeplugin.library.utils.GiveableData;
-import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import dev.gwm.spongeplugin.library.util.GiveableData;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public final class MultiKey extends GiveableKey {
 
@@ -31,7 +34,7 @@ public final class MultiKey extends GiveableKey {
             }
             List<Key> tempKeys = new ArrayList<>();
             for (ConfigurationNode keyNode : keysNode.getChildrenList()) {
-                tempKeys.add(Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                tempKeys.add(Sponge.getServiceManager().provide(SuperObjectService.class).get().
                         create(GWMCratesSuperObjectCategories.KEY, keyNode));
             }
             if (tempKeys.isEmpty()) {

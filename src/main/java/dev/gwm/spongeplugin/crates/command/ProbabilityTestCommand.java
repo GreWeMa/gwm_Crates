@@ -2,9 +2,9 @@ package dev.gwm.spongeplugin.crates.command;
 
 import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
-import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
-import dev.gwm.spongeplugin.library.utils.Language;
-import dev.gwm.spongeplugin.library.utils.Pair;
+import dev.gwm.spongeplugin.library.util.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.util.Language;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -56,28 +56,28 @@ public class ProbabilityTestCommand implements CommandExecutor {
             String customName = drop.getCustomName().orElse(id);
             if (iterator.hasNext()) {
                 dropsBuilder.append(GWMLibraryUtils.joinString(language.getSimpleTranslation("PROBABILITY_TEST_LIST_FORMAT", Arrays.asList(
-                        new Pair<>("DROP_ID", id),
-                        new Pair<>("DROP_CUSTOM_NAME", customName),
-                        new Pair<>("RESULT_VALUE", resultValue),
-                        new Pair<>("RESULT_PERCENTAGE", String.format("%.2f", resultPercentage))
+                        new ImmutablePair<>("DROP_ID", id),
+                        new ImmutablePair<>("DROP_CUSTOM_NAME", customName),
+                        new ImmutablePair<>("RESULT_VALUE", resultValue),
+                        new ImmutablePair<>("RESULT_PERCENTAGE", String.format("%.2f", resultPercentage))
                 ))));
             } else {
                 dropsBuilder.append(GWMLibraryUtils.joinString(language.getSimpleTranslation("LAST_PROBABILITY_TEST_LIST_FORMAT", Arrays.asList(
-                        new Pair<>("DROP_ID", id),
-                        new Pair<>("DROP_CUSTOM_NAME", customName),
-                        new Pair<>("RESULT_VALUE", resultValue),
-                        new Pair<>("RESULT_PERCENTAGE", String.format("%.2f", resultPercentage))
+                        new ImmutablePair<>("DROP_ID", id),
+                        new ImmutablePair<>("DROP_CUSTOM_NAME", customName),
+                        new ImmutablePair<>("RESULT_VALUE", resultValue),
+                        new ImmutablePair<>("RESULT_PERCENTAGE", String.format("%.2f", resultPercentage))
                 ))));
             }
         }
         source.sendMessages(language.getTranslation("PROBABILITY_TEST_MESSAGE", Arrays.asList(
-                new Pair<>("RESULTS", dropsBuilder.toString()),
-                new Pair<>("MANAGER_NAME", manager.getName()),
-                new Pair<>("MANAGER_ID", manager.id()),
-                new Pair<>("PLAYER_NAME", player.getName()),
-                new Pair<>("PLAYER_UUID", player.getName()),
-                new Pair<>("AMOUNT", amount),
-                new Pair<>("FAKE", fake)
+                new ImmutablePair<>("RESULTS", dropsBuilder.toString()),
+                new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                new ImmutablePair<>("MANAGER_ID", manager.id()),
+                new ImmutablePair<>("PLAYER_NAME", player.getName()),
+                new ImmutablePair<>("PLAYER_UUID", player.getName()),
+                new ImmutablePair<>("AMOUNT", amount),
+                new ImmutablePair<>("FAKE", fake)
         ), source));
         return CommandResult.success();
     }

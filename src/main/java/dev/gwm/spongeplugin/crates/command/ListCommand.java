@@ -1,8 +1,8 @@
 package dev.gwm.spongeplugin.crates.command;
 
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
-import dev.gwm.spongeplugin.library.utils.Language;
-import dev.gwm.spongeplugin.library.utils.Pair;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
+import dev.gwm.spongeplugin.library.util.Language;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -22,7 +22,7 @@ public class ListCommand implements CommandExecutor {
     public CommandResult execute(CommandSource source, CommandContext args) {
         String formattedManagers = GWMCratesUtils.formatManagers(GWMCratesUtils.getManagersStream().collect(Collectors.toList()));
         source.sendMessages(language.getTranslation("MANAGERS_LIST",
-                new Pair<>("MANAGERS", formattedManagers),
+                new ImmutablePair<>("MANAGERS", formattedManagers),
                 source));
         return CommandResult.success();
     }

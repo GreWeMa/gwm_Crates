@@ -2,15 +2,15 @@ package dev.gwm.spongeplugin.crates.superobject.drop;
 
 import dev.gwm.spongeplugin.crates.superobject.drop.base.AbstractDrop;
 import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
 import dev.gwm.spongeplugin.library.superobject.randommanager.RandomManager;
-import dev.gwm.spongeplugin.library.utils.DefaultRandomableData;
-import dev.gwm.spongeplugin.library.utils.GWMLibrarySuperObjectCategories;
-import dev.gwm.spongeplugin.library.utils.GiveableData;
-import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import dev.gwm.spongeplugin.library.util.DefaultRandomableData;
+import dev.gwm.spongeplugin.library.util.GWMLibrarySuperObjectCategories;
+import dev.gwm.spongeplugin.library.util.GiveableData;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -39,7 +39,7 @@ public final class MultiDrop extends AbstractDrop {
             }
             List<Drop> tempDrops = new ArrayList<>();
             for (ConfigurationNode dropNode : dropsNode.getChildrenList()) {
-                tempDrops.add(Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                tempDrops.add(Sponge.getServiceManager().provide(SuperObjectService.class).get().
                         create(GWMCratesSuperObjectCategories.DROP, dropNode));
             }
             if (tempDrops.isEmpty()) {
@@ -54,7 +54,7 @@ public final class MultiDrop extends AbstractDrop {
             if (randomManagerNode.isVirtual()) {
                 randomManager = GWMCratesUtils.getDefaultRandomManager();
             } else {
-                randomManager = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                randomManager = Sponge.getServiceManager().provide(SuperObjectService.class).get().
                         create(GWMLibrarySuperObjectCategories.RANDOM_MANAGER, randomManagerNode);
             }
         } catch (Exception e) {

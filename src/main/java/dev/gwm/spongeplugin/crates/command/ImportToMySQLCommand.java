@@ -1,9 +1,9 @@
 package dev.gwm.spongeplugin.crates.command;
 
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
-import dev.gwm.spongeplugin.library.utils.Language;
-import dev.gwm.spongeplugin.library.utils.Pair;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
+import dev.gwm.spongeplugin.library.util.Language;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -30,7 +30,7 @@ public class ImportToMySQLCommand implements CommandExecutor {
             try {
                 long time = GWMCratesUtils.importToMySQL();
                 source.sendMessages(language.getTranslation("IMPORT_TO_MYSQL_SUCCESSFUL",
-                        new Pair<>("TIME", GWMCratesUtils.millisToString(time)),
+                        new ImmutablePair<>("TIME", GWMCratesUtils.millisToString(time)),
                         source));
                 return CommandResult.success();
             } catch (SQLException e) {

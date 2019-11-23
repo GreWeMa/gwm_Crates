@@ -9,14 +9,14 @@ import dev.gwm.spongeplugin.crates.listener.Animation1Listener;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.AbstractOpenManager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.OpenManager;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesSuperObjectCategories;
-import dev.gwm.spongeplugin.crates.utils.GWMCratesUtils;
+import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
-import dev.gwm.spongeplugin.library.utils.CreatedHologram;
-import dev.gwm.spongeplugin.library.utils.GWMLibraryUtils;
-import dev.gwm.spongeplugin.library.utils.HologramSettings;
-import dev.gwm.spongeplugin.library.utils.SuperObjectsService;
+import dev.gwm.spongeplugin.library.util.CreatedHologram;
+import dev.gwm.spongeplugin.library.util.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.util.HologramSettings;
+import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
@@ -79,7 +79,7 @@ public final class Animation1OpenManager extends AbstractOpenManager {
                 crateBlock = DEFAULT_CRATE_BLOCK;
             }
             if (!openManagerNode.isVirtual()) {
-                openManager = Sponge.getServiceManager().provide(SuperObjectsService.class).get().
+                openManager = Sponge.getServiceManager().provide(SuperObjectService.class).get().
                         create(GWMCratesSuperObjectCategories.OPEN_MANAGER, openManagerNode);
             } else {
                 openManager = GWMCratesUtils.DEFAULT_OPEN_MANAGER;
