@@ -67,7 +67,7 @@ public class SecondOpenManagerListener {
                     }
                     Sponge.getScheduler().createTaskBuilder().delay(1, TimeUnit.SECONDS).execute(() ->
                             drop.give(player, 1)).submit(GWMCrates.getInstance());
-                    openManager.getClickSound().ifPresent(click_sound -> player.playSound(click_sound, player.getLocation().getPosition(), 1.));
+                    openManager.getClickSound().ifPresent(clickSound -> player.playSound(clickSound, player.getLocation().getPosition(), 1.));
                     PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, Collections.singletonList(drop));
                     Sponge.getEventManager().post(openedEvent);
                     Sponge.getScheduler().createTaskBuilder().delayTicks(openManager.getCloseDelay()).execute(() -> {
@@ -87,25 +87,25 @@ public class SecondOpenManagerListener {
     @Listener(order = Order.LATE)
     public void controlClose(InteractInventoryEvent.Close event) {
         Container container = event.getTargetInventory();
-        Optional<Player> optional_player = event.getCause().first(Player.class);
-        if (!optional_player.isPresent()) return;
-        Player player = optional_player.get();
+        Optional<Player> optionalPlayer = event.getCause().first(Player.class);
+        if (!optionalPlayer.isPresent()) return;
+        Player player = optionalPlayer.get();
         if (SecondOpenManager.SECOND_GUI_INVENTORIES.containsKey(container) &&
                 !SHOWN_GUI.contains(container)) {
             Pair<SecondOpenManager, Manager> pair = SecondOpenManager.SECOND_GUI_INVENTORIES.get(container);
-            SecondOpenManager open_manager = pair.getKey();
+            SecondOpenManager openManager = pair.getKey();
             Manager manager = pair.getValue();
-            if (open_manager.isForbidClose()) {
+            if (openManager.isForbidClose()) {
                 event.setCancelled(true);
-            } else if (open_manager.isGiveRandomOnClose()) {
+            } else if (openManager.isGiveRandomOnClose()) {
                 Drop drop = (Drop) manager.getRandomManager().choose(manager.getDrops(), player, false);
                 drop.give(player, 1);
-                PlayerOpenedCrateEvent opened_event = new PlayerOpenedCrateEvent(player, manager, Collections.singletonList(drop));
-                Sponge.getEventManager().post(opened_event);
+                PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, Collections.singletonList(drop));
+                Sponge.getEventManager().post(openedEvent);
                 SecondOpenManager.SECOND_GUI_INVENTORIES.remove(container);
             } else {
-                PlayerOpenedCrateEvent opened_event = new PlayerOpenedCrateEvent(player, manager, Collections.emptyList());
-                Sponge.getEventManager().post(opened_event);
+                PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, Collections.emptyList());
+                Sponge.getEventManager().post(openedEvent);
                 SecondOpenManager.SECOND_GUI_INVENTORIES.remove(container);
             }
         }

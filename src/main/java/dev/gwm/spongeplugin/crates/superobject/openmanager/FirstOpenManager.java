@@ -189,7 +189,7 @@ public final class FirstOpenManager extends AbstractOpenManager {
                             getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
         }
         Container container = player.openInventory(inventory).get();
-        getOpenSound().ifPresent(open_sound -> player.playSound(open_sound, player.getLocation().getPosition(), 1.));
+        getOpenSound().ifPresent(openSound -> player.playSound(openSound, player.getLocation().getPosition(), 1.));
         FIRST_GUI_CONTAINERS.put(container, new ImmutablePair<>(this, manager));
         if (!decorativeItems.isEmpty()) {
             decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
@@ -222,8 +222,8 @@ public final class FirstOpenManager extends AbstractOpenManager {
                     drop.give(player, 1);
                     winSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
                     if (clearDecorativeItems) {
-                        for (Integer decorative_item_index : DECORATIVE_ITEMS_INDICES) {
-                            ordered.getSlot(new SlotIndex(decorative_item_index)).get().
+                        for (Integer decorativeItemIndex : DECORATIVE_ITEMS_INDICES) {
+                            ordered.getSlot(new SlotIndex(decorativeItemIndex)).get().
                                     set(GWMCratesUtils.EMPTY_ITEM);
                         }
                     }

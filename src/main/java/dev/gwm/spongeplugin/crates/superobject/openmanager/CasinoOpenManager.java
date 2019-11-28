@@ -271,7 +271,7 @@ public final class CasinoOpenManager extends AbstractOpenManager {
                                 set(((Drop) manager.getRandomManager().choose(manager.getDrops(), player, true)).
                                         getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM))));
         Container container = player.openInventory(inventory).get();
-        getOpenSound().ifPresent(open_sound -> player.playSound(open_sound, player.getLocation().getPosition(), 1.));
+        getOpenSound().ifPresent(openSound -> player.playSound(openSound, player.getLocation().getPosition(), 1.));
         CASINO_GUI_CONTAINERS.put(container, new ImmutablePair<>(this, manager));
         if (!decorativeItems.isEmpty()) {
             decorativeItemsChangeMode.ifPresent(mode -> Sponge.getScheduler().
@@ -358,8 +358,8 @@ public final class CasinoOpenManager extends AbstractOpenManager {
                         }
                     }
                     if (clearDecorativeItems) {
-                        for (Integer decorative_item_index : DECORATIVE_ITEMS_INDICES) {
-                            ordered.getSlot(new SlotIndex(decorative_item_index)).get().
+                        for (Integer decorativeItemIndex : DECORATIVE_ITEMS_INDICES) {
+                            ordered.getSlot(new SlotIndex(decorativeItemIndex)).get().
                                     set(GWMCratesUtils.EMPTY_ITEM);
                         }
                     }
