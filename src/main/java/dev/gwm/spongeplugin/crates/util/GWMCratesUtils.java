@@ -609,18 +609,18 @@ public final class GWMCratesUtils {
         return builder.toString();
     }
 
-    public static String formatDrops(List<Drop> drops) {
+    public static String formatDrops(Collection<Drop> drops) {
         StringBuilder builder = new StringBuilder();
-        final int dropsSize = drops.size();
-        for (int i = 0; i < dropsSize; i++) {
-            Drop drop = drops.get(i);
+        Iterator<Drop> iterator = drops.iterator();
+        while (iterator.hasNext()) {
+            Drop drop = iterator.next();
             String id = drop.id();
             String customName = drop.getCustomName().orElse(id);
             List<Map.Entry<String, ?>> entries = Arrays.asList(
                     new ImmutablePair<>("DROP_ID", id),
                     new ImmutablePair<>("DROP_CUSTOM_NAME", customName)
             );
-            if (i != dropsSize - 1) {
+            if (iterator.hasNext()) {
                 builder.append(GWMLibraryUtils.joinString(GWMCrates.getInstance().getLanguage().
                         getSimpleTranslation("DROP_LIST_FORMAT",
                         entries)));
