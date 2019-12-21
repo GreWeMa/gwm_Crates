@@ -1,3 +1,11 @@
+VERSION 4.4.1
+* Fix MySQL import and export
+* Rename command '/gwmcrates importtomysql' to '/gwmcrates exporttomysql'
+* Change permission 'gwm_crates.command.import_to_mysql' to 'gwm_crates.command.export_to_mysql'
+* Change language path 'STARTING_IMPORT_TO_MYSQL' to 'STARTING_EXPORT_TO_MYSQL'
+* Change language path 'IMPORT_TO_MYSQL_SUCCESSFUL' to 'EXPORT_TO_MYSQL_SUCCESSFUL'
+* Change language path 'IMPORT_TO_MYSQL_FAILED' to 'EXPORT_TO_MYSQL_FAILED'
+
 VERSION 4.4
 * Code refactoring
 * Add 'DROPS_AMOUNT' parameter to 'SECOND' Open Manager

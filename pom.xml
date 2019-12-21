@@ -6,7 +6,7 @@
 
     <groupId>dev.gwm.spongeplugin</groupId>
     <artifactId>crates</artifactId>
-    <version>4.4</version>
+    <version>4.4.1</version>
     <name>GWMCrates</name>
     <packaging>jar</packaging>
 

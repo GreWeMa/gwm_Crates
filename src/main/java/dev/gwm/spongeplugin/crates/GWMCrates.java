@@ -16,6 +16,7 @@ import dev.gwm.spongeplugin.crates.superobject.preview.SecondGuiPreview;
 import dev.gwm.spongeplugin.crates.util.GWMCratesCommandUtils;
 import dev.gwm.spongeplugin.crates.util.GWMCratesSuperObjectCategories;
 import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
+import dev.gwm.spongeplugin.crates.util.GWMCratesMySqlUtils;
 import dev.gwm.spongeplugin.library.event.SuperObjectCategoriesRegistrationEvent;
 import dev.gwm.spongeplugin.library.event.SuperObjectIdentifiersRegistrationEvent;
 import dev.gwm.spongeplugin.library.event.SuperObjectsRegistrationEvent;
@@ -41,14 +42,12 @@ import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.service.sql.SqlService;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.io.File;
 import java.nio.file.Files;
-import java.sql.Connection;
-import java.sql.Statement;
+import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +58,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "4.4",
+        version = "4.4.1",
         description = "Universal crates plugin",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -72,7 +71,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version(4, 4);
+    public static final Version VERSION = new Version(4, 4, 1);
 
     private static GWMCrates instance = null;
 
@@ -191,9 +190,7 @@ public final class GWMCrates extends SpongePlugin {
         timedKeysConfig = new Config(this, new File(configDirectory, "timed_keys.conf"),
                 assetManager.getAsset(this, "timed_keys.conf"), true, true);
         loadConfigValues();
-        if (connectMySQL()) {
-            createMySQLTables();
-        }
+        connectMySQL();
         language = new Language(this);
         registerListeners();
         GWMCratesCommandUtils.registerCommands(this);
@@ -261,9 +258,7 @@ public final class GWMCrates extends SpongePlugin {
         timedCasesConfig.reload();
         timedKeysConfig.reload();
         loadConfigValues();
-        if (connectMySQL()) {
-            createMySQLTables();
-        }
+        connectMySQL();
         language = new Language(this);
         debugCrateListener.reschedule();
         unloadManagers();
@@ -437,58 +432,17 @@ public final class GWMCrates extends SpongePlugin {
         return map;
     }
 
-    private boolean connectMySQL() {
-        try {
-            SqlService sqlService = Sponge.getServiceManager().provide(SqlService.class).get();
-            ConfigurationNode mysqlNode = config.getNode("MYSQL");
-            if (mysqlNode.isVirtual()) {
-                return false;
+    private void connectMySQL() {
+        ConfigurationNode mySqlNode = config.getNode("MYSQL");
+        if (!mySqlNode.isVirtual()) {
+            try {
+                DataSource dataSource = GWMCratesMySqlUtils.createDataSource(mySqlNode);
+                GWMCratesMySqlUtils.createTables(dataSource, maxVirtualNamesLength);
+                this.dataSource = Optional.of(dataSource);
+                logger.info("Successfully connected to MySQL!");
+            } catch (SQLException e) {
+                logger.error("Failed to connect to MySQL!", e);
             }
-            ConfigurationNode ipNode = mysqlNode.getNode("IP");
-            ConfigurationNode portNode = mysqlNode.getNode("PORT");
-            ConfigurationNode dbNode = mysqlNode.getNode("DB");
-            ConfigurationNode userNode = mysqlNode.getNode("USER");
-            ConfigurationNode passwordNode = mysqlNode.getNode("PASSWORD");
-            String ip = ipNode.getString("localhost");
-            int port = portNode.getInt(3306);
-            String db = dbNode.getString();
-            String user = userNode.getString();
-            String password = passwordNode.getString();
-            dataSource =
-                    Optional.of(sqlService.getDataSource("jdbc:mysql://" + user + ":" + password + "@" + ip + ":" + port + "/" + db));
-            logger.info("Successfully connected to MySQL!");
-            return true;
-        } catch (Exception e) {
-            logger.warn("Failed to connect to MySQL!", e);
-            return false;
-        }
-    }
-
-    private void createMySQLTables() {
-        try (Connection connection = dataSource.get().getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE IF NOT EXISTS virtual_cases (" +
-                    "name VARCHAR(" + maxVirtualNamesLength + "), " +
-                    "uuid VARCHAR(36), " +
-                    "value INTEGER NOT NULL DEFAULT 0, " +
-                    "CONSTRAINT virtual_cases_pk PRIMARY KEY (name, uuid));");
-            statement.execute("CREATE TABLE IF NOT EXISTS virtual_keys (" +
-                    "name VARCHAR(" + maxVirtualNamesLength + "), " +
-                    "uuid VARCHAR(36), " +
-                    "value INTEGER NOT NULL DEFAULT 0, " +
-                    "CONSTRAINT virtual_keys_pk PRIMARY KEY (name, uuid));");
-            statement.execute("CREATE TABLE IF NOT EXISTS timed_cases (" +
-                    "name VARCHAR(" + maxVirtualNamesLength + "), " +
-                    "uuid VARCHAR(36), " +
-                    "expire BIGINT NOT NULL DEFAULT 0, " +
-                    "CONSTRAINT timed_cases_pk PRIMARY KEY (name, uuid));");
-            statement.execute("CREATE TABLE IF NOT EXISTS timed_keys (" +
-                    "name VARCHAR(" + maxVirtualNamesLength + "), " +
-                    "uuid VARCHAR(36), " +
-                    "expire BIGINT NOT NULL DEFAULT 0, " +
-                    "CONSTRAINT timed_keys_pk PRIMARY KEY (name, uuid));");
-        } catch (Exception e) {
-            logger.warn("Failed to create MySQL tables!", e);
         }
     }
 

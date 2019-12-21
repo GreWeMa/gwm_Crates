@@ -228,10 +228,10 @@ public class GWMCratesCommandUtils {
                         new ManagerCommandElement(Text.of("manager"))
                 ).
                 build();
-        CommandSpec importToMySQLCommand = CommandSpec.builder().
-                permission("gwm_crates.command.import_to_mysql").
-                description(Text.of("Import the data to MySQL")).
-                executor(new ImportToMySQLCommand(language)).
+        CommandSpec exportToMySQLCommand = CommandSpec.builder().
+                permission("gwm_crates.command.export_to_mysql").
+                description(Text.of("Export the data to MySQL")).
+                executor(new ExportToMySQLCommand(language)).
                 arguments(
                         GenericArguments.flags().flag("a").
                                 buildWith(GenericArguments.none())
@@ -276,7 +276,7 @@ public class GWMCratesCommandUtils {
                 child(probabilityTestCommand, "probabilitytest", "ptest").
                 child(loadCommand, "load").
                 child(unloadCommand, "unload").
-                child(importToMySQLCommand, "importtomysql", "itm").
+                child(exportToMySQLCommand, "exporttomysql", "etm").
                 child(importFromMySQLCommand, "importfrommysql", "ifm").
                 child(findBlockCaseCommand, "findblockcase", "fbc").
                 build();
