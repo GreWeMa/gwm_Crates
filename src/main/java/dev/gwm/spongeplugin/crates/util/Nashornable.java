@@ -4,9 +4,12 @@ import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.library.GWMLibrary;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import me.rojo8399.placeholderapi.PlaceholderService;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.service.economy.EconomyService;
 
 import javax.script.SimpleScriptContext;
+import java.util.Optional;
 
 public interface Nashornable {
 
@@ -16,15 +19,19 @@ public interface Nashornable {
         return engine;
     }
 
+    //Do not optimize isPresent to ifPresent as it will cause class loading errors
     default SimpleScriptContext createContext() {
         SimpleScriptContext context = new SimpleScriptContext();
         context.setAttribute("server", Sponge.getServer(), SimpleScriptContext.ENGINE_SCOPE);
         context.setAttribute("GWMCrates", GWMCrates.getInstance(), SimpleScriptContext.ENGINE_SCOPE);
-        GWMLibrary.getInstance().getEconomyService().ifPresent(economyService ->
-                context.setAttribute("economyService", economyService, SimpleScriptContext.ENGINE_SCOPE));
-        GWMLibrary.getInstance().getPlaceholderService().ifPresent(placeholderService ->
-                context.setAttribute("placeholderService", placeholderService, SimpleScriptContext.ENGINE_SCOPE));
-        return context;
+        Optional<EconomyService> optionalEconomyService = GWMLibrary.getInstance().getEconomyService();
+        if (optionalEconomyService.isPresent()) {
+            context.setAttribute("economyService", optionalEconomyService.get(), SimpleScriptContext.ENGINE_SCOPE);
+        }
+        Optional<PlaceholderService> optionalPlaceholderService = GWMLibrary.getInstance().getPlaceholderService();
+        if (optionalPlaceholderService.isPresent()) {
+            context.setAttribute("placeholderService", optionalPlaceholderService.get(), SimpleScriptContext.ENGINE_SCOPE);
+        }        return context;
     }
 
     default void initEngine(NashornScriptEngine engine, String script) {
