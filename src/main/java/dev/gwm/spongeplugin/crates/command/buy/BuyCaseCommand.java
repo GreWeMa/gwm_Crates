@@ -7,6 +7,7 @@ import dev.gwm.spongeplugin.library.GWMLibrary;
 import dev.gwm.spongeplugin.library.superobject.Giveable;
 import dev.gwm.spongeplugin.library.util.Language;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -31,8 +32,9 @@ public class BuyCaseCommand implements CommandExecutor {
         this.language = language;
     }
 
+    @NotNull
     @Override
-    public CommandResult execute(CommandSource source, CommandContext args) {
+    public CommandResult execute(@NotNull CommandSource source, @NotNull CommandContext args) {
         if (!(source instanceof Player)) {
             source.sendMessages(language.getTranslation("COMMAND_EXECUTABLE_ONLY_BY_PLAYER", source));
             return CommandResult.empty();

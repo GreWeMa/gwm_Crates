@@ -43,7 +43,6 @@ public class ForceCommand implements CommandExecutor {
         if (!openManager.canOpen(player, manager)) {
             if (self) {
                 GWMCratesUtils.sendCannotOpenMessage(source, manager);
-                return CommandResult.empty();
             } else {
                 source.sendMessages(language.getTranslation("PLAYER_CANNOT_OPEN_MANAGER", Arrays.asList(
                         new ImmutablePair<>("MANAGER_NAME", manager.getName()),
@@ -51,8 +50,8 @@ public class ForceCommand implements CommandExecutor {
                         new ImmutablePair<>("PLAYER_NAME", player.getName()),
                         new ImmutablePair<>("PLAYER_UUID", player.getUniqueId())
                 ), source));
-                return CommandResult.empty();
             }
+            return CommandResult.empty();
         }
         openManager.open(player, manager);
         if (self) {

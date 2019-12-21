@@ -10,7 +10,6 @@ import org.spongepowered.api.world.biome.BiomeType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public final class BiomeKey extends AbstractKey {
 

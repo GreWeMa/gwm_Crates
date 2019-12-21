@@ -4,8 +4,6 @@ import dev.gwm.spongeplugin.crates.superobject.key.base.AbstractKey;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
 
-import java.util.Optional;
-
 public final class EmptyKey extends AbstractKey {
 
     public static final String TYPE = "EMPTY";

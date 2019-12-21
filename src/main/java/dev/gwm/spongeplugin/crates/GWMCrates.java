@@ -131,7 +131,7 @@ public final class GWMCrates extends SpongePlugin {
 
     private Optional<DataSource> dataSource = Optional.empty();
 
-    private Map<UUID, Long> crateOpenDelays = new HashMap<>();
+    private final Map<UUID, Long> crateOpenDelays = new HashMap<>();
 
     @Listener
     public void onConstruct(GameConstructionEvent event) {
@@ -224,7 +224,7 @@ public final class GWMCrates extends SpongePlugin {
             Optional<PluginContainer> optionalContainer = manager.getOwner(mapping);
             if (optionalContainer.isPresent() && !optionalContainer.get().equals(container)) {
                 manager.removeMapping(mapping);
-                logger.warn("Evil command was removed!");
+                logger.warn("Evil command has been removed!");
                 GWMCratesCommandUtils.registerCommands(this);
                 //This is a necessary measure, because HuskyCrates does the same,
                 //and it breaks ALL the commands ('/gwmcrates', '/gwmcrate', '/crates', 'crate') NOT only '/crate'.
@@ -386,8 +386,8 @@ public final class GWMCrates extends SpongePlugin {
                 shutdownCreatedSuperObjects(superObject -> superObject instanceof Manager);
     }
 
-    private Map<SuperObjectIdentifier, Class<? extends SuperObject>> getSuperObjects() {
-        Map<SuperObjectIdentifier, Class<? extends SuperObject>> map = new HashMap<>();
+    private Map<SuperObjectIdentifier<?>, Class<? extends SuperObject>> getSuperObjects() {
+        Map<SuperObjectIdentifier<?>, Class<? extends SuperObject>> map = new HashMap<>();
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.MANAGER, Manager.TYPE), ManagerImpl.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, ItemCase.TYPE), ItemCase.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.CASE, BlockCase.TYPE), BlockCase.class);

@@ -46,7 +46,7 @@ public final class GWMCratesUtils {
 
     public static final ItemStack EMPTY_ITEM = ItemStack.of(ItemTypes.NONE, 0);
     public static final Drop EMPTY_DROP = new EmptyDrop("gwmcrates_default_drop");
-    public static final RandomManager FALLBACK_RANDOM_MANAGER = new LevelRandomManager("gwmcrates_fallback_random_manager");
+    public static final RandomManager<LevelRandomManager.LevelRandomable> FALLBACK_RANDOM_MANAGER = new LevelRandomManager("gwmcrates_fallback_random_manager");
     public static final OpenManager DEFAULT_OPEN_MANAGER = new NoGuiOpenManager("gwmcrates_default_open_manager", Optional.empty());
 
     public static boolean loadManager(File file, boolean force) {
@@ -356,7 +356,7 @@ public final class GWMCratesUtils {
 
     public static boolean isFirstInventory(Container container, Slot slot) {
         int upperSize = container.iterator().next().capacity();
-        Integer affectedSlot = slot.getProperty(SlotIndex.class, "slotindex").map(SlotIndex::getValue).orElse(-1);
+        int affectedSlot = slot.getProperty(SlotIndex.class, "slotindex").map(SlotIndex::getValue).orElse(-1);
         return affectedSlot != -1 && affectedSlot < upperSize;
     }
 
@@ -365,10 +365,7 @@ public final class GWMCratesUtils {
         if (height < 1) {
             return 1;
         }
-        if (height > 6) {
-            return 6;
-        }
-        return height;
+        return Math.min(height, 6);
     }
 
     public static boolean isLocationChanged(Transform<World> from, Transform<World> to, boolean ySensitive) {

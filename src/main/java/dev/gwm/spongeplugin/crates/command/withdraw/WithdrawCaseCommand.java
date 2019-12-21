@@ -42,7 +42,7 @@ public class WithdrawCaseCommand implements CommandExecutor {
         }
         Case caze = manager.getCase();
         int caseAmount = caze.get(player);
-        caze.withdraw(player, amount < caseAmount ? amount : caseAmount, force);
+        caze.withdraw(player, Math.min(amount, caseAmount), force);
         if (self) {
             source.sendMessages(language.getTranslation("SUCCESSFULLY_WITHDREW_CASE", Arrays.asList(
                     new ImmutablePair<>("MANAGER_NAME", manager.getName()),

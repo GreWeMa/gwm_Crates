@@ -42,7 +42,7 @@ public class WithdrawKeyCommand implements CommandExecutor {
         }
         Key key = manager.getKey();
         int keyAmount = key.get(player);
-        key.withdraw(player, amount < keyAmount ? amount : keyAmount, force);
+        key.withdraw(player, Math.min(amount, keyAmount), force);
         if (self) {
             source.sendMessages(language.getTranslation("SUCCESSFULLY_WITHDREW_KEY", Arrays.asList(
                     new ImmutablePair<>("MANAGER_NAME", manager.getName()),

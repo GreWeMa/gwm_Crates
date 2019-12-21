@@ -10,7 +10,6 @@ import org.spongepowered.api.world.World;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public final class WorldKey extends AbstractKey {
 

@@ -5,8 +5,6 @@ import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
 
-import java.util.Optional;
-
 public final class PermissionKey extends AbstractKey {
 
     public static final String TYPE = "PERMISSION";

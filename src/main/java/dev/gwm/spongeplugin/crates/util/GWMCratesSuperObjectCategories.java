@@ -25,7 +25,7 @@ public final class GWMCratesSuperObjectCategories {
     public static final SuperObjectCategory<Preview> PREVIEW = new SuperObjectCategory<>("PREVIEW");
     public static final SuperObjectCategory<DecorativeItemsChangeMode> DECORATIVE_ITEMS_CHANGE_MODE = new SuperObjectCategory<>("DECORATIVE_ITEMS_CHANGE_MODE");
 
-    public static final List<SuperObjectCategory> CATEGORIES = Arrays.asList(
+    public static final List<SuperObjectCategory<?>> CATEGORIES = Arrays.asList(
             MANAGER,
             CASE,
             KEY,

@@ -58,7 +58,7 @@ public class DebugCrateListener {
             String managerId = manager.id();
             String formattedLocation = GWMCratesUtils.formatLocation(player.getLocation());
             try (OutputStream outputStream = new FileOutputStream(logFile, true)) {
-                outputStream.write(GWMLibraryUtils.joinString(GWMCrates.getInstance().getLanguage().
+                outputStream.write(GWMLibraryUtils.joinString(language.
                         getSimpleTranslation("OPENED_MANAGER_LOG_MESSAGE", Arrays.asList(
                                 new ImmutablePair<>("TIME", time),
                                 new ImmutablePair<>("PLAYER_NAME", playerName),

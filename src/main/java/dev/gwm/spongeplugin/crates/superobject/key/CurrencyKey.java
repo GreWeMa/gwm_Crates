@@ -107,7 +107,7 @@ public final class CurrencyKey extends GiveableKey {
         UniqueAccount account = optionalAccount.get();
         BigDecimal balance = account.getBalance(realCurrency);
         int value = balance.divide(amount, RoundingMode.FLOOR).intValue();
-        return value > 0 ? value : 0;
+        return Math.max(value, 0);
     }
 
     @Override
