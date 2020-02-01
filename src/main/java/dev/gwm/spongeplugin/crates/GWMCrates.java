@@ -25,7 +25,7 @@ import dev.gwm.spongeplugin.library.util.*;
 import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.asset.AssetManager;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandMapping;
@@ -35,13 +35,13 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.game.GameReloadEvent;
-import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.world.weather.Weathers;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -58,7 +58,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "4.4.1",
+        version = "4.4.2",
         description = "Universal crates plugin",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -71,7 +71,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version(4, 4, 1);
+    public static final Version VERSION = new Version(4, 4, 2);
 
     private static GWMCrates instance = null;
 
@@ -87,29 +87,26 @@ public final class GWMCrates extends SpongePlugin {
     private static final Vector3d DEFAULT_HOLOGRAM_OFFSET = new Vector3d(0.5, 1, 0.5);
     private static final String DEFAULT_RANDOM_MANAGER_ID = "default_random_manager";
 
-    private Cause cause;
+    private final Game game;
+    private final Cause cause;
 
-    @Inject
-    @ConfigDir(sharedRoot = false)
-    private File configDirectory;
-    private File managersDirectory;
-    private File logsDirectory;
-    private File scriptsDirectory;
+    private final Logger logger;
+    private final PluginContainer container;
 
-    @Inject
-    private Logger logger;
+    private final File configDirectory;
 
-    @Inject
-    private PluginContainer container;
+    private final File managersDirectory;
+    private final File logsDirectory;
+    private final File scriptsDirectory;
 
-    private Config config;
-    private Config languageConfig;
-    private Config virtualCasesConfig;
-    private Config virtualKeysConfig;
-    private Config timedCasesConfig;
-    private Config timedKeysConfig;
+    private final Config config;
+    private final Config languageConfig;
+    private final Config virtualCasesConfig;
+    private final Config virtualKeysConfig;
+    private final Config timedCasesConfig;
+    private final Config timedKeysConfig;
 
-    private Language language;
+    private final Language language;
 
     private boolean logLoadedManagers;
     private boolean logOpenedManagers;
@@ -132,13 +129,17 @@ public final class GWMCrates extends SpongePlugin {
 
     private final Map<UUID, Long> crateOpenDelays = new HashMap<>();
 
-    @Listener
-    public void onConstruct(GameConstructionEvent event) {
-        instance = this;
-    }
-
-    @Listener
-    public void onPreInitialization(GamePreInitializationEvent event) {
+    @Inject
+    public GWMCrates(Game game,
+                     @ConfigDir(sharedRoot = false) File configDirectory,
+                     Logger logger,
+                     PluginContainer container) {
+        GWMCrates.instance = this;
+        this.game = game;
+        cause = Cause.of(EventContext.empty(), container);
+        this.logger = logger;
+        this.container = container;
+        this.configDirectory = configDirectory;
         managersDirectory = new File(configDirectory, "managers");
         logsDirectory = new File(configDirectory, "logs");
         scriptsDirectory = new File(configDirectory, "scripts");
@@ -174,24 +175,36 @@ public final class GWMCrates extends SpongePlugin {
                 logger.error("Failed to create scripts directory!");
             }
         }
+        config = new Config.Builder(this, new File(configDirectory, "config.conf")).
+                loadDefaults("config.conf").
+                build();
+        languageConfig = new Config.Builder(this, new File(configDirectory, "language.conf")).
+                loadDefaults(getDefaultTranslationPath()).
+                build();
+        virtualCasesConfig = new Config.Builder(this, new File(configDirectory, "virtual_cases.conf")).
+                loadDefaults("virtual_cases.conf").
+                setAutoSave(true).
+                build();
+        virtualKeysConfig = new Config.Builder(this, new File(configDirectory, "virtual_keys.conf")).
+                loadDefaults("virtual_keys.conf").
+                setAutoSave(true).
+                build();
+        timedCasesConfig = new Config.Builder(this, new File(configDirectory, "timed_cases.conf")).
+                loadDefaults("timed_cases.conf").
+                setAutoSave(true).
+                build();
+        timedKeysConfig = new Config.Builder(this, new File(configDirectory, "timed_keys.conf")).
+                loadDefaults("timed_keys.conf").
+                setAutoSave(true).
+                build();
+        language = new Language(this);
+        logger.info("Construction completed!");
+    }
 
-        cause = Cause.of(EventContext.empty(), container);
-        AssetManager assetManager = Sponge.getAssetManager();
-        config = new Config(this, new File(configDirectory, "config.conf"),
-                assetManager.getAsset(this, "config.conf"), true, false);
-        languageConfig = new Config(this, new File(configDirectory, "language.conf"),
-                getDefaultTranslation(assetManager), true, false);
-        virtualCasesConfig = new Config(this, new File(configDirectory, "virtual_cases.conf"),
-                assetManager.getAsset(this, "virtual_cases.conf"), true, true);
-        virtualKeysConfig = new Config(this, new File(configDirectory, "virtual_keys.conf"),
-                assetManager.getAsset(this, "virtual_keys.conf"), true, true);
-        timedCasesConfig = new Config(this, new File(configDirectory, "timed_cases.conf"),
-                assetManager.getAsset(this, "timed_cases.conf"), true, true);
-        timedKeysConfig = new Config(this, new File(configDirectory, "timed_keys.conf"),
-                assetManager.getAsset(this, "timed_keys.conf"), true, true);
+    @Listener
+    public void onPreInitialization(GamePreInitializationEvent event) {
         loadConfigValues();
         connectMySQL();
-        language = new Language(this);
         registerListeners();
         GWMCratesCommandUtils.registerCommands(this);
         logger.info("PreInitialization completed!");
@@ -216,7 +229,7 @@ public final class GWMCrates extends SpongePlugin {
     @Listener(order = Order.LATE)
     public void fightForCrateCommand(GameStartedServerEvent event) {
         if (forceCrateCommandRegistration) {
-            CommandManager manager = Sponge.getCommandManager();
+            CommandManager manager = game.getCommandManager();
             CommandMapping mapping = manager.get("crate").get();
             Optional<PluginContainer> optionalContainer = manager.getOwner(mapping);
             if (optionalContainer.isPresent() && !optionalContainer.get().equals(container)) {
@@ -259,7 +272,6 @@ public final class GWMCrates extends SpongePlugin {
         timedKeysConfig.reload();
         loadConfigValues();
         connectMySQL();
-        language = new Language(this);
         debugCrateListener.reschedule();
         unloadManagers();
         loadManagers();
@@ -331,15 +343,15 @@ public final class GWMCrates extends SpongePlugin {
 
     private void registerListeners() {
         debugCrateListener = new DebugCrateListener(language, logFileDateFormat, logFileTimeFormat);
-        Sponge.getEventManager().registerListeners(this, debugCrateListener);
-        Sponge.getEventManager().registerListeners(this, new ItemCaseListener(language));
-        Sponge.getEventManager().registerListeners(this, new BlockCaseListener(language));
-        Sponge.getEventManager().registerListeners(this, new EntityCaseListener(language));
-        Sponge.getEventManager().registerListeners(this, new FirstOpenManagerListener());
-        Sponge.getEventManager().registerListeners(this, new SecondOpenManagerListener());
-        Sponge.getEventManager().registerListeners(this, new CasinoOpenManagerListener());
-        Sponge.getEventManager().registerListeners(this, new Animation1Listener());
-        Sponge.getEventManager().registerListeners(this, new PreviewListener());
+        game.getEventManager().registerListeners(this, debugCrateListener);
+        game.getEventManager().registerListeners(this, new ItemCaseListener(language));
+        game.getEventManager().registerListeners(this, new BlockCaseListener(language));
+        game.getEventManager().registerListeners(this, new EntityCaseListener(language));
+        game.getEventManager().registerListeners(this, new FirstOpenManagerListener());
+        game.getEventManager().registerListeners(this, new SecondOpenManagerListener());
+        game.getEventManager().registerListeners(this, new CasinoOpenManagerListener());
+        game.getEventManager().registerListeners(this, new Animation1Listener());
+        game.getEventManager().registerListeners(this, new PreviewListener());
     }
 
     private void loadManagers() {
@@ -377,7 +389,7 @@ public final class GWMCrates extends SpongePlugin {
     }
 
     private void unloadManagers() {
-        Sponge.getServiceManager().provide(SuperObjectService.class).get().
+        game.getServiceManager().provide(SuperObjectService.class).get().
                 shutdownCreatedSuperObjects(superObject -> superObject instanceof Manager);
     }
 
@@ -457,6 +469,16 @@ public final class GWMCrates extends SpongePlugin {
     }
 
     @Override
+    public Logger getLogger() {
+        return logger;
+    }
+
+    @Override
+    public PluginContainer getContainer() {
+        return container;
+    }
+
+    @Override
     public File getConfigDirectory() {
         return configDirectory;
     }
@@ -471,16 +493,6 @@ public final class GWMCrates extends SpongePlugin {
 
     public File getScriptsDirectory() {
         return scriptsDirectory;
-    }
-
-    @Override
-    public Logger getLogger() {
-        return logger;
-    }
-
-    @Override
-    public PluginContainer getContainer() {
-        return container;
     }
 
     @Override

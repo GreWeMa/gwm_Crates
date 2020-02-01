@@ -49,7 +49,7 @@ public final class GWMCratesUtils {
 
     public static boolean loadManager(File file, boolean force) {
         try {
-            Config managerConfig = new Config(GWMCrates.getInstance(), file);
+            Config managerConfig = new Config.Builder(GWMCrates.getInstance(), file).build();
             ConfigurationNode loadNode = managerConfig.getNode("LOAD");
             if (force || loadNode.getBoolean(true)) {
                 Manager manager = Sponge.getServiceManager().provide(SuperObjectService.class).get().

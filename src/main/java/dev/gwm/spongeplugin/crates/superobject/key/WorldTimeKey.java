@@ -83,7 +83,7 @@ public final class WorldTimeKey extends AbstractKey {
 
     private void checkTimeValues(Map<Integer, Integer> timeValues) {
         if (timeValues.isEmpty()) {
-            throw new IllegalArgumentException("No Time Values are configured! At least one Tie Value is required!");
+            throw new IllegalArgumentException("No Time Values are configured! At least one Time Value is required!");
         }
         timeValues.forEach((start, end) -> {
             if (start >= end || start < 0 || end > 24000) {
@@ -106,14 +106,14 @@ public final class WorldTimeKey extends AbstractKey {
         long time = world.orElse(player.getWorld()).getProperties().getWorldTime() % 24_000;
         if (whitelistMode) {
             for (Map.Entry<Integer, Integer> entry : timeValues.entrySet()) {
-                if (entry.getKey() >= time && time <= entry.getValue()) {
+                if (entry.getKey() <= time && time <= entry.getValue()) {
                     return 1;
                 }
             }
             return 0;
         } else {
             for (Map.Entry<Integer, Integer> entry : timeValues.entrySet()) {
-                if (entry.getKey() >= time && time <= entry.getValue()) {
+                if (entry.getKey() <= time && time <= entry.getValue()) {
                     return 0;
                 }
             }
