@@ -26,7 +26,6 @@ import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.asset.AssetManager;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.config.ConfigDir;
@@ -41,7 +40,6 @@ import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.world.weather.Weathers;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -58,7 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "4.4.2",
+        version = "4.5",
         description = "Universal crates plugin",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -71,7 +69,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version(4, 4, 2);
+    public static final Version VERSION = new Version(4, 5);
 
     private static GWMCrates instance = null;
 

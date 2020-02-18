@@ -14,6 +14,7 @@ import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
 import dev.gwm.spongeplugin.library.util.GWMLibraryUtils;
+import dev.gwm.spongeplugin.library.util.SpongePlugin;
 import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -32,6 +33,7 @@ import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.text.Text;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public final class CasinoOpenManager extends AbstractOpenManager {
 
@@ -97,6 +99,8 @@ public final class CasinoOpenManager extends AbstractOpenManager {
     private final Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode;
     private final Optional<Drop> defaultConsolationDrop;
     private final Map<String, Drop> consolationDrops;
+    private final Optional<Double> winPercentage;
+    private final Optional<Double> consolationPercentage;
 
     public CasinoOpenManager(ConfigurationNode node) {
         super(node);
@@ -119,6 +123,8 @@ public final class CasinoOpenManager extends AbstractOpenManager {
             ConfigurationNode defaultConsolationDropNode = node.getNode("DEFAULT_CONSOLATION_DROP");
             ConfigurationNode consolationDropsNode = node.getNode("CONSOLATION_DROPS");
             ConfigurationNode decorativeItemsChangeModeNode = node.getNode("DECORATIVE_ITEMS_CHANGE_MODE");
+            ConfigurationNode winPercentageNode = node.getNode("WIN_PERCENTAGE");
+            ConfigurationNode consolationPercentageNode = node.getNode("CONSOLATION_PERCENTAGE");
             if (!displayNameNode.isVirtual()) {
                 displayName = Optional.of(displayNameNode.getValue(TypeToken.of(Text.class)));
             } else {
@@ -192,6 +198,24 @@ public final class CasinoOpenManager extends AbstractOpenManager {
                 }
             }
             consolationDrops = Collections.unmodifiableMap(tempConsolationDrops);
+            if (!winPercentageNode.isVirtual()) {
+                double tempWinPercentage = winPercentageNode.getDouble();
+                if (tempWinPercentage < 0 || tempWinPercentage > 100) {
+                    throw new IllegalArgumentException("Win Percentage is less than 0 or greater than 100!");
+                }
+                this.winPercentage = Optional.of(tempWinPercentage);
+            } else {
+                winPercentage = Optional.empty();
+            }
+            if (!consolationPercentageNode.isVirtual()) {
+                double tempConsolationPercentage = consolationPercentageNode.getDouble();
+                if (tempConsolationPercentage < 0 || tempConsolationPercentage > 100) {
+                    throw new IllegalArgumentException("Consolation Percentage is less than 0 or greater than 100!");
+                }
+                this.consolationPercentage = Optional.of(tempConsolationPercentage);
+            } else {
+                consolationPercentage = Optional.empty();
+            }
         } catch (Exception e) {
             throw new SuperObjectConstructionException(category(), type(), e);
         }
@@ -204,7 +228,8 @@ public final class CasinoOpenManager extends AbstractOpenManager {
                              Optional<SoundType> thirdRowSound, Optional<SoundType> winSound,
                              Optional<SoundType> consolationSound, Optional<SoundType> loseSound,
                              Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode,
-                             Optional<Drop> defaultConsolationDrop, Map<String, Drop> consolationDrops) {
+                             Optional<Drop> defaultConsolationDrop, Map<String, Drop> consolationDrops,
+                             Optional<Double> winPercentage, Optional<Double> consolationPercentage) {
         super(id, openSound);
         this.displayName = displayName;
         this.decorativeItems = Collections.unmodifiableList(decorativeItems);
@@ -223,6 +248,14 @@ public final class CasinoOpenManager extends AbstractOpenManager {
         this.decorativeItemsChangeMode = decorativeItemsChangeMode;
         this.defaultConsolationDrop = defaultConsolationDrop;
         this.consolationDrops = Collections.unmodifiableMap(consolationDrops);
+        if (winPercentage.isPresent() && (winPercentage.get() < 0 || winPercentage.get() > 100)) {
+            throw new IllegalArgumentException("Win Percentage is less than 0 or greater than 100!");
+        }
+        this.winPercentage = winPercentage;
+        if (consolationPercentage.isPresent() && (consolationPercentage.get() < 0 || consolationPercentage.get() > 100)) {
+            throw new IllegalArgumentException("Consolation Percentage is less than 0 or greater than 100!");
+        }
+        this.consolationPercentage = consolationPercentage;
     }
 
     @Override
@@ -280,6 +313,7 @@ public final class CasinoOpenManager extends AbstractOpenManager {
                     submit(GWMCrates.getInstance()));
         }
         int waitTime = 0;
+        CasinoRewardResult result = generateCasinoRewardResult();
         for (int i = 0; i < scrollDelays.size() - 1; i++) {
             int scrollDelay = scrollDelays.get(i);
             for (int j = 0; j < scrollDelay; j++) {
@@ -307,7 +341,21 @@ public final class CasinoOpenManager extends AbstractOpenManager {
                         (Drop) manager.getRandomManager().choose(manager.getDrops(), player, true));
             }
             waitTime += scrollDelay;
-            Drop newDrop = (Drop) manager.getRandomManager().choose(manager.getDrops(), player, i != scrollDelays.size() - 4);
+            Drop oldDrop = dropList.get(0).get(dropList.get(0).size() - 3);
+            Drop newDrop;
+            if (i == scrollDelays.size() - 4) {
+                if (result == CasinoRewardResult.LOSE) {
+                    do {
+                        newDrop = (Drop) manager.getRandomManager().choose(manager.getDrops(), player, i != scrollDelays.size() - 4);
+                    } while (oldDrop.equals(newDrop));
+                } else if (result == CasinoRewardResult.WIN) { //Get the same Drop as in previous column
+                    newDrop = oldDrop;
+                } else { //At this point we don't care if it's CONSOLATION or DEFAULT
+                    newDrop = (Drop) manager.getRandomManager().choose(manager.getDrops(), player, i != scrollDelays.size() - 4);
+                }
+            } else { //At this point we don't care if it's CONSOLATION or DEFAULT
+                newDrop = (Drop) manager.getRandomManager().choose(manager.getDrops(), player, i != scrollDelays.size() - 4);
+            }
             scheduleScroll(ROW_INDICES.get(1), ordered, waitTime, newDrop);
             dropList.get(1).add(newDrop);
         }
@@ -321,7 +369,30 @@ public final class CasinoOpenManager extends AbstractOpenManager {
         for (int i = 0; i < scrollDelays.size() - 1; i++) {
             int scrollDelay = scrollDelays.get(i);
             waitTime += scrollDelay;
-            Drop newDrop = (Drop) manager.getRandomManager().choose(manager.getDrops(), player, i != scrollDelays.size() - 4);
+            Drop oldDrop0 = dropList.get(0).get(dropList.get(0).size() - 3);
+            Drop oldDrop1 = dropList.get(1).get(dropList.get(1).size() - 3);
+            Drop newDrop;
+            if (i == scrollDelays.size() - 4) {
+                if (result == CasinoRewardResult.LOSE) {
+                    do {
+                        newDrop = (Drop) manager.getRandomManager().choose(manager.getDrops(), player, i != scrollDelays.size() - 4);
+                    } while (oldDrop0.equals(newDrop) || oldDrop1.equals(newDrop));
+                } else if (result == CasinoRewardResult.CONSOLATION) {
+                    if (oldDrop0.equals(oldDrop1)) { //We already have a consolation situation. Do not make it a win situation.
+                        do {
+                            newDrop = (Drop) manager.getRandomManager().choose(manager.getDrops(), player, i != scrollDelays.size() - 4);
+                        } while (oldDrop0.equals(newDrop));
+                    } else { //We have two different Drops. Make a consolation situation with one of them.
+                        newDrop = ThreadLocalRandom.current().nextBoolean() ? oldDrop0 : oldDrop1;
+                    }
+                } else if (result == CasinoRewardResult.WIN) {
+                    newDrop = oldDrop0;
+                } else {
+                    newDrop = (Drop) manager.getRandomManager().choose(manager.getDrops(), player, i != scrollDelays.size() - 4);
+                }
+            } else {
+                newDrop = (Drop) manager.getRandomManager().choose(manager.getDrops(), player, i != scrollDelays.size() - 4);
+            }
             scheduleScroll(ROW_INDICES.get(2), ordered, waitTime, newDrop);
             dropList.get(2).add(newDrop);
         }
@@ -340,7 +411,7 @@ public final class CasinoOpenManager extends AbstractOpenManager {
                     Drop drop1 = dropList.get(1).get(dropList.get(1).size() - 3);
                     Drop drop2 = dropList.get(2).get(dropList.get(2).size() - 3);
                     if (drop0.equals(drop1) &&
-                            drop0.equals(drop2)) { //Play won
+                            drop0.equals(drop2)) { //Player won
                         drop0.give(player, 1);
                         winSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
                     } else {
@@ -348,7 +419,7 @@ public final class CasinoOpenManager extends AbstractOpenManager {
                                 drop0 : drop1.equals(drop2) ?
                                 drop1 : drop2.equals(drop0) ?
                                 drop2 : null;
-                        if (tempDrop != null) { //Player didn't win, give him a consolation drop (if it exist)
+                        if (tempDrop != null) { //Player didn't win, give him a consolation drop (if it exists)
                             String id = tempDrop.id();
                             consolationDrops.getOrDefault(id, defaultConsolationDrop.orElse(loseDrop)).give(player, 1);
                             consolationSound.ifPresent(sound -> player.playSound(sound, player.getLocation().getPosition(), 1.));
@@ -404,6 +475,22 @@ public final class CasinoOpenManager extends AbstractOpenManager {
                     ordered.getSlot(new SlotIndex(list.get(list.size() - 1))).get().
                             set(newDrop.getDropItem().orElse(GWMCratesUtils.EMPTY_ITEM));
                 }).submit(GWMCrates.getInstance());
+    }
+
+    private CasinoRewardResult generateCasinoRewardResult() {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        CasinoRewardResult result = CasinoRewardResult.DEFAULT;
+        if (winPercentage.isPresent() && random.nextDouble() * 100 <= winPercentage.get()) {
+            result = CasinoRewardResult.WIN;
+        }
+        if (result == CasinoRewardResult.DEFAULT &&
+                consolationPercentage.isPresent() && random.nextDouble() * 100 <= consolationPercentage.get()) {
+            result = CasinoRewardResult.CONSOLATION;
+        }
+        if (result == CasinoRewardResult.DEFAULT && winPercentage.isPresent()) {
+            result = CasinoRewardResult.LOSE;
+        }
+        return result;
     }
 
     public Optional<Text> getDisplayName() {
@@ -472,5 +559,21 @@ public final class CasinoOpenManager extends AbstractOpenManager {
 
     public Map<String, Drop> getConsolationDrops() {
         return consolationDrops;
+    }
+
+    public Optional<Double> getWinPercentage() {
+        return winPercentage;
+    }
+
+    public Optional<Double> getConsolationPercentage() {
+        return consolationPercentage;
+    }
+
+    public enum CasinoRewardResult {
+
+        WIN,
+        CONSOLATION,
+        LOSE,
+        DEFAULT
     }
 }

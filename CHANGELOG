@@ -1,3 +1,7 @@
+VERSION 4.5
+* Add 'WIN_PERCENTAGE' parameter to 'CASINO' Open Manager
+* Add 'CONSOLATION_PERCENTAGE' parameter to 'CASINO' Open Manager
+
 VERSION 4.4.2
 * Update GWMLibrary 2.5.3
 * Code refactoring
