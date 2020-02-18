@@ -7,7 +7,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 
-public class ReloadCommand implements CommandExecutor {
+public final class ReloadCommand implements CommandExecutor {
 
     private final Language language;
 

@@ -14,7 +14,7 @@ import org.spongepowered.api.text.Text;
 import java.util.Arrays;
 import java.util.Optional;
 
-public class GiveDropCommand implements CommandExecutor {
+public final class GiveDropCommand implements CommandExecutor {
 
     private final Language language;
 

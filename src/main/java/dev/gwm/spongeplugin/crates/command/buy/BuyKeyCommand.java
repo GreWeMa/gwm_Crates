@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
-public class BuyKeyCommand implements CommandExecutor {
+public final class BuyKeyCommand implements CommandExecutor {
 
     private final Language language;
 

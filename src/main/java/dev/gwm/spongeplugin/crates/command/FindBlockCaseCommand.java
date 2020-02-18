@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class FindBlockCaseCommand implements CommandExecutor {
+public final class FindBlockCaseCommand implements CommandExecutor {
 
     private final Language language;
 

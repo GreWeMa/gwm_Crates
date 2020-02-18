@@ -12,7 +12,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Arrays;
 
-public class CheckCommand implements CommandExecutor {
+public final class CheckCommand implements CommandExecutor {
 
     private final Language language;
 

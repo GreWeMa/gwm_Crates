@@ -12,7 +12,7 @@ import org.spongepowered.api.text.Text;
 
 import java.io.File;
 
-public class LoadCommand implements CommandExecutor {
+public final class LoadCommand implements CommandExecutor {
 
     private final Language language;
 

@@ -15,7 +15,7 @@ import org.spongepowered.api.text.Text;
 import java.util.Arrays;
 import java.util.Optional;
 
-public class PreviewCommand implements CommandExecutor {
+public final class PreviewCommand implements CommandExecutor {
 
     private final Language language;
 

@@ -14,7 +14,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Arrays;
 
-public class GiveCaseCommand implements CommandExecutor {
+public final class GiveCaseCommand implements CommandExecutor {
 
     private final Language language;
 

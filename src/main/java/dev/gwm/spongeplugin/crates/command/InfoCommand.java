@@ -9,7 +9,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.text.Text;
 
-public class InfoCommand implements CommandExecutor {
+public final class InfoCommand implements CommandExecutor {
 
     private final Language language;
 

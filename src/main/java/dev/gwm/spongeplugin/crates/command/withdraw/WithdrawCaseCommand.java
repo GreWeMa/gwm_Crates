@@ -13,7 +13,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Arrays;
 
-public class WithdrawCaseCommand implements CommandExecutor {
+public final class WithdrawCaseCommand implements CommandExecutor {
 
     private final Language language;
 

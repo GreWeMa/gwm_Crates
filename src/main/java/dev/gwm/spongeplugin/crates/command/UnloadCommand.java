@@ -14,7 +14,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Arrays;
 
-public class UnloadCommand implements CommandExecutor {
+public final class UnloadCommand implements CommandExecutor {
 
     private final Language language;
 

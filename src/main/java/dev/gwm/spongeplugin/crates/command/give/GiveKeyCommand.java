@@ -14,7 +14,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Arrays;
 
-public class GiveKeyCommand implements CommandExecutor {
+public final class GiveKeyCommand implements CommandExecutor {
 
     private final Language language;
 

@@ -15,7 +15,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.UUID;
 
-public class OpenCommand implements CommandExecutor {
+public final class OpenCommand implements CommandExecutor {
 
     private final Language language;
 

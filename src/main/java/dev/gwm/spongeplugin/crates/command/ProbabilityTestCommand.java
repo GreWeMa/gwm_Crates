@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class ProbabilityTestCommand implements CommandExecutor {
+public final class ProbabilityTestCommand implements CommandExecutor {
 
     private final Language language;
 

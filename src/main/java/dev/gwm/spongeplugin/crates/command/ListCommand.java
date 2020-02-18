@@ -10,7 +10,7 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 
 import java.util.stream.Collectors;
 
-public class ListCommand implements CommandExecutor {
+public final class ListCommand implements CommandExecutor {
 
     private final Language language;
 

@@ -12,7 +12,7 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 
 import java.sql.SQLException;
 
-public class ExportToMySQLCommand implements CommandExecutor {
+public final class ExportToMySQLCommand implements CommandExecutor {
 
     private final Language language;
 

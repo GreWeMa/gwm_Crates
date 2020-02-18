@@ -14,7 +14,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Arrays;
 
-public class ForceCommand implements CommandExecutor {
+public final class ForceCommand implements CommandExecutor {
 
     private final Language language;
 

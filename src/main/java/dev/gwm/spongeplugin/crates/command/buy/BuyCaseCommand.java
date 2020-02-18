@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
-public class BuyCaseCommand implements CommandExecutor {
+public final class BuyCaseCommand implements CommandExecutor {
 
     private final Language language;
 
