@@ -63,6 +63,13 @@ public class GWMCratesCommandUtils {
                         GenericArguments.playerOrSource(Text.of("player"))
                 ).
                 build();
+        CommandSpec checkAllCommand = CommandSpec.builder().
+                description(Text.of("Check player's amount of Cases and Keys from all the crates")).
+                executor(new CheckAllCommand(language)).
+                arguments(
+                        GenericArguments.playerOrSource(Text.of("player"))
+                ).
+                build();
         CommandSpec listCommand = CommandSpec.builder().
                 permission("gwm_crates.command.list").
                 description(Text.of("List all the available crates")).
@@ -267,6 +274,7 @@ public class GWMCratesCommandUtils {
                 child(forceCommand, "force").
                 child(previewCommand, "preview").
                 child(checkCommand, "check").
+                child(checkAllCommand, "checkall").
                 child(listCommand, "list").
                 child(infoCommand, "info").
                 child(buyCommand, "buy").

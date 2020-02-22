@@ -1,3 +1,9 @@
+VERSION 4.6
+* Add '/gwmcrates checkall' command
+* Fix wrong parameter in config.conf (`LOG_OPENED_CRATES` -> `LOG_OPENED_MANAGERS`)
+* Fix wrong placeholder in 'OPENED_MANAGER_LOG_MESSAGE' from language.conf (%PLAYER% -> %PLAYER_NAME%)
+* Make log messages use new translation paths for Drops formatting
+
 VERSION 4.5
 * Add 'WIN_PERCENTAGE' parameter to 'CASINO' Open Manager
 * Add 'CONSOLATION_PERCENTAGE' parameter to 'CASINO' Open Manager

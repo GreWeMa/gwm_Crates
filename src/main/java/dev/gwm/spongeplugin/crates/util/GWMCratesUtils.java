@@ -392,6 +392,30 @@ public final class GWMCratesUtils {
         return builder.toString();
     }
 
+    public static String logFormatDrops(Collection<Drop> drops) {
+        StringBuilder builder = new StringBuilder();
+        Iterator<Drop> iterator = drops.iterator();
+        while (iterator.hasNext()) {
+            Drop drop = iterator.next();
+            String id = drop.id();
+            String customName = drop.getCustomName().orElse(id);
+            List<Map.Entry<String, ?>> entries = Arrays.asList(
+                    new ImmutablePair<>("DROP_ID", id),
+                    new ImmutablePair<>("DROP_CUSTOM_NAME", customName)
+            );
+            if (iterator.hasNext()) {
+                builder.append(GWMLibraryUtils.joinString(GWMCrates.getInstance().getLanguage().
+                        getSimpleTranslation("LOG_DROP_LIST_FORMAT",
+                                entries)));
+            } else {
+                builder.append(GWMLibraryUtils.joinString(GWMCrates.getInstance().getLanguage().
+                        getSimpleTranslation("LOG_LAST_DROP_LIST_FORMAT",
+                                entries)));
+            }
+        }
+        return builder.toString();
+    }
+
     public static String formatLocation(Location<World> location) {
         return GWMLibraryUtils.joinString(GWMCrates.getInstance().getLanguage().getSimpleTranslation("LOCATION_FORMAT", Arrays.asList(
                 new ImmutablePair<>("WORLD_NAME", location.getExtent().getName()),

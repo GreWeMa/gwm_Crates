@@ -48,7 +48,7 @@ public class DebugCrateListener {
     public void onOpened(PlayerOpenedCrateEvent event) {
         Player player = event.getTargetEntity();
         Manager manager = event.getManager();
-        String formattedDrops = GWMCratesUtils.formatDrops(event.getDrops());
+        String formattedDrops = GWMCratesUtils.logFormatDrops(event.getDrops());
         GWMCratesUtils.sendOpenMessage(player, manager, formattedDrops);
         if (GWMCrates.getInstance().isLogOpenedManagers()) {
             String time = LocalTime.now().withNano(0).format(timeFormatter);
