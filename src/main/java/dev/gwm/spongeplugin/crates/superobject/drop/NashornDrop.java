@@ -39,7 +39,7 @@ public final class NashornDrop extends AbstractDrop implements Nashornable {
                     BufferedReader reader = new BufferedReader(new FileReader(file));
                     script = reader.lines().reduce("", (s1, s2) -> s1 + "\n" + s2);
                 } else {
-                    throw new IllegalArgumentException("Both SCRIPT and SCRIPT_FILE node do not exist!");
+                    throw new IllegalArgumentException("Both SCRIPT and SCRIPT_FILE nodes do not exist!");
                 }
             }
             initEngine(engine, script);
