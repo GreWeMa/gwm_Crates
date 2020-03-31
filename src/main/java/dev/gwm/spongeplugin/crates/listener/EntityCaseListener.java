@@ -27,7 +27,7 @@ public class EntityCaseListener {
     }
 
     @Listener(order = Order.LATE)
-    public void openEntityCase(InteractEntityEvent event, @First Player player) {
+    public void openEntityCase(InteractEntityEvent.Secondary.MainHand event, @First Player player) {
         UUID uuid = player.getUniqueId();
         Entity entity = event.getTargetEntity();
         GWMCratesUtils.getManagersStream().
@@ -36,46 +36,55 @@ public class EntityCaseListener {
                 findFirst().
                 ifPresent(manager -> {
                     event.setCancelled(true);
-                    if (event instanceof InteractEntityEvent.Secondary.MainHand) {
-                        if (!player.hasPermission("gwm_crates.open." + manager.id())) {
-                            GWMCratesUtils.sendNoPermissionToOpenMessage(player, manager);
-                            return;
-                        }
-                        long delay = GWMCratesUtils.getCrateOpenDelay(uuid);
-                        if (delay > 0L) {
-                            GWMCratesUtils.sendCrateDelayMessage(player, manager, delay);
-                            return;
-                        }
-                        OpenManager openManager = manager.getOpenManager();
-                        if (!openManager.canOpen(player, manager)) {
-                            GWMCratesUtils.sendCannotOpenMessage(player, manager);
-                            return;
-                        }
-                        Key key = manager.getKey();
-                        if (key.get(player) < 1) {
-                            GWMCratesUtils.sendKeyMissingMessage(player, manager);
-                            return;
-                        }
-                        key.withdraw(player, 1, false);
-                        GWMCratesUtils.updateCrateOpenDelay(uuid);
-                        openManager.open(player, manager);
-                    } else if (event instanceof InteractEntityEvent.Primary.MainHand) {
-                        Optional<Preview> optionalPreview = manager.getPreview();
-                        if (!optionalPreview.isPresent()) {
-                            GWMCratesUtils.sendPreviewNotAvailableMessage(player, manager);
-                            return;
-                        }
-                        Preview preview = optionalPreview.get();
-                        if (!player.hasPermission("gwm_crates.preview." + manager.id())) {
-                            GWMCratesUtils.sendNoPermissionToPreviewMessage(player, manager);
-                            return;
-                        }
-                        preview.preview(player, manager);
-                        player.sendMessages(language.getTranslation("PREVIEW_STARTED", Arrays.asList(
-                                new ImmutablePair<>("MANAGER_NAME", manager.getName()),
-                                new ImmutablePair<>("MANAGER_ID", manager.id())
-                        ), player));
+                    if (!player.hasPermission("gwm_crates.open." + manager.id())) {
+                        GWMCratesUtils.sendNoPermissionToOpenMessage(player, manager);
+                        return;
                     }
+                    long delay = GWMCratesUtils.getCrateOpenDelay(uuid);
+                    if (delay > 0L) {
+                        GWMCratesUtils.sendCrateDelayMessage(player, manager, delay);
+                        return;
+                    }
+                    OpenManager openManager = manager.getOpenManager();
+                    if (!openManager.canOpen(player, manager)) {
+                        GWMCratesUtils.sendCannotOpenMessage(player, manager);
+                        return;
+                    }
+                    Key key = manager.getKey();
+                    if (key.get(player) < 1) {
+                        GWMCratesUtils.sendKeyMissingMessage(player, manager);
+                        return;
+                    }
+                    key.withdraw(player, 1, false);
+                    GWMCratesUtils.updateCrateOpenDelay(uuid);
+                    openManager.open(player, manager);
+                });
+    }
+
+    @Listener(order = Order.LATE)
+    public void previewEntityCase(InteractEntityEvent.Primary.MainHand event, @First Player player) {
+        Entity entity = event.getTargetEntity();
+        GWMCratesUtils.getManagersStream().
+                filter(manager -> manager.getCase() instanceof EntityCase &&
+                        ((EntityCase) manager.getCase()).getEntityUuids().contains(entity.getUniqueId())).
+                findFirst().
+                ifPresent(manager -> {
+                    event.setCancelled(true);
+                    Optional<Preview> optionalPreview = manager.getPreview();
+                    if (!optionalPreview.isPresent()) {
+                        GWMCratesUtils.sendPreviewNotAvailableMessage(player, manager);
+                        return;
+                    }
+                    Preview preview = optionalPreview.get();
+                    if (!player.hasPermission("gwm_crates.preview." + manager.id())) {
+                        GWMCratesUtils.sendNoPermissionToPreviewMessage(player, manager);
+                        return;
+                    }
+                    preview.preview(player, manager);
+                    player.sendMessages(language.getTranslation("PREVIEW_STARTED", Arrays.asList(
+                            new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                            new ImmutablePair<>("MANAGER_ID", manager.id())
+                    ), player));
                 });
     }
 }

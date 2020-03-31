@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
         id = "gwm_crates",
         name = "GWMCrates",
-        version = "4.6",
+        version = "4.6.1",
         description = "Universal crates plugin",
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
@@ -69,7 +69,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version(4, 6);
+    public static final Version VERSION = new Version(4, 6, 1);
 
     private static GWMCrates instance = null;
 
@@ -343,6 +343,7 @@ public final class GWMCrates extends SpongePlugin {
         debugCrateListener = new DebugCrateListener(language, logFileDateFormat, logFileTimeFormat);
         game.getEventManager().registerListeners(this, debugCrateListener);
         game.getEventManager().registerListeners(this, new ItemCaseListener(language));
+        game.getEventManager().registerListeners(this, new ItemKeyListener());
         game.getEventManager().registerListeners(this, new BlockCaseListener(language));
         game.getEventManager().registerListeners(this, new EntityCaseListener(language));
         game.getEventManager().registerListeners(this, new FirstOpenManagerListener());

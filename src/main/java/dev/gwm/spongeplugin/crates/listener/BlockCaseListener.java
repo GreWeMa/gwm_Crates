@@ -29,7 +29,7 @@ public class BlockCaseListener {
     }
 
     @Listener(order = Order.LATE)
-    public void openBlockCase(InteractBlockEvent.Secondary.MainHand event, @First Player player) {
+    public void openBlockCase(InteractBlockEvent.Secondary event, @First Player player) {
         UUID uuid = player.getUniqueId();
         Optional<Location<World>> optionalLocation = event.getTargetBlock().getLocation();
         if (!optionalLocation.isPresent()) {
@@ -68,7 +68,7 @@ public class BlockCaseListener {
     }
 
     @Listener(order = Order.LATE)
-    public void startBlockCasePreview(InteractBlockEvent.Primary.MainHand event, @First Player player) {
+    public void startBlockCasePreview(InteractBlockEvent.Primary event, @First Player player) {
         Optional<Location<World>> optionalLocation = event.getTargetBlock().getLocation();
         if (!optionalLocation.isPresent()) {
             return;

@@ -31,12 +31,12 @@ public class ItemCaseListener {
     }
 
     @Listener(order = Order.LATE)
-    public void openItemCase(InteractItemEvent.Secondary.MainHand event, @First Player player) {
+    public void openItemCase(InteractItemEvent.Secondary event, @First Player player) {
         openItemCase(event, player, event.getItemStack().createStack());
     }
 
     @Listener(order = Order.LATE)
-    public void openItemCase(InteractBlockEvent.Secondary.MainHand event, @First Player player) {
+    public void openItemCase(InteractBlockEvent.Secondary event, @First Player player) {
         event.getContext().get(EventContextKeys.USED_ITEM).
                 ifPresent(item -> openItemCase(event, player, item.createStack()));
     }
@@ -77,12 +77,12 @@ public class ItemCaseListener {
 
 
     @Listener(order = Order.LATE)
-    public void previewItemCase(InteractItemEvent.Primary.MainHand event, @First Player player) {
+    public void previewItemCase(InteractItemEvent.Primary event, @First Player player) {
         previewItemCase(event, player, event.getItemStack().createStack());
     }
 
     @Listener
-    public void previewItemCase(InteractBlockEvent.Primary.MainHand event, @First Player player) {
+    public void previewItemCase(InteractBlockEvent.Primary event, @First Player player) {
         event.getContext().get(EventContextKeys.USED_ITEM).
                 ifPresent(item -> previewItemCase(event, player, item.createStack()));
     }
