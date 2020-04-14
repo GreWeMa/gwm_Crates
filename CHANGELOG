@@ -1,3 +1,7 @@
+VERSION 4.6.2
+* Core refactoring
+* Fix all those things from previous update once again, but this time without introducing a regression (at least I hope so)
+
 VERSION 4.6.1
 * Code refactoring
 * Fix the possibility of placing `ITEM` Case when using second hand

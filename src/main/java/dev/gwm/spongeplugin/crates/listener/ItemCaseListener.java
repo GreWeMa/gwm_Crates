@@ -2,6 +2,7 @@ package dev.gwm.spongeplugin.crates.listener;
 
 import dev.gwm.spongeplugin.crates.superobject.caze.ItemCase;
 import dev.gwm.spongeplugin.crates.superobject.key.base.Key;
+import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.OpenManager;
 import dev.gwm.spongeplugin.crates.superobject.preview.base.Preview;
 import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
@@ -17,6 +18,7 @@ import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackComparators;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -30,88 +32,115 @@ public class ItemCaseListener {
         this.language = language;
     }
 
+    @Listener
+    public void cancelOffhandEvent(InteractItemEvent.Primary.OffHand event, @First Player player) {
+        findManager(event.getItemStack().createStack()).
+                ifPresent(manager -> event.setCancelled(true));
+    }
+
+    @Listener
+    public void cancelOffhandEvent(InteractBlockEvent.Primary.OffHand event, @First Player player) {
+        event.getContext().get(EventContextKeys.USED_ITEM).
+                map(ItemStackSnapshot::createStack).
+                flatMap(this::findManager).
+                ifPresent(manager -> event.setCancelled(true));
+    }
+
+    @Listener
+    public void cancelOffhandEvent(InteractItemEvent.Secondary.OffHand event, @First Player player) {
+        findManager(event.getItemStack().createStack()).
+                ifPresent(manager -> event.setCancelled(true));
+    }
+
+    @Listener
+    public void cancelOffhandEvent(InteractBlockEvent.Secondary.OffHand event, @First Player player) {
+        event.getContext().get(EventContextKeys.USED_ITEM).
+                map(ItemStackSnapshot::createStack).
+                flatMap(this::findManager).
+                ifPresent(manager -> event.setCancelled(true));
+    }
+
     @Listener(order = Order.LATE)
-    public void openItemCase(InteractItemEvent.Secondary event, @First Player player) {
+    public void openItemCase(InteractItemEvent.Secondary.MainHand event, @First Player player) {
         openItemCase(event, player, event.getItemStack().createStack());
     }
 
     @Listener(order = Order.LATE)
-    public void openItemCase(InteractBlockEvent.Secondary event, @First Player player) {
+    public void openItemCase(InteractBlockEvent.Secondary.MainHand event, @First Player player) {
         event.getContext().get(EventContextKeys.USED_ITEM).
                 ifPresent(item -> openItemCase(event, player, item.createStack()));
     }
 
     private void openItemCase(Cancellable event, Player player, ItemStack item) {
         UUID uuid = player.getUniqueId();
-        GWMCratesUtils.getManagersStream().
-                filter(manager -> manager.getCase() instanceof ItemCase &&
-                        ItemStackComparators.IGNORE_SIZE.compare(item, ((ItemCase) manager.getCase()).getItem()) == 0).
-                findFirst().
-                ifPresent(manager -> {
-                    event.setCancelled(true);
-                    if (!player.hasPermission("gwm_crates.open." + manager.id())) {
-                        GWMCratesUtils.sendNoPermissionToOpenMessage(player, manager);
-                        return;
-                    }
-                    long delay = GWMCratesUtils.getCrateOpenDelay(uuid);
-                    if (delay > 0L) {
-                        GWMCratesUtils.sendCrateDelayMessage(player, manager, delay);
-                        return;
-                    }
-                    OpenManager openManager = manager.getOpenManager();
-                    if (!openManager.canOpen(player, manager)) {
-                        GWMCratesUtils.sendCannotOpenMessage(player, manager);
-                        return;
-                    }
-                    Key key = manager.getKey();
-                    if (key.get(player) < 1) {
-                        GWMCratesUtils.sendKeyMissingMessage(player, manager);
-                        return;
-                    }
-                    manager.getCase().withdraw(player, 1, false);
-                    key.withdraw(player, 1, false);
-                    GWMCratesUtils.updateCrateOpenDelay(uuid);
-                    manager.getOpenManager().open(player, manager);
-                });
+        findManager(item).ifPresent(manager -> {
+            event.setCancelled(true);
+            if (!player.hasPermission("gwm_crates.open." + manager.id())) {
+                GWMCratesUtils.sendNoPermissionToOpenMessage(player, manager);
+                return;
+            }
+            long delay = GWMCratesUtils.getCrateOpenDelay(uuid);
+            if (delay > 0L) {
+                GWMCratesUtils.sendCrateDelayMessage(player, manager, delay);
+                return;
+            }
+            OpenManager openManager = manager.getOpenManager();
+            if (!openManager.canOpen(player, manager)) {
+                GWMCratesUtils.sendCannotOpenMessage(player, manager);
+                return;
+            }
+            Key key = manager.getKey();
+            if (key.get(player) < 1) {
+                GWMCratesUtils.sendKeyMissingMessage(player, manager);
+                return;
+            }
+            manager.getCase().withdraw(player, 1, false);
+            key.withdraw(player, 1, false);
+            GWMCratesUtils.updateCrateOpenDelay(uuid);
+            manager.getOpenManager().open(player, manager);
+        });
     }
 
 
     @Listener(order = Order.LATE)
-    public void previewItemCase(InteractItemEvent.Primary event, @First Player player) {
+    public void previewItemCase(InteractItemEvent.Primary.MainHand event, @First Player player) {
         previewItemCase(event, player, event.getItemStack().createStack());
     }
 
     @Listener
-    public void previewItemCase(InteractBlockEvent.Primary event, @First Player player) {
+    public void previewItemCase(InteractBlockEvent.Primary.MainHand event, @First Player player) {
         event.getContext().get(EventContextKeys.USED_ITEM).
                 ifPresent(item -> previewItemCase(event, player, item.createStack()));
     }
 
     private void previewItemCase(Cancellable event, Player player, ItemStack item) {
-        GWMCratesUtils.getManagersStream().
+        findManager(item).ifPresent(manager -> {
+            event.setCancelled(true);
+            if (!((ItemCase) manager.getCase()).isStartPreviewOnLeftClick()) {
+                return;
+            }
+            Optional<Preview> optionalPreview = manager.getPreview();
+            if (!optionalPreview.isPresent()) {
+                GWMCratesUtils.sendPreviewNotAvailableMessage(player, manager);
+                return;
+            }
+            Preview preview = optionalPreview.get();
+            if (!player.hasPermission("gwm_crates.preview." + manager.id())) {
+                GWMCratesUtils.sendNoPermissionToPreviewMessage(player, manager);
+                return;
+            }
+            preview.preview(player, manager);
+            player.sendMessages(language.getTranslation("PREVIEW_STARTED", Arrays.asList(
+                    new ImmutablePair<>("MANAGER_NAME", manager.getName()),
+                    new ImmutablePair<>("MANAGER_ID", manager.id())
+            ), player));
+        });
+    }
+
+    private Optional<Manager> findManager(ItemStack item) {
+        return GWMCratesUtils.getManagersStream().
                 filter(manager -> manager.getCase() instanceof ItemCase &&
                         ItemStackComparators.IGNORE_SIZE.compare(item, ((ItemCase) manager.getCase()).getItem()) == 0).
-                findFirst().
-                ifPresent(manager -> {
-                    event.setCancelled(true);
-                    if (!((ItemCase) manager.getCase()).isStartPreviewOnLeftClick()) {
-                        return;
-                    }
-                    Optional<Preview> optionalPreview = manager.getPreview();
-                    if (!optionalPreview.isPresent()) {
-                        GWMCratesUtils.sendPreviewNotAvailableMessage(player, manager);
-                        return;
-                    }
-                    Preview preview = optionalPreview.get();
-                    if (!player.hasPermission("gwm_crates.preview." + manager.id())) {
-                        GWMCratesUtils.sendNoPermissionToPreviewMessage(player, manager);
-                        return;
-                    }
-                    preview.preview(player, manager);
-                    player.sendMessages(language.getTranslation("PREVIEW_STARTED", Arrays.asList(
-                            new ImmutablePair<>("MANAGER_NAME", manager.getName()),
-                            new ImmutablePair<>("MANAGER_ID", manager.id())
-                    ), player));
-                });
+                findFirst();
     }
 }
