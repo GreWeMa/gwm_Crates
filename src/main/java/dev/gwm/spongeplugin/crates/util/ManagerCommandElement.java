@@ -22,10 +22,11 @@ import java.util.stream.Collectors;
 
 public class ManagerCommandElement extends AbstractSuperObjectCommandElement {
 
-    private final Language language = GWMCrates.getInstance().getLanguage();
+    private final Language language;
 
-    public ManagerCommandElement(@Nullable Text key) {
+    public ManagerCommandElement(@Nullable Text key, Language language) {
         super(key);
+        this.language = language;
     }
 
     @Nullable

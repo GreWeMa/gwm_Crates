@@ -36,14 +36,14 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Open a crate")).
                 executor(new OpenCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager"))
+                        new ManagerCommandElement(Text.of("manager"), language)
                 ).
                 build();
         CommandSpec forceCommand = CommandSpec.builder().
                 description(Text.of("Force open a crate")).
                 executor(new ForceCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.playerOrSource(Text.of("player"))
                 ).
                 build();
@@ -51,7 +51,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Preview a crate")).
                 executor(new PreviewCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.playerOrSource(Text.of("player"))
                 ).
                 build();
@@ -59,7 +59,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Check player's amount of Cases and Keys")).
                 executor(new CheckCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.playerOrSource(Text.of("player"))
                 ).
                 build();
@@ -79,14 +79,14 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Info about a crate")).
                 executor(new InfoCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager"))
+                        new ManagerCommandElement(Text.of("manager"), language)
                 ).
                 build();
         CommandSpec buyCaseCommand = CommandSpec.builder().
                 description(Text.of("Buy a Case")).
                 executor(new BuyCaseCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1)
                 ).
                 build();
@@ -94,7 +94,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Buy a Key")).
                 executor(new BuyKeyCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1)
                 ).
                 build();
@@ -102,7 +102,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Buy a Drop from a crate")).
                 executor(new BuyDropCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.string(Text.of("drop")),
                         GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1)
                 ).
@@ -116,7 +116,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Give a Case to a player")).
                 executor(new GiveCaseCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.playerOrSource(Text.of("player")),
                         GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
                         GenericArguments.flags().flag("f").
@@ -127,7 +127,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Give a Key to a player")).
                 executor(new GiveKeyCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.playerOrSource(Text.of("player")),
                         GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
                         GenericArguments.flags().flag("f").
@@ -138,7 +138,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Give a Drop from a crate to a player")).
                 executor(new GiveDropCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.string(Text.of("drop")),
                         GenericArguments.playerOrSource(Text.of("player")),
                         GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1)
@@ -153,7 +153,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Give a Case to all the online players")).
                 executor(new GiveEveryoneCaseCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
                         GenericArguments.flags().flag("f").
                                 buildWith(GenericArguments.none())
@@ -163,7 +163,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Give a Key to all the online players")).
                 executor(new GiveEveryoneKeyCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
                         GenericArguments.flags().flag("f").
                                 buildWith(GenericArguments.none())
@@ -173,7 +173,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Give a Drop from a manager to all the online players")).
                 executor(new GiveEveryoneDropCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.string(Text.of("drop")),
                         GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1)
                 ).
@@ -187,7 +187,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Withdraw a Case from a player")).
                 executor(new WithdrawCaseCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.playerOrSource(Text.of("player")),
                         GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
                         GenericArguments.flags().flag("f").
@@ -198,7 +198,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Withdraw a Key from a player")).
                 executor(new WithdrawKeyCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.playerOrSource(Text.of("player")),
                         GenericArguments.optional(GenericArguments.integer(Text.of("amount")), 1),
                         GenericArguments.flags().flag("f").
@@ -213,7 +213,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Test a probability of each Drop in a crate")).
                 executor(new ProbabilityTestCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.integer(Text.of("amount")),
                         GenericArguments.playerOrSource(Text.of("player")),
                         GenericArguments.flags().flag("f").
@@ -232,7 +232,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Unload a crate")).
                 executor(new UnloadCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager"))
+                        new ManagerCommandElement(Text.of("manager"), language)
                 ).
                 build();
         CommandSpec exportToMySQLCommand = CommandSpec.builder().
@@ -257,7 +257,7 @@ public class GWMCratesCommandUtils {
                 description(Text.of("Highlight a BLOCK Case")).
                 executor(new FindBlockCaseCommand(language)).
                 arguments(
-                        new ManagerCommandElement(Text.of("manager")),
+                        new ManagerCommandElement(Text.of("manager"), language),
                         GenericArguments.flags().valueFlag(GenericArguments.
                                 optional(GenericArguments
                                         .integer(Text.of("index")), 0), "t").
