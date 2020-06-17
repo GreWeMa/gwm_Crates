@@ -274,19 +274,19 @@ public class GWMCratesCommandUtils {
                 child(forceCommand, "force").
                 child(previewCommand, "preview").
                 child(checkCommand, "check").
-                child(checkAllCommand, "checkall").
+                child(checkAllCommand, "check-all", "checkall").
                 child(listCommand, "list").
                 child(infoCommand, "info").
                 child(buyCommand, "buy").
                 child(giveCommand, "give").
-                child(giveEveryoneCommand, "giveeveryone").
+                child(giveEveryoneCommand, "give-everyone", "giveeveryone").
                 child(withdrawCommand, "withdraw").
-                child(probabilityTestCommand, "probabilitytest", "ptest").
+                child(probabilityTestCommand, "probability-test", "probabilitytest", "ptest").
                 child(loadCommand, "load").
                 child(unloadCommand, "unload").
-                child(exportToMySQLCommand, "exporttomysql", "etm").
-                child(importFromMySQLCommand, "importfrommysql", "ifm").
-                child(findBlockCaseCommand, "findblockcase", "fbc").
+                child(exportToMySQLCommand, "export-to-mysql", "exporttomysql", "etm").
+                child(importFromMySQLCommand, "import-to-mysql", "importfrommysql", "ifm").
+                child(findBlockCaseCommand, "find-block-case", "findblockcase", "fbc").
                 build();
         Sponge.getCommandManager().register(GWMCrates.getInstance(), spec,
                 "gwmcrates", "gwmcrate", "crates", "crate");
