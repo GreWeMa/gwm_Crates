@@ -29,7 +29,6 @@ import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import org.spongepowered.api.text.Text;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public final class FirstGuiPreview extends AbstractPreview {
 
@@ -86,10 +85,10 @@ public final class FirstGuiPreview extends AbstractPreview {
         }
     }
 
-    public FirstGuiPreview(String id, Optional<List<Drop>> customDrops,
+    public FirstGuiPreview(String id, boolean showEmptyDrops, Optional<List<Drop>> customDrops,
                            Optional<Text> displayName, List<ItemStack> decorativeItems,
                            int scrollDelay, Optional<DecorativeItemsChangeMode> decorativeItemsChangeMode) {
-        super(id, customDrops);
+        super(id, showEmptyDrops, customDrops);
         this.displayName = displayName;
         this.decorativeItems = Collections.unmodifiableList(decorativeItems);
         this.scrollDelay = scrollDelay;
@@ -126,10 +125,7 @@ public final class FirstGuiPreview extends AbstractPreview {
                         set(decorativeItems.get(index));
             }
         }
-        List<Drop> drops = getCustomDrops().orElse(manager.getDrops()).
-                stream().
-                filter(Drop::isShowInPreview).
-                collect(Collectors.toList());
+        List<Drop> drops = getDrops(manager);
         if (!drops.isEmpty()) {
             int index = 0;
             for (int i = 10; i < 17; i++) {

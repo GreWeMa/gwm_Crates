@@ -19,5 +19,7 @@ public interface Preview extends SuperObject {
 
     void preview(Player player, Manager manager);
 
+    boolean isShowEmptyDrops();
+
     Optional<List<Drop>> getCustomDrops();
 }

@@ -49,9 +49,9 @@ public final class PermissionPreview extends AbstractPreview {
         }
     }
 
-    public PermissionPreview(String id, Optional<List<Drop>> customDrops,
+    public PermissionPreview(String id, boolean showEmptyDrops, Optional<List<Drop>> customDrops,
                              String permission, Preview preview1, Preview preview2) {
-        super(id, customDrops);
+        super(id, showEmptyDrops, customDrops);
         this.permission = permission;
         this.preview1 = preview1;
         this.preview2 = preview2;
