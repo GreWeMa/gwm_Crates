@@ -66,7 +66,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         authors = {"GWM"/* My contacts:
                          * E-Mail(nazark@tutanota.com),
                          * Telegram(@gwmdev)
-                         */}))
+                         */})
 public final class GWMCrates extends SpongePlugin {
 
     public static final Version VERSION = new Version(4, 7);
