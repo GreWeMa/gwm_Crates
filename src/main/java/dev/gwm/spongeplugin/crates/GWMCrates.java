@@ -54,19 +54,19 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Plugin(
-        id = "gwm_crates",
+		id = "gwm_crates",
         name = "GWMCrates",
         version = "4.7",
         description = "Universal crates plugin",
-        authors = {"GWM"/* My contacts:
-                         * E-Mail(nazark@tutanota.com),
-                         * Telegram(@grewema),
-                         * Discord(GWM#2192)*/},
         dependencies = {
                 @Dependency(id = "gwm_library"),
                 @Dependency(id = "holograms", optional = true),
                 @Dependency(id = "cosmetics", optional = true)
-        })
+        },
+        authors = {"GWM"/* My contacts:
+                         * E-Mail(nazark@tutanota.com),
+                         * Telegram(@gwmdev)
+                         */}))
 public final class GWMCrates extends SpongePlugin {
 
     public static final Version VERSION = new Version(4, 7);
