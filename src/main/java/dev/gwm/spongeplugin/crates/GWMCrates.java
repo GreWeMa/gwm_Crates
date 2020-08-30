@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
 		id = "gwm_crates",
         name = "GWMCrates",
-        version = "4.7",
+        version = "4.8",
         description = "Universal crates plugin",
         dependencies = {
                 @Dependency(id = "gwm_library"),
@@ -69,7 +69,7 @@ import java.util.concurrent.atomic.AtomicInteger;
                          */})
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version(4, 7);
+    public static final Version VERSION = new Version(4, 8);
 
     private static GWMCrates instance = null;
 
@@ -434,6 +434,7 @@ public final class GWMCrates extends SpongePlugin {
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, DelayDrop.TYPE), DelayDrop.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, PermissionDrop.TYPE), PermissionDrop.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, NashornDrop.TYPE), NashornDrop.class);
+        map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, ReplicatorDrop.TYPE), ReplicatorDrop.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.DROP, EmptyDrop.TYPE), EmptyDrop.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.PREVIEW, FirstGuiPreview.TYPE), FirstGuiPreview.class);
         map.put(new SuperObjectIdentifier<>(GWMCratesSuperObjectCategories.PREVIEW, SecondGuiPreview.TYPE), SecondGuiPreview.class);

@@ -1,3 +1,6 @@
+VERSION 4.8
+* Add `REPLICATOR` Drop
+
 VERSION 4.7
 * Add pages to `SECOND` Preview
 * Add 'SHOW_EMPTY_DROPS' parameter to all Previews
