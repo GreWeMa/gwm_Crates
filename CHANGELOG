@@ -1,3 +1,6 @@
+VERSION 4.8.1
+* Fix bug with negative amount in "buy" commands
+
 VERSION 4.8
 * Add `REPLICATOR` Drop
 

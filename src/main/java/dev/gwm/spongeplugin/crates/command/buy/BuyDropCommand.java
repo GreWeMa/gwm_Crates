@@ -42,6 +42,10 @@ public final class BuyDropCommand implements CommandExecutor {
         String managerId = manager.id();
         String dropId = args.<String>getOne(Text.of("drop")).get();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
+        if (amount < 1) {
+            player.sendMessages(language.getTranslation("BUY_AMOUNT_IS_LESS_THAN_ONE", player));
+            return CommandResult.empty();
+        }
         Optional<Drop> optionalDrop = manager.getDropById(dropId);
         if (!optionalDrop.isPresent()) {
             player.sendMessages(language.getTranslation("DROP_IS_NOT_FOUND", Arrays.asList(

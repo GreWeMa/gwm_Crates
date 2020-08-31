@@ -42,6 +42,10 @@ public final class BuyKeyCommand implements CommandExecutor {
         Manager manager = args.<Manager>getOne(Text.of("manager")).get();
         String managerId = manager.id();
         int amount = args.<Integer>getOne(Text.of("amount")).orElse(1);
+        if (amount < 1) {
+            player.sendMessages(language.getTranslation("BUY_AMOUNT_IS_LESS_THAN_ONE", player));
+            return CommandResult.empty();
+        }
         if (!player.hasPermission("gwm_crates.command.buy." + managerId + ".key")) {
             player.sendMessages(language.getTranslation("HAVE_NOT_PERMISSION", player));
             return CommandResult.empty();

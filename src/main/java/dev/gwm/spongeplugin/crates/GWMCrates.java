@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Plugin(
 		id = "gwm_crates",
         name = "GWMCrates",
-        version = "4.8",
+        version = "4.8.1",
         description = "Universal crates plugin",
         dependencies = {
                 @Dependency(id = "gwm_library"),
@@ -69,7 +69,7 @@ import java.util.concurrent.atomic.AtomicInteger;
                          */})
 public final class GWMCrates extends SpongePlugin {
 
-    public static final Version VERSION = new Version(4, 8);
+    public static final Version VERSION = new Version(4, 8, 1);
 
     private static GWMCrates instance = null;
 
