@@ -13,7 +13,7 @@ import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 
-public class BoundariesKey extends AbstractKey {
+public final class BoundariesKey extends AbstractKey {
 
     public static final String TYPE = "BOUNDARIES";
 

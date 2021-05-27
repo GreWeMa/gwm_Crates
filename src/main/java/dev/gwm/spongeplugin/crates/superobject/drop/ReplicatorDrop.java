@@ -14,7 +14,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.Optional;
 
-public class ReplicatorDrop extends AbstractDrop {
+public final class ReplicatorDrop extends AbstractDrop {
 
     public static final String TYPE = "REPLICATOR";
 
