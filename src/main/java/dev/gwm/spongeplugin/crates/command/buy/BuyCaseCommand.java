@@ -32,7 +32,6 @@ public final class BuyCaseCommand implements CommandExecutor {
         this.language = language;
     }
 
-    @NotNull
     @Override
     public CommandResult execute(@NotNull CommandSource source, @NotNull CommandContext args) {
         if (!(source instanceof Player)) {
