@@ -2,8 +2,8 @@ package dev.gwm.spongeplugin.crates.superobject.openmanager;
 
 import com.google.common.reflect.TypeToken;
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.event.PlayerOpenCrateEvent;
-import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEvent;
+import dev.gwm.spongeplugin.crates.event.PlayerOpenCrateEventImpl;
+import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEventImpl;
 import dev.gwm.spongeplugin.crates.superobject.changemode.base.DecorativeItemsChangeMode;
 import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
@@ -271,7 +271,7 @@ public final class CasinoOpenManager extends AbstractOpenManager {
 
     @Override
     public void open(Player player, Manager manager) {
-        PlayerOpenCrateEvent openEvent = new PlayerOpenCrateEvent(player, manager);
+        PlayerOpenCrateEventImpl openEvent = new PlayerOpenCrateEventImpl(player, manager);
         Sponge.getEventManager().post(openEvent);
         if (openEvent.isCancelled()) {
             return;
@@ -445,7 +445,7 @@ public final class CasinoOpenManager extends AbstractOpenManager {
                         });
                     }
                     SHOWN_GUI.add(container);
-                    PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, Collections.singletonList(drop0));
+                    PlayerOpenedCrateEventImpl openedEvent = new PlayerOpenedCrateEventImpl(player, manager, Collections.singletonList(drop0));
                     Sponge.getEventManager().post(openedEvent);
                 }).submit(GWMCrates.getInstance());
         waitTime += closeDelay;

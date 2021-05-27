@@ -1,7 +1,7 @@
 package dev.gwm.spongeplugin.crates.listener;
 
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEvent;
+import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEventImpl;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import dev.gwm.spongeplugin.library.util.GWMLibraryUtils;
@@ -45,7 +45,7 @@ public final class DebugCrateListener {
     }
 
     @Listener(order = Order.LATE)
-    public void onOpened(PlayerOpenedCrateEvent event) {
+    public void onOpened(PlayerOpenedCrateEventImpl event) {
         Player player = event.getTargetEntity();
         Manager manager = event.getManager();
         String formattedDrops = GWMCratesUtils.logFormatDrops(event.getDrops());

@@ -4,7 +4,7 @@ import com.flowpowered.math.vector.Vector3i;
 import com.google.common.reflect.TypeToken;
 import de.randombyte.holograms.api.HologramsService;
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.event.PlayerOpenCrateEvent;
+import dev.gwm.spongeplugin.crates.event.PlayerOpenCrateEventImpl;
 import dev.gwm.spongeplugin.crates.listener.Animation1Listener;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.AbstractOpenManager;
@@ -133,7 +133,7 @@ public final class Animation1OpenManager extends AbstractOpenManager {
 
     @Override
     public void open(Player player, Manager manager) {
-        PlayerOpenCrateEvent openEvent = new PlayerOpenCrateEvent(player, manager);
+        PlayerOpenCrateEventImpl openEvent = new PlayerOpenCrateEventImpl(player, manager);
         Sponge.getEventManager().post(openEvent);
         if (openEvent.isCancelled()) {
             return;

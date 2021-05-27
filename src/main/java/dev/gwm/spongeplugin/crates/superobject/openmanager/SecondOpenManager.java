@@ -2,7 +2,7 @@ package dev.gwm.spongeplugin.crates.superobject.openmanager;
 
 import com.google.common.reflect.TypeToken;
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.event.PlayerOpenCrateEvent;
+import dev.gwm.spongeplugin.crates.event.PlayerOpenCrateEventImpl;
 import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.AbstractOpenManager;
@@ -137,7 +137,7 @@ public final class SecondOpenManager extends AbstractOpenManager {
 
     @Override
     public void open(Player player, Manager manager) {
-        PlayerOpenCrateEvent openEvent = new PlayerOpenCrateEvent(player, manager);
+        PlayerOpenCrateEventImpl openEvent = new PlayerOpenCrateEventImpl(player, manager);
         Sponge.getEventManager().post(openEvent);
         if (openEvent.isCancelled()) {
             return;

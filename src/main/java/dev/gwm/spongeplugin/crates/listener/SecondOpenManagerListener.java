@@ -1,7 +1,7 @@
 package dev.gwm.spongeplugin.crates.listener;
 
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEvent;
+import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEventImpl;
 import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.SecondOpenManager;
@@ -67,7 +67,7 @@ public final class SecondOpenManagerListener {
                                 }
                             }).submit(GWMCrates.getInstance());
                 }
-                PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, data.getOpenedIndices().values());
+                PlayerOpenedCrateEventImpl openedEvent = new PlayerOpenedCrateEventImpl(player, manager, data.getOpenedIndices().values());
                 Sponge.getEventManager().post(openedEvent);
                 Sponge.getScheduler().createTaskBuilder().
                         delayTicks(openManager.getCloseDelay()).
@@ -96,11 +96,11 @@ public final class SecondOpenManagerListener {
             } else if (openManager.isGiveRandomOnClose()) {
                 Drop drop = (Drop) manager.getRandomManager().choose(manager.getDrops(), player, false);
                 drop.give(player, 1);
-                PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, Collections.singletonList(drop));
+                PlayerOpenedCrateEventImpl openedEvent = new PlayerOpenedCrateEventImpl(player, manager, Collections.singletonList(drop));
                 Sponge.getEventManager().post(openedEvent);
                 SecondOpenManager.SECOND_GUI_INVENTORIES.remove(container);
             } else {
-                PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, Collections.emptyList());
+                PlayerOpenedCrateEventImpl openedEvent = new PlayerOpenedCrateEventImpl(player, manager, Collections.emptyList());
                 Sponge.getEventManager().post(openedEvent);
                 SecondOpenManager.SECOND_GUI_INVENTORIES.remove(container);
             }

@@ -3,7 +3,7 @@ package dev.gwm.spongeplugin.crates.listener;
 import com.flowpowered.math.vector.Vector3i;
 import de.randombyte.holograms.api.HologramsService;
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEvent;
+import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEventImpl;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.Animation1OpenManager;
 import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import org.spongepowered.api.Sponge;
@@ -100,7 +100,7 @@ public final class Animation1Listener {
                 return;
             }
         }
-        PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, information.getManager(), Collections.emptyList());
+        PlayerOpenedCrateEventImpl openedEvent = new PlayerOpenedCrateEventImpl(player, information.getManager(), Collections.emptyList());
         Sponge.getEventManager().post(openedEvent);
         OPENED_PLAYERS.put(player, information.getOpenManager());
         Sponge.getScheduler().createTaskBuilder().delayTicks(information.getOpenManager().getCloseDelay()).execute(() -> {

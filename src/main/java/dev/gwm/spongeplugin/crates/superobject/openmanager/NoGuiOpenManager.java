@@ -1,7 +1,7 @@
 package dev.gwm.spongeplugin.crates.superobject.openmanager;
 
-import dev.gwm.spongeplugin.crates.event.PlayerOpenCrateEvent;
-import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEvent;
+import dev.gwm.spongeplugin.crates.event.PlayerOpenCrateEventImpl;
+import dev.gwm.spongeplugin.crates.event.PlayerOpenedCrateEventImpl;
 import dev.gwm.spongeplugin.crates.superobject.drop.base.Drop;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.crates.superobject.openmanager.base.AbstractOpenManager;
@@ -32,7 +32,7 @@ public final class NoGuiOpenManager extends AbstractOpenManager {
 
     @Override
     public void open(Player player, Manager manager) {
-        PlayerOpenCrateEvent openEvent = new PlayerOpenCrateEvent(player, manager);
+        PlayerOpenCrateEventImpl openEvent = new PlayerOpenCrateEventImpl(player, manager);
         Sponge.getEventManager().post(openEvent);
         if (openEvent.isCancelled()) {
             return;
@@ -40,7 +40,7 @@ public final class NoGuiOpenManager extends AbstractOpenManager {
         Drop drop = (Drop) manager.getRandomManager().choose(manager.getDrops(), player, false);
         drop.give(player, 1);
         getOpenSound().ifPresent(openSound -> player.playSound(openSound, player.getLocation().getPosition(), 1.));
-        PlayerOpenedCrateEvent openedEvent = new PlayerOpenedCrateEvent(player, manager, Collections.singletonList(drop));
+        PlayerOpenedCrateEventImpl openedEvent = new PlayerOpenedCrateEventImpl(player, manager, Collections.singletonList(drop));
         Sponge.getEventManager().post(openedEvent);
     }
 }
