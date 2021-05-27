@@ -25,7 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class DebugCrateListener {
+public final class DebugCrateListener {
 
     private final Language language;
 

@@ -15,7 +15,7 @@ import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import java.util.List;
 import java.util.Optional;
 
-public class SecondPreviewListener {
+public final class SecondPreviewListener {
 
     @Listener(order = Order.LATE)
     public void cancelClick(ClickInventoryEvent event) {

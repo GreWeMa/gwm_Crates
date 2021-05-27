@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
-public class ItemCaseListener {
+public final class ItemCaseListener {
 
     private final Language language;
 

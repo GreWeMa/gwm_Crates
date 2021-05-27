@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
-public class PhysicalCaseListener {
+public final class PhysicalCaseListener {
 
     private final Language language;
 

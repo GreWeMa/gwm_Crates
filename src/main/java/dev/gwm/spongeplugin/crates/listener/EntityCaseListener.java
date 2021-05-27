@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
-public class EntityCaseListener {
+public final class EntityCaseListener {
 
     private final Language language;
 

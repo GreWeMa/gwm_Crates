@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class Animation1Listener {
+public final class Animation1Listener {
 
     public static final HashMap<Player, Animation1OpenManager> OPENED_PLAYERS = new HashMap<>();
 

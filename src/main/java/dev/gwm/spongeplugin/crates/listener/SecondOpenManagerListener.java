@@ -24,7 +24,7 @@ import org.spongepowered.api.item.inventory.type.OrderedInventory;
 import java.util.Collections;
 import java.util.Optional;
 
-public class SecondOpenManagerListener {
+public final class SecondOpenManagerListener {
 
     @Listener(order = Order.LATE)
     public void controlClick(ClickInventoryEvent event, @First Player player) {

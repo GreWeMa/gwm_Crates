@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
-public class BlockCaseListener {
+public final class BlockCaseListener {
 
     private final Language language;
 

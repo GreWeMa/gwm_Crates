@@ -12,7 +12,7 @@ import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.util.Optional;
 
-public class ItemKeyListener {
+public final class ItemKeyListener {
 
     @Listener
     public void cancelItemKeyPlacing(ChangeBlockEvent.Place event) {

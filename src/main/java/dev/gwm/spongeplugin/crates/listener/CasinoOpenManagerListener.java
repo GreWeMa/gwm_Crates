@@ -7,7 +7,7 @@ import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.inventory.Container;
 
-public class CasinoOpenManagerListener {
+public final class CasinoOpenManagerListener {
 
     @Listener(order = Order.LATE)
     public void cancelClick(ClickInventoryEvent event) {
