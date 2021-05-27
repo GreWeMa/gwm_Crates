@@ -138,8 +138,9 @@ public final class TimedKey extends GiveableKey {
         try (PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
             statement.setString(1, virtualName);
             statement.setString(2, uuid.toString());
-            ResultSet set = statement.executeQuery();
-            return set.next();
+            try (ResultSet set = statement.executeQuery()) {
+                return set.next();
+            }
         }
     }
 
@@ -194,14 +195,15 @@ public final class TimedKey extends GiveableKey {
              PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
             statement.setString(1, virtualName);
             statement.setString(2, uuid.toString());
-            ResultSet set = statement.executeQuery();
-            if (set.next()) {
-                long expire = set.getLong(1);
-                cache.put(uuid, expire);
-                return System.currentTimeMillis() >= expire ? 1 : 0;
-            } else {
-                cache.put(uuid, 0L);
-                return 1;
+            try (ResultSet set = statement.executeQuery()) {
+                if (set.next()) {
+                    long expire = set.getLong(1);
+                    cache.put(uuid, expire);
+                    return System.currentTimeMillis() >= expire ? 1 : 0;
+                } else {
+                    cache.put(uuid, 0L);
+                    return 1;
+                }
             }
         }
     }

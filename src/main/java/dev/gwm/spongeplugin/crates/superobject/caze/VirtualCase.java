@@ -119,8 +119,9 @@ public final class VirtualCase extends GiveableCase {
         try (PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
             statement.setString(1, virtualName);
             statement.setString(2, uuid.toString());
-            ResultSet set = statement.executeQuery();
-            return set.next();
+            try (ResultSet set = statement.executeQuery()) {
+                return set.next();
+            }
         }
     }
 
@@ -169,14 +170,15 @@ public final class VirtualCase extends GiveableCase {
              PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
             statement.setString(1, virtualName);
             statement.setString(2, uuid.toString());
-            ResultSet set = statement.executeQuery();
-            if (set.next()) {
-                int value = set.getInt(1);
-                cache.put(uuid, value);
-                return value;
-            } else {
-                cache.put(uuid, 0);
-                return 0;
+            try (ResultSet set = statement.executeQuery()) {
+                if (set.next()) {
+                    int value = set.getInt(1);
+                    cache.put(uuid, value);
+                    return value;
+                } else {
+                    cache.put(uuid, 0);
+                    return 0;
+                }
             }
         }
     }
