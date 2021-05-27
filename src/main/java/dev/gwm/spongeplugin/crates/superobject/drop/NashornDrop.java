@@ -36,8 +36,9 @@ public final class NashornDrop extends AbstractDrop implements Nashornable {
             } else {
                 if (!scriptFileNode.isVirtual()) {
                     File file = new File(GWMCrates.getInstance().getScriptsDirectory(), scriptFileNode.getString());
-                    BufferedReader reader = new BufferedReader(new FileReader(file));
-                    script = reader.lines().reduce("", (s1, s2) -> s1 + "\n" + s2);
+                    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                        script = reader.lines().reduce("", (s1, s2) -> s1 + "\n" + s2);
+                    }
                 } else {
                     throw new IllegalArgumentException("Both SCRIPT and SCRIPT_FILE nodes do not exist!");
                 }
