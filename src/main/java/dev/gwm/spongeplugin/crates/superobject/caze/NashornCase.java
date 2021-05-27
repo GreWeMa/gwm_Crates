@@ -12,8 +12,9 @@ import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public final class NashornCase extends GiveableCase implements Nashornable {
 
@@ -32,8 +33,8 @@ public final class NashornCase extends GiveableCase implements Nashornable {
                 script = GWMLibraryUtils.joinString(scriptNode.getList(TypeToken.of(String.class)));
             } else {
                 if (!scriptFileNode.isVirtual()) {
-                    File file = new File(GWMCrates.getInstance().getScriptsDirectory(), scriptFileNode.getString());
-                    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                    Path path = GWMCrates.getInstance().getScriptsDirectory().toPath().resolve(scriptFileNode.getString());
+                    try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
                         script = reader.lines().reduce("", (s1, s2) -> s1 + "\n" + s2);
                     }
                 } else {
