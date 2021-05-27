@@ -1,8 +1,12 @@
 package dev.gwm.spongeplugin.crates.superobject.caze;
 
+import com.flowpowered.math.vector.Vector3d;
 import de.randombyte.holograms.api.HologramsService;
 import dev.gwm.spongeplugin.cosmetics.superobject.effect.base.CosmeticEffect;
 import dev.gwm.spongeplugin.cosmetics.util.CosmeticsSuperObjectCategories;
+import dev.gwm.spongeplugin.cosmetics.util.LocationLocatable;
+import dev.gwm.spongeplugin.cosmetics.util.Vector3dVector3dable;
+import dev.gwm.spongeplugin.cosmetics.util.ViewerViewerable;
 import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.crates.superobject.caze.base.AbstractCase;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
@@ -81,7 +85,7 @@ public final class BlockCase extends AbstractCase {
                 List<Task> tempTasks = new ArrayList<>();
                 locations.forEach(location ->
                         persistentCosmeticEffects.get().forEach(effect ->
-                                tempTasks.add(effect.activate(location.getExtent(), location))));
+                                tempTasks.add(effect.activate(new ViewerViewerable(location.getExtent()), new LocationLocatable(location), new Vector3dVector3dable(Vector3d.ZERO)))));
                 cosmeticEffectTasks = Optional.of(Collections.unmodifiableList(tempTasks));
             } else {
                 cosmeticEffectTasks = Optional.empty();
@@ -114,7 +118,7 @@ public final class BlockCase extends AbstractCase {
             List<Task> tempTasks = new ArrayList<>();
             locations.forEach(location ->
                     persistentCosmeticEffects.get().forEach(effect ->
-                            tempTasks.add(effect.activate(location.getExtent(), location))));
+                            tempTasks.add(effect.activate(new ViewerViewerable(location.getExtent()), new LocationLocatable(location), new Vector3dVector3dable(Vector3d.ZERO)))));
             cosmeticEffectTasks = Optional.of(Collections.unmodifiableList(tempTasks));
         } else {
             cosmeticEffectTasks = Optional.empty();

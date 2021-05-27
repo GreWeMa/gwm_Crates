@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class ManagerCommandElement extends AbstractSuperObjectCommandElement {
+public final class ManagerCommandElement extends AbstractSuperObjectCommandElement {
 
     private final Language language;
 

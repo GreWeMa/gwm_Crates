@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class DecorativeItemsChangeRunnable implements Runnable {
+public final class DecorativeItemsChangeRunnable implements Runnable {
 
     private final Player player;
     private final Container container;

@@ -14,7 +14,10 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 
-public class GWMCratesCommandUtils {
+public final class GWMCratesCommandUtils {
+
+    private GWMCratesCommandUtils() {
+    }
 
     public static void registerCommands(GWMCrates instance) {
         Language language = instance.getLanguage();

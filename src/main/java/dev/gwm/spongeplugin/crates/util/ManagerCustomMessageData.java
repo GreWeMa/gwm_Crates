@@ -7,7 +7,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import java.util.List;
 import java.util.Optional;
 
-public class ManagerCustomMessageData {
+public final class ManagerCustomMessageData {
 
     private final Optional<List<String>> customInfo;
     private final boolean sendOpenMessage;
