@@ -10,7 +10,10 @@ import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

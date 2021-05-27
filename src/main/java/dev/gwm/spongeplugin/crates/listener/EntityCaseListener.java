@@ -8,7 +8,6 @@ import dev.gwm.spongeplugin.crates.superobject.preview.base.Preview;
 import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import dev.gwm.spongeplugin.library.util.Language;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;

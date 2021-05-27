@@ -14,7 +14,6 @@ import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
 import dev.gwm.spongeplugin.library.util.GWMLibraryUtils;
-import dev.gwm.spongeplugin.library.util.SpongePlugin;
 import dev.gwm.spongeplugin.library.util.service.SuperObjectService;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.apache.commons.lang3.tuple.ImmutablePair;

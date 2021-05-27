@@ -13,7 +13,10 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.DyeColors;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.*;
+import org.spongepowered.api.item.inventory.Container;
+import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.item.inventory.InventoryArchetypes;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.property.InventoryDimension;
 import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
@@ -22,7 +25,10 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public final class SecondGuiPreview extends AbstractPreview {
 

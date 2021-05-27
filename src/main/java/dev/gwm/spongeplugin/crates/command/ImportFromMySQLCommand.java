@@ -1,8 +1,8 @@
 package dev.gwm.spongeplugin.crates.command;
 
 import dev.gwm.spongeplugin.crates.GWMCrates;
-import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import dev.gwm.spongeplugin.crates.util.GWMCratesMySqlUtils;
+import dev.gwm.spongeplugin.crates.util.GWMCratesUtils;
 import dev.gwm.spongeplugin.library.util.Language;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spongepowered.api.command.CommandResult;

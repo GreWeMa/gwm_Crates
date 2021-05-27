@@ -1,6 +1,5 @@
 package dev.gwm.spongeplugin.crates.util;
 
-import dev.gwm.spongeplugin.crates.GWMCrates;
 import dev.gwm.spongeplugin.crates.superobject.manager.Manager;
 import dev.gwm.spongeplugin.library.superobject.SuperObject;
 import dev.gwm.spongeplugin.library.util.AbstractSuperObjectCommandElement;

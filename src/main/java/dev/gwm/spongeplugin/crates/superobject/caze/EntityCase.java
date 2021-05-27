@@ -6,7 +6,10 @@ import dev.gwm.spongeplugin.library.exception.SuperObjectConstructionException;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 public final class EntityCase extends AbstractCase {
 
