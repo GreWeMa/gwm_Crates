@@ -10,7 +10,9 @@ import dev.gwm.spongeplugin.crates.superobject.preview.base.Preview;
 import dev.gwm.spongeplugin.library.util.SuperObjectCategory;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class GWMCratesSuperObjectCategories {
 
@@ -25,12 +27,12 @@ public final class GWMCratesSuperObjectCategories {
     public static final SuperObjectCategory<Preview> PREVIEW = new SuperObjectCategory<>("PREVIEW");
     public static final SuperObjectCategory<DecorativeItemsChangeMode> DECORATIVE_ITEMS_CHANGE_MODE = new SuperObjectCategory<>("DECORATIVE_ITEMS_CHANGE_MODE");
 
-    public static final List<SuperObjectCategory<?>> CATEGORIES = Arrays.asList(
+    public static final Set<SuperObjectCategory<?>> CATEGORIES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             MANAGER,
             CASE,
             KEY,
             DROP,
             OPEN_MANAGER,
             PREVIEW,
-            DECORATIVE_ITEMS_CHANGE_MODE);
+            DECORATIVE_ITEMS_CHANGE_MODE)));
 }
